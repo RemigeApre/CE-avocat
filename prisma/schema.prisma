@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  PARTNER_ADMIN
+  PARTNER_USER
+  MEMBER
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  password       String
+  name           String
+  role           Role     @default(MEMBER)
+  partnerId      String?
+  partner        Partner? @relation("PartnerMembers", fields: [partnerId], references: [id], onDelete: SetNull)
+  adminOfPartner Partner? @relation("PartnerAdmin")
+  orders         Order[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([email])
+  @@index([partnerId])
+}
+
+model Partner {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  logo        String?
+  website     String?
+  adminId     String   @unique
+  admin       User     @relation("PartnerAdmin", fields: [adminId], references: [id])
+  members     User[]   @relation("PartnerMembers")
+  offers      Offer[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([slug])
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  icon        String?
+  description String?
+  offers      Offer[]
+  createdAt   DateTime @default(now())
+
+  @@index([slug])
+}
+
+model Offer {
+  id              String      @id @default(cuid())
+  title           String
+  description     String
+  originalPrice   Decimal     @db.Decimal(10, 2)
+  discountedPrice Decimal     @db.Decimal(10, 2)
+  imageUrl        String?
+  conditions      String?
+  validUntil      DateTime?
+  isActive        Boolean     @default(true)
+  partnerId       String
+  partner         Partner     @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  categoryId      String
+  category        Category    @relation(fields: [categoryId], references: [id])
+  orderItems      OrderItem[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([partnerId])
+  @@index([categoryId])
+  @@index([isActive])
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  status      OrderStatus @default(PENDING)
+  totalAmount Decimal     @db.Decimal(10, 2)
+  items       OrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([userId])
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  offerId   String
+  offer     Offer   @relation(fields: [offerId], references: [id])
+  quantity  Int     @default(1)
+  unitPrice Decimal @db.Decimal(10, 2)
+
+  @@index([orderId])
+}
