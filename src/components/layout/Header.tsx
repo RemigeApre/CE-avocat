@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { useSession, signOut } from 'next-auth/react'
 import { useState } from 'react'
-import { Button } from '@/components/ui'
 
 const NAV_PUBLIC = [
   { href: '/offres', label: 'Offres' },
@@ -22,26 +21,26 @@ export function Header() {
     '/tableau-de-bord'
 
   return (
-    <header className="bg-white border-b border-[#e5e3de] sticky top-0 z-40">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+    <header className="bg-navy-800 sticky top-0 z-40 border-b border-navy-700">
+      <div className="w-full px-10 lg:px-16 h-[72px] flex items-center justify-between">
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 shrink-0 group">
-          <span className="w-9 h-9 bg-navy-800 flex items-center justify-center rounded-[3px]">
+          <span className="w-9 h-9 bg-navy-700 border border-navy-600 flex items-center justify-center rounded-[3px]">
             <span className="text-gold-400 font-bold text-sm tracking-tight">CE</span>
           </span>
-          <span className="font-semibold text-navy-800 text-base hidden sm:block group-hover:text-navy-600 transition-colors">
+          <span className="font-semibold text-white text-base hidden sm:block group-hover:text-gold-300 transition-colors">
             CE Avocats
           </span>
         </Link>
 
         {/* Nav public */}
-        <nav className="hidden md:flex items-center gap-7">
+        <nav className="hidden md:flex items-center gap-8">
           {NAV_PUBLIC.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="text-sm text-gray-500 hover:text-navy-800 transition-colors font-medium"
+              className="text-sm text-white/65 hover:text-white transition-colors font-medium"
             >
               {item.label}
             </Link>
@@ -49,7 +48,7 @@ export function Header() {
           {role === 'ADMIN' && (
             <Link
               href="/admin"
-              className="text-sm text-gray-500 hover:text-navy-800 transition-colors font-medium"
+              className="text-sm text-white/65 hover:text-white transition-colors font-medium"
             >
               Administration
             </Link>
@@ -62,15 +61,15 @@ export function Header() {
             <div className="relative">
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
-                className="flex items-center gap-2 text-sm font-medium text-navy-800 hover:text-navy-600 transition-colors"
+                className="flex items-center gap-2 text-sm font-medium text-white/80 hover:text-white transition-colors"
               >
-                <span className="w-8 h-8 rounded-full bg-navy-100 flex items-center justify-center text-navy-800 font-semibold text-xs">
+                <span className="w-8 h-8 rounded-full bg-navy-600 border border-navy-500 flex items-center justify-center text-white font-semibold text-xs">
                   {session.user.name?.charAt(0).toUpperCase()}
                 </span>
                 <span className="hidden sm:block max-w-[120px] truncate">
                   {session.user.name}
                 </span>
-                <svg className="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                <svg className="h-4 w-4 text-white/40" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" clipRule="evenodd"
                     d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
                   />
@@ -109,8 +108,11 @@ export function Header() {
               )}
             </div>
           ) : (
-            <Link href="/login">
-              <Button size="sm">Connexion</Button>
+            <Link
+              href="/login"
+              className="px-5 py-2 text-sm font-semibold bg-gold-500 hover:bg-gold-400 text-white rounded-sm transition-colors"
+            >
+              Connexion
             </Link>
           )}
         </div>
