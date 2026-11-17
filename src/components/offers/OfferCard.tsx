@@ -5,21 +5,19 @@ import { CATEGORY_IMAGES } from '@/lib/categoryImages'
 import type { OfferWithRelations } from '@/types'
 
 function OfferMeta({ offer }: { offer: OfferWithRelations }) {
-  const slug = offer.category.slug
-
-  if (slug === 'restauration' && offer.addresses.length > 0) {
+  if (offer.addresses.length > 0) {
     const cities = [...new Set(offer.addresses.map((a) => a.split(',').pop()?.trim()).filter(Boolean))]
     return <span>{cities.join(' · ')}</span>
   }
-  if ((slug === 'voyages' || slug === 'culture') && offer.locationCity) {
+  if (offer.locationCity) {
     return (
       <span>
         {offer.locationCity}
-        {offer.locationCountry && slug === 'voyages' ? `, ${offer.locationCountry}` : ''}
+        {offer.locationCountry ? `, ${offer.locationCountry}` : ''}
       </span>
     )
   }
-  if (slug === 'shopping' && offer.contactEmail) {
+  if (offer.contactEmail) {
     return <span className="truncate">{offer.contactEmail}</span>
   }
   return null
