@@ -84,15 +84,42 @@ export default async function OffresPage({ searchParams }: Props) {
 
       {/* Grille d'offres */}
       <div className="flex-1 min-w-0 px-6 py-8">
-        {/* Titre mobile uniquement */}
+        {/* Mobile : titre + filtres scrollables */}
         <div className="lg:hidden mb-6">
-          <h1 className="text-xl font-bold text-navy-800 mb-1">
-            {activeCategory ? activeCategory.name : 'Toutes les offres'}
-          </h1>
-          <p className="text-sm text-gray-400">
-            {offers.length} offre{offers.length > 1 ? 's' : ''}
-          </p>
+          <div className="mb-4">
+            <h1 className="text-xl font-bold text-navy-800 mb-0.5">
+              {activeCategory ? activeCategory.name : 'Toutes les offres'}
+            </h1>
+            <p className="text-sm text-gray-400">
+              {offers.length} offre{offers.length > 1 ? 's' : ''}
+            </p>
+          </div>
+          <div className="flex gap-2 overflow-x-auto pb-1 -mx-6 px-6 scrollbar-hide">
+            <a
+              href="/offres"
+              className={[
+                'shrink-0 px-4 py-1.5 rounded-full text-sm font-medium border transition-colors',
+                !categorie ? 'bg-navy-800 text-white border-navy-800' : 'border-[#e5e3de] text-gray-600 hover:border-navy-800 hover:text-navy-800',
+              ].join(' ')}
+            >
+              Tout
+            </a>
+            {categories.map((cat) => (
+              <a
+                key={cat.id}
+                href={`/offres?categorie=${cat.slug}`}
+                className={[
+                  'shrink-0 flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium border transition-colors',
+                  categorie === cat.slug ? 'bg-navy-800 text-white border-navy-800' : 'border-[#e5e3de] text-gray-600 hover:border-navy-800 hover:text-navy-800',
+                ].join(' ')}
+              >
+                {cat.icon && <span>{cat.icon}</span>}
+                {cat.name}
+              </a>
+            ))}
+          </div>
         </div>
+
         <OfferGrid offers={offers} emptyMessage="Aucune offre dans cette categorie pour le moment." />
       </div>
 

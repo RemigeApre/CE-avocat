@@ -30,7 +30,19 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
       {/* Colonne droite -- formulaire */}
       <div className="flex-1 flex flex-col bg-white">
-        <div className="flex-1 flex items-center justify-center px-8 py-12">
+        {/* Bouton retour mobile (colonne gauche cachée) */}
+        <div className="lg:hidden px-6 pt-5">
+          <a
+            href="/"
+            className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-navy-800 transition-colors"
+          >
+            <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10 3L5 8l5 5" />
+            </svg>
+            Retour
+          </a>
+        </div>
+        <div className="flex-1 flex items-center justify-center px-8 py-8">
           <div className="w-full max-w-sm">
             {children}
           </div>

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { signIn } from 'next-auth/react'
-import { Button, Input, Card } from '@/components/ui'
+import { Button, Input } from '@/components/ui'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -44,10 +44,10 @@ export default function RegisterPage() {
   }
 
   return (
-    <Card className="w-full max-w-sm">
-      <div className="mb-6">
-        <h1 className="text-xl font-bold text-navy-800">Creer un compte</h1>
-        <p className="text-sm text-gray-500 mt-1">Rejoignez le CE Avocats</p>
+    <div className="w-full">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-navy-800">Creer un compte</h1>
+        <p className="text-sm text-gray-400 mt-1">Rejoignez le CE Avocats</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -89,12 +89,12 @@ export default function RegisterPage() {
         </Button>
       </form>
 
-      <p className="text-sm text-center text-gray-500 mt-6">
+      <p className="text-sm text-center text-gray-400 mt-8">
         Deja un compte ?{' '}
         <Link href="/login" className="text-navy-800 font-medium hover:text-gold-600 transition-colors">
           Se connecter
         </Link>
       </p>
-    </Card>
+    </div>
   )
 }

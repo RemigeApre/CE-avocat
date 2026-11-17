@@ -74,13 +74,13 @@ export default async function HomePage() {
       {/* Hero + marquee = exactement le viewport moins le header */}
       <section
         className="flex flex-col overflow-hidden bg-white"
-        style={{ height: 'calc(100vh - 4rem)' }}
+        style={{ height: 'calc(100vh - 72px)' }}
       >
         {/* Zone principale */}
         <div className="relative flex-1 overflow-hidden">
 
           {/* Image droite - habillage, rien par dessus */}
-          <div className="absolute right-0 top-0 h-full w-[44%] pointer-events-none select-none">
+          <div className="absolute right-0 top-0 h-full w-[44%] pointer-events-none select-none hidden md:block">
             {/* Fondu blanc a gauche */}
             <div className="absolute left-0 top-0 bottom-0 w-48 bg-gradient-to-r from-white to-transparent z-10" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -123,19 +123,19 @@ export default async function HomePage() {
             </div>
 
             {/* Texte + CTA - non affectes par les cartes */}
-            <div className="max-w-5xl mx-auto px-8 w-full">
+            <div className="max-w-5xl mx-auto px-6 md:px-8 w-full">
               <div className="max-w-lg">
-                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-navy-800 leading-[1.05] mb-10">
+                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-navy-800 leading-[1.05] mb-8 md:mb-10">
                   Profitez de chaque avantage
                 </h1>
-                <div className="flex items-center gap-8">
+                <div className="flex items-center gap-6 md:gap-8">
                   <Link href="/login">
-                    <Button size="lg" className="px-10 py-3 h-auto rounded-sm">
+                    <Button size="lg" className="px-8 md:px-10 py-3 h-auto rounded-sm">
                       Se connecter
                     </Button>
                   </Link>
                   <div>
-                    <span className="text-4xl font-bold text-gold-500 leading-none">{offerCount}</span>
+                    <span className="text-3xl md:text-4xl font-bold text-gold-500 leading-none">{offerCount}</span>
                     <span className="block text-xs text-gray-400 mt-0.5 uppercase tracking-wider">offres disponibles</span>
                   </div>
                 </div>
