@@ -1,4 +1,5 @@
 export { Button } from './Button'
+export { CountUp } from './CountUp'
 export { Card } from './Card'
 export { Input } from './Input'
 export { Badge } from './Badge'

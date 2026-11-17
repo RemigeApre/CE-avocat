@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/db'
-import { Button } from '@/components/ui'
+import { Button, CountUp } from '@/components/ui'
 import { OfferGrid } from '@/components/offers/OfferGrid'
 import { cn } from '@/lib/utils'
 import { formatDate } from '@/lib/utils'
@@ -148,8 +148,9 @@ export default async function HomePage() {
                   préférentiels. Les avocats libéraux, eux, n'y ont pas droit.
                   Maître en Pause change ça.
                 </p>
-                <p className="mt-2 text-xs text-gray-400">
-                  81 640 avocats en France. 4 132 élèves avocats.
+                <p className="mt-2 text-xs text-gray-400 flex items-center gap-2">
+                  <CountUp target={81640} className="font-semibold text-gray-500" /> avocats en France.
+                  <CountUp target={4132} className="font-semibold text-gray-500" /> élèves avocats.
                 </p>
               </div>
             </div>
