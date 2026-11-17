@@ -3,7 +3,7 @@ export const CATEGORY_IMAGES: Record<string, string> = {
   'culture':         'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800&q=80',
   'bien-etre':       'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&q=80',
   'voyages':         'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80',
-  'loisirs':         'https://images.unsplash.com/photo-1575548694047-77f3c94ee69b?w=800&q=80',
+  'loisirs':         'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&q=80',
   'services':        'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&q=80',
   // anciens slugs en fallback
   'restauration':    'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80',
