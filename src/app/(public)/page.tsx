@@ -214,54 +214,31 @@ export default async function HomePage() {
 
       {/* Nous rejoindre */}
       <section className="bg-white py-16 border-b border-[#e5e3de]">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="mb-10">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="h-px w-6 bg-gold-400" />
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-600">Adhesion</p>
-            </div>
-            <h2 className="text-2xl font-bold text-navy-800">Nous rejoindre</h2>
-          </div>
+        <div className="max-w-5xl mx-auto px-6 text-center">
+          <h2 className="text-2xl font-bold text-navy-800 mb-12">Nous rejoindre</h2>
 
-          <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Ligne de connexion desktop */}
-            <div className="hidden lg:block absolute top-6 left-[calc(12.5%+1rem)] right-[calc(12.5%+1rem)] h-px bg-[#e5e3de]" />
-
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              {
-                n: '01',
-                title: "S'inscrire gratuitement",
-                desc: "Creez votre compte en quelques minutes avec votre adresse @avocat.fr ou @avocat-conseil.fr.",
-              },
-              {
-                n: '02',
-                title: 'Confirmer sa qualite',
-                desc: "Validez votre statut d'avocat aupres de notre equipe. Une simple verification.",
-              },
-              {
-                n: '03',
-                title: 'Choisir sa contribution',
-                desc: "Selectionnez la formule de cotisation adaptee a votre situation.",
-              },
-              {
-                n: '04',
-                title: 'Profiter des avantages',
-                desc: "Acces immediat aux offres negociees, aides et services reserves aux membres.",
-              },
+              { n: '01', title: "S'inscrire gratuitement" },
+              { n: '02', title: "Prouver son inscription au barreau" },
+              { n: '03', title: "Choisir sa cotisation" },
+              { n: '04', title: "Acces aux offres et avantages" },
             ].map((step) => (
-              <div key={step.n} className="relative flex flex-col items-start">
-                <div className="relative z-10 w-12 h-12 rounded-sm bg-white border-2 border-gold-400 flex items-center justify-center mb-5 shrink-0">
-                  <span className="text-sm font-bold text-gold-500 tabular-nums">{step.n}</span>
+              <div
+                key={step.n}
+                className="flex flex-col items-center gap-4 bg-[#f7f6f3] rounded-sm px-6 py-8 border border-[#e5e3de]"
+              >
+                <div className="w-14 h-14 rounded-sm bg-navy-800 flex items-center justify-center shrink-0">
+                  <span className="text-lg font-bold text-gold-400 tabular-nums tracking-tight">{step.n}</span>
                 </div>
-                <h3 className="font-semibold text-navy-800 mb-2 leading-snug">{step.title}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">{step.desc}</p>
+                <p className="text-sm font-semibold text-navy-800 leading-snug">{step.title}</p>
               </div>
             ))}
           </div>
 
           <div className="mt-10">
             <Link href="/adhesion">
-              <Button variant="outline">Demarrer l'adhesion</Button>
+              <Button size="lg" className="px-10">Rejoindre le CE</Button>
             </Link>
           </div>
         </div>
@@ -270,14 +247,8 @@ export default async function HomePage() {
       {/* Offres en vedette */}
       <section className="bg-[#f7f6f3] py-14">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-end justify-between mb-8">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <div className="h-px w-6 bg-gold-400" />
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-600">Catalogue</p>
-              </div>
-              <h2 className="text-2xl font-bold text-navy-800">Dernieres offres</h2>
-            </div>
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-bold text-navy-800">Dernieres offres</h2>
             <Link href="/offres" className="text-sm text-gold-600 hover:text-gold-700 font-medium transition-colors shrink-0">
               Tout voir &rarr;
             </Link>
@@ -297,14 +268,8 @@ export default async function HomePage() {
       {posts.length > 0 && (
         <section className="bg-white py-14 border-t border-[#e5e3de]">
           <div className="max-w-7xl mx-auto px-6">
-            <div className="flex items-end justify-between mb-8">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="h-px w-6 bg-gold-400" />
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-600">Blog</p>
-                </div>
-                <h2 className="text-2xl font-bold text-navy-800">Actualites</h2>
-              </div>
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl font-bold text-navy-800">Actualites</h2>
               <Link href="/actualites" className="text-sm text-gold-600 hover:text-gold-700 font-medium transition-colors shrink-0">
                 Tout voir &rarr;
               </Link>
