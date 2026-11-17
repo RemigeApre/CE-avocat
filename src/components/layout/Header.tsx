@@ -25,15 +25,8 @@ export function Header() {
     '/tableau-de-bord'
 
   const Logo = () => (
-    <span className="flex items-center gap-2.5 shrink-0">
-      <span className="w-8 h-8 rounded-full bg-white overflow-hidden shrink-0 flex items-center justify-center">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/icone robe.png" alt="" className="w-7 h-7 object-contain" />
-      </span>
-      <span className="font-semibold text-white text-base tracking-wide">
-        Maitre en <span className="text-gold-400">Pause</span>
-      </span>
-    </span>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src="/logo complet.jpg" alt="Maître en Pause" className="h-9 w-auto object-contain rounded-sm" />
   )
 
   return (
@@ -94,14 +87,9 @@ export function Header() {
           {/* Droite — logo mobile / actions desktop */}
           <div className="flex items-center gap-3">
             {/* Logo mobile (droite) */}
-            <Link href="/" className="md:hidden flex items-center gap-2">
-              <span className="w-7 h-7 rounded-full bg-white overflow-hidden shrink-0 flex items-center justify-center">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/icone robe.png" alt="" className="w-6 h-6 object-contain" />
-              </span>
-              <span className="font-semibold text-white text-sm tracking-wide">
-                Maitre en <span className="text-gold-400">Pause</span>
-              </span>
+            <Link href="/" className="md:hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo complet.jpg" alt="Maître en Pause" className="h-8 w-auto object-contain rounded-sm" />
             </Link>
 
             {/* Actions desktop */}
