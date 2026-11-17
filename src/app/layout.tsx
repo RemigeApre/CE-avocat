@@ -13,7 +13,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'Maitre en Pause',
   description: 'Le comite d\'entreprise des avocats. Profitez d\'avantages exclusifs negocies par et pour vous.',
-  icons: { icon: '/icone robe.png' },
+  icons: { icon: '/favicon.svg' },
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
