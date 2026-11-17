@@ -37,5 +37,7 @@
 }
 
 .animate-marquee {
+  display: flex;
+  width: max-content;
   animation: marquee 32s linear infinite;
 }

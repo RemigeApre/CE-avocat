@@ -121,24 +121,42 @@ export default async function HomePage() {
         </div>
 
         {/* Partenaires - dans le hero, visible sans scroll */}
-        <div className="border-t border-[#e5e3de] bg-[#f7f6f3] py-5 overflow-hidden shrink-0">
-          <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-gray-400 mb-4">
-            Partenaires
-          </p>
-          <div className="flex animate-marquee whitespace-nowrap">
-            {doubled.map((p, i) => (
-              <span
-                key={i}
-                className="inline-flex items-center mx-10 text-navy-800 font-medium text-sm opacity-60 hover:opacity-100 transition-opacity shrink-0"
-              >
-                {p.logo ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={p.logo} alt={p.name} className="h-7 w-auto object-contain" />
-                ) : (
-                  p.name
-                )}
-              </span>
-            ))}
+        <div className="border-t border-[#e5e3de] bg-[#f7f6f3] py-5 shrink-0">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="h-px w-8 bg-gold-400" />
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-navy-800">
+              Partenaires
+            </p>
+            <div className="h-px w-8 bg-gold-400" />
+          </div>
+          <div className="relative overflow-hidden">
+            {/* Fondu gauche */}
+            <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#f7f6f3] to-transparent z-10 pointer-events-none" />
+            {/* Fondu droit */}
+            <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#f7f6f3] to-transparent z-10 pointer-events-none" />
+
+            <div className="animate-marquee">
+              <div className="flex">
+                {marqueeItems.map((p, i) => (
+                  <span key={`a-${i}`} className="inline-flex items-center mx-10 text-navy-800 font-medium text-sm opacity-60 hover:opacity-100 transition-opacity shrink-0">
+                    {p.logo
+                      // eslint-disable-next-line @next/next/no-img-element
+                      ? <img src={p.logo} alt={p.name} className="h-7 w-auto object-contain" />
+                      : p.name}
+                  </span>
+                ))}
+              </div>
+              <div className="flex" aria-hidden="true">
+                {marqueeItems.map((p, i) => (
+                  <span key={`b-${i}`} className="inline-flex items-center mx-10 text-navy-800 font-medium text-sm opacity-60 shrink-0">
+                    {p.logo
+                      // eslint-disable-next-line @next/next/no-img-element
+                      ? <img src={p.logo} alt={p.name} className="h-7 w-auto object-contain" />
+                      : p.name}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
