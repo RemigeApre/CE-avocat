@@ -27,6 +27,7 @@ model User {
   password       String
   name           String
   role           Role     @default(MEMBER)
+  isDemo         Boolean  @default(false)
   partnerId      String?
   partner        Partner? @relation("PartnerMembers", fields: [partnerId], references: [id], onDelete: SetNull)
   adminOfPartner Partner? @relation("PartnerAdmin")

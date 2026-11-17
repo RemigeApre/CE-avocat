@@ -4,6 +4,8 @@ import { z } from 'zod'
 import { prisma } from '@/lib/db'
 import { sendWelcome } from '@/lib/mail'
 
+const ALLOWED_DOMAINS = ['avocat.fr', 'avocat-conseil.fr']
+
 const schema = z.object({
   name: z.string().min(2).max(80),
   email: z.string().email(),
@@ -17,6 +19,14 @@ export async function POST(req: Request) {
 
     if (!data.success) {
       return NextResponse.json({ error: 'Donnees invalides.' }, { status: 400 })
+    }
+
+    const domain = data.data.email.split('@')[1]
+    if (!ALLOWED_DOMAINS.includes(domain)) {
+      return NextResponse.json(
+        { error: 'Seules les adresses @avocat.fr et @avocat-conseil.fr sont acceptees.' },
+        { status: 400 }
+      )
     }
 
     const existing = await prisma.user.findUnique({ where: { email: data.data.email } })

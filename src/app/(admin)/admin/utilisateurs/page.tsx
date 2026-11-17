@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/db'
 import { Card, Badge } from '@/components/ui'
 import { formatDate } from '@/lib/utils'
+import { CreateUserButton } from './CreateUserButton'
 
 const roleLabel: Record<string, string> = {
   ADMIN: 'Admin',
@@ -23,16 +24,19 @@ export default async function AdminUsersPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-navy-800">Utilisateurs</h1>
-        <p className="text-sm text-gray-500 mt-1">{users.length} compte{users.length > 1 ? 's' : ''}</p>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-navy-800">Utilisateurs</h1>
+          <p className="text-sm text-gray-500 mt-1">{users.length} compte{users.length > 1 ? 's' : ''}</p>
+        </div>
+        <CreateUserButton />
       </div>
 
       <Card padding="none">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-[#e5e3de]">
-              {['Nom', 'Email', 'Role', 'Partenaire', 'Inscription'].map((h) => (
+              {['Nom', 'Email', 'Role', 'Partenaire', 'Inscription', ''].map((h) => (
                 <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   {h}
                 </th>
@@ -49,6 +53,9 @@ export default async function AdminUsersPage() {
                 </td>
                 <td className="px-5 py-3 text-gray-500">{u.partner?.name ?? '-'}</td>
                 <td className="px-5 py-3 text-gray-400 text-xs">{formatDate(u.createdAt)}</td>
+                <td className="px-5 py-3">
+                  {u.isDemo && <Badge variant="default">Demo</Badge>}
+                </td>
               </tr>
             ))}
           </tbody>
