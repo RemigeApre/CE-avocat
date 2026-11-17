@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { signIn } from 'next-auth/react'
-import { Button, Input, Card } from '@/components/ui'
+import { Button, Input } from '@/components/ui'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -39,17 +39,29 @@ export default function LoginPage() {
   }
 
   return (
-    <Card className="w-full max-w-sm">
-      <div className="mb-6">
-        <h1 className="text-xl font-bold text-navy-800">Connexion</h1>
-        <p className="text-sm text-gray-500 mt-1">Acces a votre espace CE Avocats</p>
+    <div>
+      {/* Retour */}
+      <Link
+        href="/"
+        className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-navy-800 transition-colors mb-8"
+      >
+        <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M10 3L5 8l5 5" />
+        </svg>
+        Retour
+      </Link>
+
+      {/* En-tete */}
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-navy-800">Connexion</h1>
+        <p className="text-sm text-gray-400 mt-1">Acces a votre espace CE Avocats</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5">
         <Input
           label="Adresse email"
           type="email"
-          placeholder="vous@exemple.fr"
+          placeholder="vous@avocat.fr"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -74,12 +86,12 @@ export default function LoginPage() {
         </Button>
       </form>
 
-      <p className="text-sm text-center text-gray-500 mt-6">
+      <p className="text-sm text-center text-gray-400 mt-8">
         Pas encore de compte ?{' '}
         <Link href="/register" className="text-navy-800 font-medium hover:text-gold-600 transition-colors">
           S'inscrire
         </Link>
       </p>
-    </Card>
+    </div>
   )
 }
