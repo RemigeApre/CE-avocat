@@ -97,7 +97,7 @@ export default async function HomePage() {
             {/* Cartes collectibles - absolues a gauche, hors flux */}
             <div className="absolute left-6 top-1/2 -translate-y-1/2 hidden 2xl:flex flex-col items-center gap-6">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo complet.jpg" alt="Maître en Pause" className="h-20 w-auto object-contain rounded-xl" />
+              <img src="/logo complet.jpg" alt="Maître en Pause" className="h-32 w-auto object-contain rounded-xl" />
             <div className="grid grid-cols-2 gap-5">
               {HIGHLIGHTS.map((h, i) => {
                 const rotations = ['-2deg', '1.5deg', '-1.5deg', '2deg', '-1deg', '1.5deg']
@@ -129,11 +129,6 @@ export default async function HomePage() {
             {/* Texte + CTA - non affectes par les cartes */}
             <div className="max-w-5xl mx-auto px-6 md:px-8 w-full">
               <div className="max-w-lg">
-                {/* Logo marque */}
-                <div className="mb-6">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/logo complet.jpg" alt="Maître en Pause" className="h-12 w-auto object-contain" />
-                </div>
                 <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-navy-800 leading-[1.05] mb-8 md:mb-10">
                   Le Comité Professionnel des avocats
                 </h1>
