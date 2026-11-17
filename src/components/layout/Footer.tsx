@@ -22,8 +22,9 @@ export function Footer() {
             <p className="text-xs font-semibold text-navy-300 uppercase tracking-wider mb-3">Navigation</p>
             <ul className="space-y-2">
               {[
-                { href: '/offres', label: 'Les offres' },
+                { href: '/offres', label: 'Offres' },
                 { href: '/partenaires', label: 'Partenaires' },
+                { href: '/adhesion', label: 'Adherer' },
                 { href: '/login', label: 'Connexion' },
               ].map(({ href, label }) => (
                 <li key={href}>
@@ -36,10 +37,19 @@ export function Footer() {
           </div>
 
           <div>
-            <p className="text-xs font-semibold text-navy-300 uppercase tracking-wider mb-3">Contact</p>
-            <p className="text-sm text-navy-200">
-              Pour toute question, contactez le bureau du CE.
-            </p>
+            <p className="text-xs font-semibold text-navy-300 uppercase tracking-wider mb-3">Informations légales</p>
+            <ul className="space-y-2">
+              {[
+                { href: '/mentions-legales', label: 'Mentions légales' },
+                { href: '/politique-confidentialite', label: 'Politique de confidentialité' },
+              ].map(({ href, label }) => (
+                <li key={href}>
+                  <Link href={href} className="text-sm text-navy-200 hover:text-white transition-colors">
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
