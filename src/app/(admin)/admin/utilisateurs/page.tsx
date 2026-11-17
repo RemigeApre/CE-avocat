@@ -1,26 +1,18 @@
 import { prisma } from '@/lib/db'
 import { Card, Badge } from '@/components/ui'
 import { formatDate } from '@/lib/utils'
+import { auth } from '../../../../../auth'
 import { CreateUserButton } from './CreateUserButton'
-
-const roleLabel: Record<string, string> = {
-  ADMIN: 'Admin',
-  PARTNER_ADMIN: 'Partenaire admin',
-  PARTNER_USER: 'Partenaire',
-  MEMBER: 'Membre',
-}
-const roleVariant: Record<string, 'danger' | 'gold' | 'info' | 'default'> = {
-  ADMIN: 'danger',
-  PARTNER_ADMIN: 'gold',
-  PARTNER_USER: 'info',
-  MEMBER: 'default',
-}
+import { RoleSelect } from './RoleSelect'
 
 export default async function AdminUsersPage() {
-  const users = await prisma.user.findMany({
-    orderBy: { createdAt: 'desc' },
-    include: { partner: { select: { name: true } } },
-  })
+  const [users, session] = await Promise.all([
+    prisma.user.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: { partner: { select: { name: true } } },
+    }),
+    auth(),
+  ])
 
   return (
     <div>
@@ -49,7 +41,7 @@ export default async function AdminUsersPage() {
                 <td className="px-5 py-3 font-medium text-navy-800">{u.name}</td>
                 <td className="px-5 py-3 text-gray-500">{u.email}</td>
                 <td className="px-5 py-3">
-                  <Badge variant={roleVariant[u.role]}>{roleLabel[u.role]}</Badge>
+                  <RoleSelect userId={u.id} currentRole={u.role} isSelf={session?.user.id === u.id} />
                 </td>
                 <td className="px-5 py-3 text-gray-500">{u.partner?.name ?? '-'}</td>
                 <td className="px-5 py-3 text-gray-400 text-xs">{formatDate(u.createdAt)}</td>

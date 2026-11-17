@@ -5,6 +5,18 @@ import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 import { auth } from '../../../../../auth'
 import { prisma } from '@/lib/db'
+import type { Role } from '@prisma/client'
+
+const VALID_ROLES: Role[] = ['ADMIN', 'PARTNER_ADMIN', 'PARTNER_USER', 'MEMBER']
+
+export async function updateUserRole(userId: string, role: string) {
+  await assertAdmin()
+  if (!VALID_ROLES.includes(role as Role)) throw new Error('Rôle invalide')
+  const session = await auth()
+  if (session?.user.id === userId) throw new Error('Impossible de modifier son propre rôle')
+  await prisma.user.update({ where: { id: userId }, data: { role: role as Role } })
+  revalidatePath('/admin/utilisateurs')
+}
 
 const ALLOWED_DOMAINS = ['avocat.fr', 'avocat-conseil.fr']
 
