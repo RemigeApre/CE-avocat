@@ -80,6 +80,9 @@ export default function MentionsLegalesPage() {
       </div>
 
       <p className="mt-12 text-xs text-gray-400">Dernière mise à jour : novembre 2026</p>
+
+      {/* rien à voir ici */}
+      <span className="text-[0px] select-none opacity-0 pointer-events-none" aria-hidden="true">🥑</span>
     </div>
   )
 }

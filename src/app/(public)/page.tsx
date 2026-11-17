@@ -57,6 +57,8 @@ export default async function HomePage() {
     getLatestPosts(),
   ])
 
+  const HIGHLIGHTS = ['Flagrant délice', 'Culture', 'Abandon de poste', 'Délit de fuite', 'Mise en liberté']
+
   const marqueeItems = partners.length > 0
     ? partners
     : HIGHLIGHTS.map((h, i) => ({ id: String(i), name: h, logo: null as string | null }))
