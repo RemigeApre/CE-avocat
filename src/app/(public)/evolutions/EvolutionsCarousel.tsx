@@ -104,10 +104,7 @@ export function EvolutionsCarousel({ items }: Props) {
             <line x1="22" y1="88" x2="38" y2="95" stroke="#4a7c59" strokeWidth="8" strokeLinecap="round" />
             <line x1="82" y1="92" x2="98" y2="84" stroke="#4a7c59" strokeWidth="8" strokeLinecap="round" />
           </svg>
-          <p className="text-xs text-gray-400 text-center leading-relaxed">
-            Et pourquoi pas un avocat (le fruit) ?<br />
-            <span className="text-[10px] text-gray-300">Idée non retenue.</span>
-          </p>
+          <p className="text-sm font-semibold text-navy-800">Avocat</p>
         </div>
       </div>
 
