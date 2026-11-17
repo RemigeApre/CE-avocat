@@ -47,15 +47,10 @@ const HIGHLIGHTS = [
 function PivotDecoration() {
   return (
     <svg viewBox="0 0 400 700" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-      {/* Beam - extends far to the right */}
       <rect x="0" y="152" width="400" height="13" rx="6.5" fill="#1b2d5a" />
-      {/* Outer ring */}
       <circle cx="140" cy="158" r="72" stroke="#1b2d5a" strokeWidth="4" />
-      {/* Inner ring */}
       <circle cx="140" cy="158" r="44" stroke="#1b2d5a" strokeWidth="3" />
-      {/* Center */}
       <circle cx="140" cy="158" r="20" fill="#1b2d5a" />
-      {/* Column - goes off bottom */}
       <rect x="133" y="230" width="14" height="470" rx="7" fill="#1b2d5a" />
     </svg>
   )
@@ -76,63 +71,67 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Hero */}
-      <section className="relative min-h-screen bg-white flex items-center overflow-hidden">
+      {/* Hero + marquee = exactement 100vh */}
+      <section className="h-screen flex flex-col overflow-hidden bg-white">
 
-        {/* Pivot de la balance - coupe par le bord gauche */}
-        <div
-          className="absolute top-1/2 -translate-y-1/2 pointer-events-none select-none opacity-[0.17]"
-          style={{ left: '-140px', width: '400px', height: '700px' }}
-        >
-          <PivotDecoration />
-        </div>
+        {/* Zone principale : contenu centré */}
+        <div className="relative flex-1 flex items-center justify-center overflow-hidden">
 
-        {/* Categories - absolues a droite, hors flux */}
-        <div className="absolute right-14 top-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-3">
-          {HIGHLIGHTS.map((h) => (
-            <span
-              key={h}
-              className="px-6 py-2.5 rounded-full border border-navy-200 text-navy-700 font-medium text-base"
-            >
-              {h}
-            </span>
-          ))}
-        </div>
+          {/* Pivot de la balance - coupe par le bord gauche */}
+          <div
+            className="absolute top-1/2 -translate-y-1/2 pointer-events-none select-none opacity-[0.17]"
+            style={{ left: '-140px', width: '400px', height: '700px' }}
+          >
+            <PivotDecoration />
+          </div>
 
-        {/* Contenu principal - pleine largeur, non affecte par les pills */}
-        <div className="relative z-10 max-w-5xl mx-auto px-8 w-full py-24">
-          <h1 className="text-5xl md:text-6xl lg:text-[5.25rem] font-bold text-navy-800 leading-[1.05] mb-10 max-w-2xl">
-            Profitez de chaque avantage
-          </h1>
-          <Link href="/login">
-            <Button size="lg">Se connecter</Button>
-          </Link>
-          <div className="mt-4">
-            <span className="text-4xl font-bold text-gold-500">{offerCount}</span>
-            <span className="text-gray-400 text-sm ml-2">offres disponibles</span>
+          {/* Categories - absolues a droite */}
+          <div className="absolute right-14 top-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-3">
+            {HIGHLIGHTS.map((h) => (
+              <span
+                key={h}
+                className="px-6 py-2.5 rounded-full border border-navy-200 text-navy-700 font-medium text-base"
+              >
+                {h}
+              </span>
+            ))}
+          </div>
+
+          {/* Contenu centré */}
+          <div className="relative z-10 text-center px-8">
+            <h1 className="text-5xl md:text-6xl lg:text-[5.25rem] font-bold text-navy-800 leading-[1.05] mb-10">
+              Profitez de chaque avantage
+            </h1>
+            <Link href="/login">
+              <Button size="lg">Se connecter</Button>
+            </Link>
+            <div className="mt-4">
+              <span className="text-4xl font-bold text-gold-500">{offerCount}</span>
+              <span className="text-gray-400 text-sm ml-2">offres disponibles</span>
+            </div>
           </div>
         </div>
-      </section>
 
-      {/* Partenaires marquee */}
-      <section className="bg-[#f7f6f3] border-y border-[#e5e3de] py-8 overflow-hidden">
-        <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-gray-400 mb-6">
-          Partenaires
-        </p>
-        <div className="flex animate-marquee whitespace-nowrap">
-          {doubled.map((p, i) => (
-            <span
-              key={i}
-              className="inline-flex items-center mx-10 text-navy-800 font-medium text-sm opacity-60 hover:opacity-100 transition-opacity shrink-0"
-            >
-              {p.logo ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={p.logo} alt={p.name} className="h-7 w-auto object-contain" />
-              ) : (
-                p.name
-              )}
-            </span>
-          ))}
+        {/* Partenaires - dans le hero, visible sans scroll */}
+        <div className="border-t border-[#e5e3de] bg-[#f7f6f3] py-5 overflow-hidden shrink-0">
+          <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-gray-400 mb-4">
+            Partenaires
+          </p>
+          <div className="flex animate-marquee whitespace-nowrap">
+            {doubled.map((p, i) => (
+              <span
+                key={i}
+                className="inline-flex items-center mx-10 text-navy-800 font-medium text-sm opacity-60 hover:opacity-100 transition-opacity shrink-0"
+              >
+                {p.logo ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={p.logo} alt={p.name} className="h-7 w-auto object-contain" />
+                ) : (
+                  p.name
+                )}
+              </span>
+            ))}
+          </div>
         </div>
       </section>
 
