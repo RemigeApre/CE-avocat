@@ -134,6 +134,9 @@ export default async function HomePage() {
                     <span className="block text-xs text-gray-400 mt-0.5 uppercase tracking-wider">offres disponibles</span>
                   </div>
                 </div>
+                <p className="mt-4 text-xs text-gray-400 leading-relaxed">
+                  Un CE pour les avocats. Partenariats et contribution mutuelle.
+                </p>
               </div>
             </div>
 

@@ -5,6 +5,12 @@ import { useSession, signOut } from 'next-auth/react'
 import { useState } from 'react'
 import { Button } from '@/components/ui'
 
+const NAV_PUBLIC = [
+  { href: '/offres', label: 'Offres' },
+  { href: '/partenaires', label: 'Partenaires' },
+  { href: '/adhesion', label: 'Adherer' },
+]
+
 export function Header() {
   const { data: session } = useSession()
   const [menuOpen, setMenuOpen] = useState(false)
@@ -20,33 +26,30 @@ export function Header() {
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
 
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 shrink-0">
-          <span className="w-8 h-8 rounded bg-navy-800 flex items-center justify-center">
-            <span className="text-gold-400 font-bold text-sm">CE</span>
+        <Link href="/" className="flex items-center gap-3 shrink-0 group">
+          <span className="w-9 h-9 bg-navy-800 flex items-center justify-center rounded-[3px]">
+            <span className="text-gold-400 font-bold text-sm tracking-tight">CE</span>
           </span>
-          <span className="font-semibold text-navy-800 text-sm hidden sm:block">
+          <span className="font-semibold text-navy-800 text-base hidden sm:block group-hover:text-navy-600 transition-colors">
             CE Avocats
           </span>
         </Link>
 
-        {/* Nav desktop */}
-        <nav className="hidden md:flex items-center gap-6">
-          <Link
-            href="/offres"
-            className="text-sm text-gray-600 hover:text-navy-800 transition-colors"
-          >
-            Les offres
-          </Link>
-          <Link
-            href="/partenaires"
-            className="text-sm text-gray-600 hover:text-navy-800 transition-colors"
-          >
-            Partenaires
-          </Link>
+        {/* Nav public */}
+        <nav className="hidden md:flex items-center gap-7">
+          {NAV_PUBLIC.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="text-sm text-gray-500 hover:text-navy-800 transition-colors font-medium"
+            >
+              {item.label}
+            </Link>
+          ))}
           {role === 'ADMIN' && (
             <Link
               href="/admin"
-              className="text-sm text-gray-600 hover:text-navy-800 transition-colors"
+              className="text-sm text-gray-500 hover:text-navy-800 transition-colors font-medium"
             >
               Administration
             </Link>
@@ -107,7 +110,7 @@ export function Header() {
             </div>
           ) : (
             <Link href="/login">
-              <Button size="sm">Se connecter &rarr;</Button>
+              <Button size="sm">Connexion</Button>
             </Link>
           )}
         </div>
