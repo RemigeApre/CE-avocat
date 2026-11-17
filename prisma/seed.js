@@ -26,6 +26,22 @@ async function upsertOffer(id, data) {
   })
 }
 
+// Migrate les offres d'un ancien slug vers le nouveau, puis supprime l'ancienne categorie
+async function cleanupCategory(oldSlug, newSlug) {
+  const oldCat = await prisma.category.findUnique({ where: { slug: oldSlug } })
+  if (!oldCat) return
+  if (newSlug) {
+    const newCat = await prisma.category.findUnique({ where: { slug: newSlug } })
+    if (newCat) {
+      await prisma.offer.updateMany({ where: { categoryId: oldCat.id }, data: { categoryId: newCat.id } })
+    }
+  } else {
+    await prisma.offer.deleteMany({ where: { categoryId: oldCat.id, isDemo: true } })
+  }
+  const remaining = await prisma.offer.count({ where: { categoryId: oldCat.id } })
+  if (remaining === 0) await prisma.category.delete({ where: { id: oldCat.id } })
+}
+
 async function main() {
   console.log('[seed] Demarrage...')
 
@@ -52,12 +68,14 @@ async function main() {
     prisma.category.upsert({ where: { slug: 'bien-etre' },   update: { name: 'Abandon de poste',  icon: '🧘' }, create: { name: 'Abandon de poste',  slug: 'bien-etre',   icon: '🧘' } }),
     prisma.category.upsert({ where: { slug: 'voyages' },     update: { name: 'Delit de fuite',    icon: '✈️' }, create: { name: 'Delit de fuite',    slug: 'voyages',     icon: '✈️' } }),
     prisma.category.upsert({ where: { slug: 'loisirs' },     update: { name: 'Mise en liberte',   icon: '🎡' }, create: { name: 'Mise en liberte',   slug: 'loisirs',     icon: '🎡' } }),
-    // migration : mettre a jour les anciens slugs en base
-    prisma.category.upsert({ where: { slug: 'restauration'    }, update: { name: 'Flagrant delice',  slug: 'gastronomie' }, create: { name: 'Flagrant delice',  slug: 'restauration' } }).catch(() => null),
-    prisma.category.upsert({ where: { slug: 'sport-bien-etre' }, update: { name: 'Abandon de poste', slug: 'bien-etre'   }, create: { name: 'Abandon de poste', slug: 'sport-bien-etre' } }).catch(() => null),
-    prisma.category.upsert({ where: { slug: 'shopping'        }, update: { name: 'Culture',          slug: 'culture'     }, create: { name: 'Culture',          slug: 'shopping' } }).catch(() => null),
   ])
   const [CAT_GASTRO, CAT_CULTURE, CAT_BIEN_ETRE, CAT_VOYAGE, CAT_LOISIRS] = cats
+
+  // Nettoyage des anciens slugs (doublons)
+  await cleanupCategory('restauration',    'gastronomie')
+  await cleanupCategory('sport-bien-etre', 'bien-etre')
+  await cleanupCategory('shopping',        'culture')
+  await cleanupCategory('services',        null)
 
   // ── 1. La Table du Palais — Gastronomie ──────────────────────────────
   const tablePalais = await upsertPartner(
