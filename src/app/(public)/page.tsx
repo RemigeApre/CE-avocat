@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { prisma } from '@/lib/db'
 import { Button } from '@/components/ui'
 import { OfferGrid } from '@/components/offers/OfferGrid'
+import { cn } from '@/lib/utils'
 import type { OfferWithRelations } from '@/types'
 
 async function getFeaturedOffers(): Promise<OfferWithRelations[]> {
@@ -79,27 +80,42 @@ export default async function HomePage() {
             />
           </div>
 
-          {/* Contenu principal - gauche, non affecte par l'image */}
+          {/* Contenu principal */}
           <div className="relative z-10 h-full flex items-center">
-            <div className="max-w-5xl mx-auto px-8 w-full">
-              <div className="max-w-lg">
+            <div className="max-w-5xl mx-auto px-8 w-full flex items-center gap-12">
 
-                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-navy-800 leading-[1.05] mb-8">
-                  Profitez de chaque avantage
-                </h1>
-
-                {/* Cartes categories minimalistes */}
-                <div className="grid grid-cols-3 gap-px bg-navy-100 border border-navy-100 mb-10">
-                  {HIGHLIGHTS.map((h) => (
+              {/* Cartes collectibles - gauche du flux */}
+              <div className="hidden xl:grid grid-cols-2 gap-3 shrink-0">
+                {HIGHLIGHTS.map((h, i) => {
+                  const rotations = ['-2deg', '1.5deg', '-1.5deg', '2deg', '-1deg', '1.5deg']
+                  return (
                     <div
                       key={h}
-                      className="bg-white px-3 py-2.5 text-sm font-medium text-navy-600"
+                      className={cn(
+                        'w-[86px] h-[122px] bg-white border border-navy-100',
+                        'rounded-[4px] flex flex-col overflow-hidden',
+                        'transition-transform duration-200 hover:scale-105',
+                      )}
+                      style={{
+                        rotate: rotations[i],
+                        boxShadow: '0 4px 18px rgba(27,45,90,0.13), 0 1px 4px rgba(27,45,90,0.08)',
+                      }}
                     >
-                      {h}
+                      <div className="h-1 bg-gold-400 shrink-0" />
+                      <div className="flex-1 flex items-center justify-center px-2 text-center">
+                        <span className="text-[11px] font-semibold text-navy-700 leading-tight">{h}</span>
+                      </div>
+                      <div className="h-1 bg-navy-100 shrink-0" />
                     </div>
-                  ))}
-                </div>
+                  )
+                })}
+              </div>
 
+              {/* Titre + CTA */}
+              <div className="max-w-lg">
+                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-navy-800 leading-[1.05] mb-10">
+                  Profitez de chaque avantage
+                </h1>
                 <div className="flex items-center gap-8">
                   <Link href="/login">
                     <Button size="lg" className="px-10 py-3 h-auto rounded-sm">
@@ -111,8 +127,8 @@ export default async function HomePage() {
                     <span className="block text-xs text-gray-400 mt-0.5 uppercase tracking-wider">offres disponibles</span>
                   </div>
                 </div>
-
               </div>
+
             </div>
           </div>
         </div>
