@@ -67,7 +67,8 @@ export default async function HomePage() {
   const marqueeItems = partners.length > 0
     ? partners
     : HIGHLIGHTS.map((h, i) => ({ id: String(i), name: h, logo: null as string | null }))
-  const doubled = [...marqueeItems, ...marqueeItems]
+  // 4 repetitions par groupe pour depasser la largeur de n'importe quel ecran
+  const groupItems = [...marqueeItems, ...marqueeItems, ...marqueeItems, ...marqueeItems]
 
   return (
     <>
@@ -136,9 +137,9 @@ export default async function HomePage() {
             <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#f7f6f3] to-transparent z-10 pointer-events-none" />
 
             <div className="animate-marquee">
-              <div className="flex">
-                {marqueeItems.map((p, i) => (
-                  <span key={`a-${i}`} className="inline-flex items-center mx-10 text-navy-800 font-medium text-sm opacity-60 hover:opacity-100 transition-opacity shrink-0">
+              <div className="marquee-group">
+                {groupItems.map((p, i) => (
+                  <span key={`a-${i}`} className="inline-flex items-center mx-10 text-navy-800 font-medium text-sm opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap">
                     {p.logo
                       // eslint-disable-next-line @next/next/no-img-element
                       ? <img src={p.logo} alt={p.name} className="h-7 w-auto object-contain" />
@@ -146,9 +147,9 @@ export default async function HomePage() {
                   </span>
                 ))}
               </div>
-              <div className="flex" aria-hidden="true">
-                {marqueeItems.map((p, i) => (
-                  <span key={`b-${i}`} className="inline-flex items-center mx-10 text-navy-800 font-medium text-sm opacity-60 shrink-0">
+              <div className="marquee-group" aria-hidden="true">
+                {groupItems.map((p, i) => (
+                  <span key={`b-${i}`} className="inline-flex items-center mx-10 text-navy-800 font-medium text-sm opacity-60 whitespace-nowrap">
                     {p.logo
                       // eslint-disable-next-line @next/next/no-img-element
                       ? <img src={p.logo} alt={p.name} className="h-7 w-auto object-contain" />

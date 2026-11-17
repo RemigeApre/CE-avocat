@@ -39,5 +39,10 @@
 .animate-marquee {
   display: flex;
   width: max-content;
-  animation: marquee 32s linear infinite;
+  animation: marquee 28s linear infinite;
+}
+
+.marquee-group {
+  display: flex;
+  flex-shrink: 0;
 }
