@@ -25,8 +25,15 @@ export function Header() {
     '/tableau-de-bord'
 
   const Logo = () => (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src="/logo complet.jpg" alt="Maître en Pause" className="h-11 w-auto object-contain rounded-lg" />
+    <span className="flex items-center gap-2.5 shrink-0">
+      <span className="w-8 h-8 rounded-full bg-white overflow-hidden shrink-0 flex items-center justify-center">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/icone robe.png" alt="" className="w-7 h-7 object-contain" />
+      </span>
+      <span className="font-semibold text-white text-base tracking-wide">
+        Maître en <span className="text-gold-400">Pause</span>
+      </span>
+    </span>
   )
 
   return (
