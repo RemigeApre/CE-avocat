@@ -26,7 +26,7 @@ export function Header() {
 
   const Logo = () => (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src="/logo complet.jpg" alt="Maître en Pause" className="h-9 w-auto object-contain rounded-sm" />
+    <img src="/logo complet.jpg" alt="Maître en Pause" className="h-11 w-auto object-contain rounded-lg" />
   )
 
   return (

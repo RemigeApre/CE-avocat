@@ -139,9 +139,9 @@ export default async function HomePage() {
                       Se connecter
                     </Button>
                   </Link>
-                  <div>
+                  <div className="flex items-baseline gap-1.5">
                     <span className="text-3xl md:text-4xl font-bold text-gold-500 leading-none">{offerCount}</span>
-                    <span className="block text-xs text-gray-400 mt-0.5 uppercase tracking-wider">offres disponibles</span>
+                    <span className="text-sm text-gray-400">offres</span>
                   </div>
                 </div>
                 <p className="mt-4 text-sm text-gray-500 leading-relaxed max-w-sm">
