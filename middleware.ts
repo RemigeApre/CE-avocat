@@ -10,7 +10,8 @@ export default auth((req) => {
   if (
     pathname.startsWith('/offres') ||
     pathname.startsWith('/tableau-de-bord') ||
-    pathname.startsWith('/mes-commandes')
+    pathname.startsWith('/mes-commandes') ||
+    pathname.startsWith('/mes-favoris')
   ) {
     if (!isAuthenticated) {
       return NextResponse.redirect(new URL('/login', req.url))

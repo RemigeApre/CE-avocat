@@ -5,6 +5,8 @@ import { prisma } from '@/lib/db'
 import { Badge, Card } from '@/components/ui'
 import { formatPrice, formatDate, getDiscountPercent } from '@/lib/utils'
 import { OrderButton } from './OrderButton'
+import { SaveButton } from '@/components/offers/SaveButton'
+import { auth } from '../../../../auth'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -12,18 +14,28 @@ interface Props {
 
 export default async function OfferPage({ params }: Props) {
   const { id } = await params
+  const session = await auth()
 
-  const offer = await prisma.offer.findUnique({
-    where: { id, isActive: true },
-    include: {
-      partner: { select: { id: true, name: true, slug: true, logo: true, description: true, website: true } },
-      category: { select: { id: true, name: true, slug: true, icon: true } },
-    },
-  })
+  const [offer, savedEntry] = await Promise.all([
+    prisma.offer.findUnique({
+      where: { id, isActive: true },
+      include: {
+        partner: { select: { id: true, name: true, slug: true, logo: true, description: true, website: true } },
+        category: { select: { id: true, name: true, slug: true, icon: true } },
+      },
+    }),
+    session
+      ? prisma.savedOffer.findUnique({
+          where: { userId_offerId: { userId: session.user.id, offerId: id } },
+        })
+      : null,
+  ])
 
   if (!offer) notFound()
 
   const discount = getDiscountPercent(Number(offer.originalPrice), Number(offer.discountedPrice))
+  const showDiscount = Number.isFinite(discount) && discount > 0
+  const isSaved = savedEntry !== null
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-10">
@@ -37,12 +49,12 @@ export default async function OfferPage({ params }: Props) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Contenu principal */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="relative h-64 md:h-80 rounded-lg overflow-hidden bg-gray-100">
+          <div className="relative h-64 md:h-80 rounded-lg overflow-hidden bg-[#f7f6f3]">
             {offer.imageUrl ? (
               <Image src={offer.imageUrl} alt={offer.title} fill className="object-cover" />
             ) : (
-              <div className="h-full flex items-center justify-center text-7xl select-none">
-                {offer.category.icon ?? '🏷️'}
+              <div className="h-full flex items-center justify-center text-7xl select-none text-gray-300">
+                {offer.category.icon}
               </div>
             )}
           </div>
@@ -50,7 +62,7 @@ export default async function OfferPage({ params }: Props) {
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-3">
               <Badge>{offer.category.name}</Badge>
-              <Badge variant="gold">-{discount}%</Badge>
+              {showDiscount && <Badge variant="gold">-{discount}%</Badge>}
             </div>
             <h1 className="text-2xl font-bold text-navy-800 mb-3">{offer.title}</h1>
             <p className="text-gray-600 leading-relaxed">{offer.description}</p>
@@ -68,24 +80,26 @@ export default async function OfferPage({ params }: Props) {
         <div className="space-y-4">
           <Card>
             <div className="mb-4">
-              <p className="text-sm text-gray-400 line-through mb-0.5">
-                {formatPrice(Number(offer.originalPrice))}
-              </p>
               <p className="text-3xl font-bold text-navy-800">
                 {formatPrice(Number(offer.discountedPrice))}
               </p>
-              <p className="text-sm text-green-600 font-medium mt-1">
-                Vous economisez {formatPrice(Number(offer.originalPrice) - Number(offer.discountedPrice))}
-              </p>
+              {Number(offer.originalPrice) > 0 && showDiscount && (
+                <p className="text-sm text-gray-400 line-through mt-0.5">
+                  {formatPrice(Number(offer.originalPrice))}
+                </p>
+              )}
             </div>
 
             {offer.validUntil && (
               <p className="text-xs text-gray-400 mb-4">
-                Valable jusqu'au {formatDate(offer.validUntil)}
+                Valable jusqu&apos;au {formatDate(offer.validUntil)}
               </p>
             )}
 
-            <OrderButton offerId={offer.id} price={Number(offer.discountedPrice)} />
+            <div className="space-y-2">
+              <OrderButton offerId={offer.id} price={Number(offer.discountedPrice)} />
+              {session && <SaveButton offerId={offer.id} initialSaved={isSaved} />}
+            </div>
           </Card>
 
           <Card>

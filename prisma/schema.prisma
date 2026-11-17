@@ -33,6 +33,7 @@ model User {
   adminOfPartner Partner? @relation("PartnerAdmin")
   orders         Order[]
   posts          Post[]
+  savedOffers    SavedOffer[]
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -104,12 +105,24 @@ model Offer {
   categoryId      String
   category        Category    @relation(fields: [categoryId], references: [id])
   orderItems      OrderItem[]
+  savedBy         SavedOffer[]
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 
   @@index([partnerId])
   @@index([categoryId])
   @@index([isActive])
+}
+
+model SavedOffer {
+  userId    String
+  offerId   String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  offer     Offer    @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@id([userId, offerId])
+  @@index([userId])
 }
 
 model Order {

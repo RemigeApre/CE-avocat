@@ -28,6 +28,7 @@ const navItems: Record<SidebarRole, NavItem[]> = {
   ],
   member: [
     { href: '/tableau-de-bord', label: 'Tableau de bord', icon: '◈' },
+    { href: '/mes-favoris', label: 'Mes favoris', icon: '◇' },
     { href: '/mes-commandes', label: 'Mes commandes', icon: '◆' },
     { href: '/offres', label: 'Toutes les offres', icon: '◎' },
   ],
