@@ -104,12 +104,9 @@ export function Header() {
               <div className="hidden md:block relative">
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center gap-2 text-sm font-medium text-white/80 hover:text-white transition-colors"
+                  className="flex items-center gap-1.5 text-sm font-medium text-white/80 hover:text-white transition-colors"
                 >
-                  <span className="w-8 h-8 rounded-full bg-navy-600 border border-navy-500 flex items-center justify-center text-white font-semibold text-xs">
-                    {session.user.name?.charAt(0).toUpperCase()}
-                  </span>
-                  <span className="hidden lg:block max-w-[120px] truncate">{session.user.name}</span>
+                  <span className="max-w-[140px] truncate">{session.user.name}</span>
                   <svg className="h-4 w-4 text-white/40" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" clipRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" />
                   </svg>

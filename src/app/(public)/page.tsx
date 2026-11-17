@@ -95,7 +95,10 @@ export default async function HomePage() {
           <div className="relative z-10 h-full flex items-center">
 
             {/* Cartes collectibles - absolues a gauche, hors flux */}
-            <div className="absolute left-6 top-1/2 -translate-y-1/2 hidden 2xl:grid grid-cols-2 gap-5">
+            <div className="absolute left-6 top-1/2 -translate-y-1/2 hidden 2xl:flex flex-col items-center gap-6">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo complet.jpg" alt="Maître en Pause" className="h-20 w-auto object-contain rounded-xl" />
+            <div className="grid grid-cols-2 gap-5">
               {HIGHLIGHTS.map((h, i) => {
                 const rotations = ['-2deg', '1.5deg', '-1.5deg', '2deg', '-1deg', '1.5deg']
                 const icons = [
@@ -120,6 +123,7 @@ export default async function HomePage() {
                   </div>
                 )
               })}
+            </div>
             </div>
 
             {/* Texte + CTA - non affectes par les cartes */}
