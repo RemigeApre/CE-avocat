@@ -38,7 +38,7 @@ export default async function OffresPage({ searchParams }: Props) {
     <div className="flex min-h-[calc(100vh-72px)]">
 
       {/* Sidebar filtres */}
-      <aside className="hidden lg:flex flex-col w-56 shrink-0 sticky top-[72px] self-start max-h-[calc(100vh-72px)] overflow-y-auto border-r border-[#e5e3de] bg-white py-7 px-5">
+      <aside className="hidden lg:flex flex-col w-56 shrink-0 sticky top-[72px] h-[calc(100vh-72px)] overflow-y-auto border-r border-[#e5e3de] bg-white py-7 px-5">
 
         <h1 className="text-base font-bold text-navy-800 mb-0.5">
           {activeCategory ? activeCategory.name : 'Toutes les offres'}
