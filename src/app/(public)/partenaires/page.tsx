@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/db'
-import { Card, Badge } from '@/components/ui'
+
+export const metadata = { title: 'Partenaires - CE Avocats' }
 
 export default async function PartenairesPage() {
   const partenaires = await prisma.partner.findMany({
@@ -17,51 +18,68 @@ export default async function PartenairesPage() {
   })
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-10">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-navy-800 mb-1">Nos partenaires</h1>
-        <p className="text-sm text-gray-500">
+    <div className="max-w-7xl mx-auto px-6 py-12">
+      <div className="mb-10">
+        <h1 className="text-2xl font-bold text-navy-800">Nos partenaires</h1>
+        <p className="text-sm text-gray-400 mt-1">
           {partenaires.length} partenaire{partenaires.length > 1 ? 's' : ''} selectionne{partenaires.length > 1 ? 's' : ''}
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {partenaires.map((p) => (
-          <Link key={p.id} href={`/partenaires/${p.slug}`}>
-            <Card className="hover:shadow-md transition-shadow h-full cursor-pointer group">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-lg bg-navy-50 flex items-center justify-center shrink-0 font-bold text-navy-800 text-lg">
-                  {p.name.charAt(0)}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h2 className="font-semibold text-navy-800 group-hover:text-gold-600 transition-colors truncate">
-                    {p.name}
-                  </h2>
-                  {p.description && (
-                    <p className="text-sm text-gray-500 mt-1 line-clamp-2 leading-relaxed">
-                      {p.description}
-                    </p>
-                  )}
-                  <div className="flex flex-wrap items-center gap-1.5 mt-3">
+      {partenaires.length === 0 ? (
+        <p className="text-sm text-gray-400 py-10 text-center">Aucun partenaire pour le moment.</p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {partenaires.map((p) => (
+            <Link
+              key={p.id}
+              href={`/partenaires/${p.slug}`}
+              className="group bg-white border border-[#e5e3de] rounded-lg overflow-hidden hover:shadow-md hover:border-navy-200 transition-all flex flex-col"
+            >
+              {/* En-tête visuelle */}
+              <div className="h-24 bg-[#f7f6f3] flex items-center justify-center shrink-0 border-b border-[#e5e3de]">
+                {p.logo ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={p.logo} alt={p.name} className="h-12 w-auto object-contain" />
+                ) : (
+                  <span className="text-4xl font-bold text-navy-200 select-none tracking-tighter">
+                    {p.name.substring(0, 2).toUpperCase()}
+                  </span>
+                )}
+              </div>
+
+              {/* Contenu */}
+              <div className="p-5 flex flex-col flex-1">
+                <h2 className="font-semibold text-navy-800 group-hover:text-gold-600 transition-colors leading-snug mb-1">
+                  {p.name}
+                </h2>
+                {p.description ? (
+                  <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed mb-4 flex-1">
+                    {p.description}
+                  </p>
+                ) : (
+                  <div className="flex-1" />
+                )}
+
+                <div className="flex items-center justify-between pt-3 border-t border-[#e5e3de]">
+                  <div className="flex flex-wrap gap-1.5">
                     {p.offers.map((o) => (
-                      <Badge key={o.category.slug}>
-                        {o.category.icon} {o.category.name}
-                      </Badge>
+                      <span
+                        key={o.category.slug}
+                        className="inline-flex items-center gap-1 text-xs text-gray-500 bg-[#f7f6f3] px-2 py-0.5 rounded-full"
+                      >
+                        {o.category.icon && <span>{o.category.icon}</span>}
+                        {o.category.name}
+                      </span>
                     ))}
-                    <span className="text-xs text-gray-400 ml-auto">
-                      {p._count.offers} offre{p._count.offers > 1 ? 's' : ''}
-                    </span>
                   </div>
+                  <span className="text-xs text-gray-400 shrink-0 ml-3">
+                    {p._count.offers} offre{p._count.offers > 1 ? 's' : ''}
+                  </span>
                 </div>
               </div>
-            </Card>
-          </Link>
-        ))}
-      </div>
-
-      {partenaires.length === 0 && (
-        <div className="text-center py-16 text-gray-400 text-sm">
-          Aucun partenaire pour le moment.
+            </Link>
+          ))}
         </div>
       )}
     </div>

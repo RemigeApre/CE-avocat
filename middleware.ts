@@ -7,7 +7,11 @@ export default auth((req) => {
   const isAuthenticated = !!session
   const role = session?.user?.role
 
-  if (pathname.startsWith('/tableau-de-bord') || pathname.startsWith('/mes-commandes')) {
+  if (
+    pathname.startsWith('/offres') ||
+    pathname.startsWith('/tableau-de-bord') ||
+    pathname.startsWith('/mes-commandes')
+  ) {
     if (!isAuthenticated) {
       return NextResponse.redirect(new URL('/login', req.url))
     }
