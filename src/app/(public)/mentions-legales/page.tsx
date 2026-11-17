@@ -40,8 +40,12 @@ export default function MentionsLegalesPage() {
         <section>
           <h2 className="text-base font-semibold text-navy-800 mb-3 pb-2 border-b border-[#e5e3de]">Propriété intellectuelle</h2>
           <p>
-            L'ensemble des contenus présents sur ce site (textes, visuels, structure) est la propriété de Le Geai.
-            Toute reproduction, même partielle, est interdite sans autorisation préalable.
+            La propriété du site et de ses contenus est partagée entre l'entreprise Le Geai et l'équipe
+            commanditaire ayant sollicité sa réalisation. Ce site a été conçu et développé bénévolement
+            par l'entreprise Le Geai.
+          </p>
+          <p className="mt-2">
+            Toute reproduction, même partielle, est interdite sans l'accord conjoint des deux parties.
           </p>
         </section>
 
