@@ -19,6 +19,7 @@ const navItems: Record<SidebarRole, NavItem[]> = {
     { href: '/admin/partenaires', label: 'Partenaires', icon: '◎' },
     { href: '/admin/categories', label: 'Categories', icon: '◫' },
     { href: '/admin/offres', label: 'Offres', icon: '◆' },
+    { href: '/admin/actualites', label: 'Actualites', icon: '◩' },
   ],
   partner: [
     { href: '/partenaire', label: 'Tableau de bord', icon: '◈' },

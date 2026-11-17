@@ -3,13 +3,14 @@ import { prisma } from '@/lib/db'
 import { Button } from '@/components/ui'
 import { OfferGrid } from '@/components/offers/OfferGrid'
 import { cn } from '@/lib/utils'
+import { formatDate } from '@/lib/utils'
 import type { OfferWithRelations } from '@/types'
 
 async function getFeaturedOffers(): Promise<OfferWithRelations[]> {
   const offers = await prisma.offer.findMany({
     where: { isActive: true },
     orderBy: { createdAt: 'desc' },
-    take: 8,
+    take: 4,
     include: {
       partner: { select: { id: true, name: true, slug: true, logo: true } },
       category: { select: { id: true, name: true, slug: true, icon: true } },
@@ -36,6 +37,15 @@ async function getPartners() {
   })
 }
 
+async function getLatestPosts() {
+  return prisma.post.findMany({
+    where: { isPublished: true },
+    orderBy: { publishedAt: 'desc' },
+    take: 3,
+    select: { id: true, title: true, slug: true, excerpt: true, imageUrl: true, publishedAt: true },
+  })
+}
+
 const HIGHLIGHTS = [
   'Voyages',
   'Vacances',
@@ -46,11 +56,12 @@ const HIGHLIGHTS = [
 ]
 
 export default async function HomePage() {
-  const [offers, categories, offerCount, partners] = await Promise.all([
+  const [offers, categories, offerCount, partners, posts] = await Promise.all([
     getFeaturedOffers(),
     getCategories(),
     getOfferCount(),
     getPartners(),
+    getLatestPosts(),
   ])
 
   const marqueeItems = partners.length > 0
@@ -201,16 +212,143 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Offres en vedette */}
-      <section className="max-w-7xl mx-auto px-6 py-12">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-navy-800">Dernieres offres</h2>
-          <Link href="/offres" className="text-sm text-gold-600 hover:text-gold-700 font-medium transition-colors">
-            Tout voir
-          </Link>
+      {/* Nous rejoindre */}
+      <section className="bg-white py-16 border-b border-[#e5e3de]">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="mb-10">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="h-px w-6 bg-gold-400" />
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-600">Adhesion</p>
+            </div>
+            <h2 className="text-2xl font-bold text-navy-800">Nous rejoindre</h2>
+          </div>
+
+          <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {/* Ligne de connexion desktop */}
+            <div className="hidden lg:block absolute top-6 left-[calc(12.5%+1rem)] right-[calc(12.5%+1rem)] h-px bg-[#e5e3de]" />
+
+            {[
+              {
+                n: '01',
+                title: "S'inscrire gratuitement",
+                desc: "Creez votre compte en quelques minutes avec votre adresse @avocat.fr ou @avocat-conseil.fr.",
+              },
+              {
+                n: '02',
+                title: 'Confirmer sa qualite',
+                desc: "Validez votre statut d'avocat aupres de notre equipe. Une simple verification.",
+              },
+              {
+                n: '03',
+                title: 'Choisir sa contribution',
+                desc: "Selectionnez la formule de cotisation adaptee a votre situation.",
+              },
+              {
+                n: '04',
+                title: 'Profiter des avantages',
+                desc: "Acces immediat aux offres negociees, aides et services reserves aux membres.",
+              },
+            ].map((step) => (
+              <div key={step.n} className="relative flex flex-col items-start">
+                <div className="relative z-10 w-12 h-12 rounded-sm bg-white border-2 border-gold-400 flex items-center justify-center mb-5 shrink-0">
+                  <span className="text-sm font-bold text-gold-500 tabular-nums">{step.n}</span>
+                </div>
+                <h3 className="font-semibold text-navy-800 mb-2 leading-snug">{step.title}</h3>
+                <p className="text-sm text-gray-500 leading-relaxed">{step.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-10">
+            <Link href="/adhesion">
+              <Button variant="outline">Demarrer l'adhesion</Button>
+            </Link>
+          </div>
         </div>
-        <OfferGrid offers={offers} emptyMessage="Aucune offre disponible pour le moment." />
       </section>
+
+      {/* Offres en vedette */}
+      <section className="bg-[#f7f6f3] py-14">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex items-end justify-between mb-8">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <div className="h-px w-6 bg-gold-400" />
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-600">Catalogue</p>
+              </div>
+              <h2 className="text-2xl font-bold text-navy-800">Dernieres offres</h2>
+            </div>
+            <Link href="/offres" className="text-sm text-gold-600 hover:text-gold-700 font-medium transition-colors shrink-0">
+              Tout voir &rarr;
+            </Link>
+          </div>
+          <OfferGrid offers={offers} emptyMessage="Aucune offre disponible pour le moment." />
+          {offerCount > 4 && (
+            <div className="mt-8 text-center">
+              <Link href="/offres">
+                <Button variant="outline">Voir toutes les offres</Button>
+              </Link>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Actualites */}
+      {posts.length > 0 && (
+        <section className="bg-white py-14 border-t border-[#e5e3de]">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="flex items-end justify-between mb-8">
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="h-px w-6 bg-gold-400" />
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-600">Blog</p>
+                </div>
+                <h2 className="text-2xl font-bold text-navy-800">Actualites</h2>
+              </div>
+              <Link href="/actualites" className="text-sm text-gold-600 hover:text-gold-700 font-medium transition-colors shrink-0">
+                Tout voir &rarr;
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {posts.map((post) => (
+                <Link
+                  key={post.id}
+                  href={`/actualites/${post.slug}`}
+                  className="group bg-white border border-[#e5e3de] rounded-lg overflow-hidden hover:shadow-md transition-shadow flex flex-col"
+                >
+                  {post.imageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={post.imageUrl} alt={post.title} className="w-full h-44 object-cover" />
+                  ) : (
+                    <div className="w-full h-44 bg-[#f7f6f3] flex items-center justify-center">
+                      <span className="text-3xl text-navy-200">◈</span>
+                    </div>
+                  )}
+                  <div className="p-5 flex flex-col flex-1">
+                    {post.publishedAt && (
+                      <p className="text-xs font-semibold uppercase tracking-widest text-gold-600 mb-2">
+                        {formatDate(post.publishedAt)}
+                      </p>
+                    )}
+                    <h3 className="font-semibold text-navy-800 leading-snug mb-2 group-hover:text-gold-600 transition-colors">
+                      {post.title}
+                    </h3>
+                    {post.excerpt && (
+                      <p className="text-sm text-gray-500 leading-relaxed line-clamp-3 flex-1">
+                        {post.excerpt}
+                      </p>
+                    )}
+                    <span className="mt-4 text-sm font-medium text-gold-600 group-hover:text-gold-700 transition-colors">
+                      Lire l'article &rarr;
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
     </>
   )
 }

@@ -3,6 +3,7 @@ import Link from 'next/link'
 const NAV_LINKS = [
   { href: '/offres', label: 'Offres' },
   { href: '/partenaires', label: 'Partenaires' },
+  { href: '/actualites', label: 'Actualites' },
   { href: '/adhesion', label: 'Adherer' },
   { href: '/login', label: 'Connexion' },
 ]
