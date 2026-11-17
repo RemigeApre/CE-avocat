@@ -10,7 +10,7 @@ const PLANS = [
     badge: null,
     price: '29,90',
     period: 'par an',
-    description: "Pour l'avocat qui souhaite accéder aux avantages négociés du CE.",
+    description: "Pour l'avocat qui souhaite accéder aux avantages négociés du Comité Professionnel.",
     features: [
       'Acces a tout le catalogue partenaires',
       'Tarifs négociés exclusifs',

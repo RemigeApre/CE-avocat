@@ -52,7 +52,7 @@ const EVOLUTIONS = [
   {
     id: 'parrainage',
     title: 'Parrainage entre confreres',
-    description: 'Un systeme de parrainage permettant a un adherent de recommander le CE a un confrere, avec avantages a la cle.',
+    description: 'Un systeme de parrainage permettant a un adherent de recommander le Comité Professionnela un confrere, avec avantages a la cle.',
     icon: '◑',
   },
   {
@@ -76,7 +76,7 @@ const EVOLUTIONS = [
   {
     id: 'newsletter',
     title: 'Newsletter',
-    description: 'Une lettre d\'information periodique retrancant les nouvelles offres, les evenements a venir et la vie du CE.',
+    description: 'Une lettre d\'information periodique retrancant les nouvelles offres, les evenements a venir et la vie du Comité Professionnel.',
     icon: '◕',
   },
   {
@@ -94,7 +94,7 @@ export default function EvolutionsPage() {
       <div className="max-w-4xl mx-auto px-6 lg:px-16 mb-12 text-center">
         <h1 className="text-3xl font-bold text-navy-800 mb-4">Evolutions envisagees</h1>
         <p className="text-gray-500 leading-relaxed max-w-2xl mx-auto">
-          Ce site est une base. Voici les pistes identifiees pour enrichir le CE au fil du temps.
+          Ce site est une base. Voici les pistes identifiees pour enrichir le Comité Professionnelau fil du temps.
           Certaines seront realisees, d'autres resteront des idees. Toutes ont ete pensees pour
           les avocats.
         </p>

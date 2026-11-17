@@ -31,15 +31,16 @@ export function Footer() {
           {/* Marque */}
           <div className="md:col-span-1">
             <Link href="/" className="inline-flex items-center gap-3 mb-5 group">
-              <span className="w-9 h-9 bg-navy-700 border border-navy-600 flex items-center justify-center rounded-[3px]">
-                <span className="text-gold-400 font-bold text-sm tracking-tight">CE</span>
+              <span className="w-9 h-9 rounded-full bg-navy-700 border border-navy-600 overflow-hidden flex items-center justify-center shrink-0">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/icone robe.png" alt="" className="w-7 h-7 object-contain" />
               </span>
               <span className="font-semibold text-white text-base group-hover:text-gold-300 transition-colors">
-                Maitre en Pause
+                Maître en Pause
               </span>
             </Link>
             <p className="text-sm text-navy-300 leading-relaxed max-w-xs">
-              Le comite d'entreprise des avocats. Des avantages negocies, des partenaires selectionnes.
+              Le Comité Professionnel des avocats. Des avantages négociés, des partenaires sélectionnés.
             </p>
             <p className="mt-4 text-xs text-navy-500 italic">Site de demonstration</p>
           </div>

@@ -30,7 +30,7 @@ export async function sendOrderConfirmation(params: {
       <div style="font-family:system-ui,sans-serif;max-width:560px;margin:0 auto;color:#1a1a2e">
         <div style="background:#1b2d5a;padding:32px 40px">
           <h1 style="color:#ffffff;margin:0;font-size:22px;font-weight:600">Maitre en Pause</h1>
-          <p style="color:#c9a84c;margin:4px 0 0;font-size:14px">Votre comite d'entreprise</p>
+          <p style="color:#c9a84c;margin:4px 0 0;font-size:14px">Votre Comité Professionnel</p>
         </div>
         <div style="padding:40px;background:#ffffff;border:1px solid #e5e3de;border-top:none">
           <h2 style="margin:0 0 8px;font-size:18px">Commande confirmee</h2>
@@ -70,7 +70,7 @@ export async function sendWelcome(params: { to: string; name: string }) {
       <div style="font-family:system-ui,sans-serif;max-width:560px;margin:0 auto;color:#1a1a2e">
         <div style="background:#1b2d5a;padding:32px 40px">
           <h1 style="color:#ffffff;margin:0;font-size:22px;font-weight:600">Maitre en Pause</h1>
-          <p style="color:#c9a84c;margin:4px 0 0;font-size:14px">Votre comite d'entreprise</p>
+          <p style="color:#c9a84c;margin:4px 0 0;font-size:14px">Votre Comité Professionnel</p>
         </div>
         <div style="padding:40px;background:#ffffff;border:1px solid #e5e3de;border-top:none">
           <h2 style="margin:0 0 16px;font-size:18px">Bienvenue, ${params.name} !</h2>
