@@ -8,6 +8,10 @@ const NAV_LINKS = [
   { href: '/login', label: 'Connexion' },
 ]
 
+const EXTRA_LINKS = [
+  { href: '/evolutions', label: 'Evolutions envisagees' },
+]
+
 const LEGAL_LINKS = [
   { href: '/mentions-legales', label: 'Mentions légales' },
   { href: '/politique-confidentialite', label: 'Politique de confidentialité' },
@@ -59,7 +63,7 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Légal */}
+          {/* Légal + extra */}
           <div>
             <p className="text-xs font-semibold text-gold-400 uppercase tracking-[0.15em] mb-5">
               Informations légales
@@ -67,14 +71,18 @@ export function Footer() {
             <ul className="space-y-3">
               {LEGAL_LINKS.map(({ href, label }) => (
                 <li key={href}>
-                  <Link
-                    href={href}
-                    className="text-sm text-navy-300 hover:text-white transition-colors"
-                  >
+                  <Link href={href} className="text-sm text-navy-300 hover:text-white transition-colors">
                     {label}
                   </Link>
                 </li>
               ))}
+              <li className="pt-2 border-t border-navy-700">
+                {EXTRA_LINKS.map(({ href, label }) => (
+                  <Link key={href} href={href} className="text-sm text-navy-300 hover:text-white transition-colors">
+                    {label}
+                  </Link>
+                ))}
+              </li>
             </ul>
           </div>
 
