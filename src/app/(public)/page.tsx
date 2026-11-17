@@ -82,36 +82,43 @@ export default async function HomePage() {
 
           {/* Contenu principal */}
           <div className="relative z-10 h-full flex items-center">
-            <div className="max-w-5xl mx-auto px-8 w-full flex items-center gap-12">
 
-              {/* Cartes collectibles - gauche du flux */}
-              <div className="hidden xl:grid grid-cols-2 gap-3 shrink-0">
-                {HIGHLIGHTS.map((h, i) => {
-                  const rotations = ['-2deg', '1.5deg', '-1.5deg', '2deg', '-1deg', '1.5deg']
-                  return (
-                    <div
-                      key={h}
-                      className={cn(
-                        'w-[86px] h-[122px] bg-white border border-navy-100',
-                        'rounded-[4px] flex flex-col overflow-hidden',
-                        'transition-transform duration-200 hover:scale-105',
-                      )}
-                      style={{
-                        rotate: rotations[i],
-                        boxShadow: '0 4px 18px rgba(27,45,90,0.13), 0 1px 4px rgba(27,45,90,0.08)',
-                      }}
-                    >
-                      <div className="h-1 bg-gold-400 shrink-0" />
-                      <div className="flex-1 flex items-center justify-center px-2 text-center">
-                        <span className="text-[11px] font-semibold text-navy-700 leading-tight">{h}</span>
-                      </div>
-                      <div className="h-1 bg-navy-100 shrink-0" />
-                    </div>
-                  )
-                })}
-              </div>
+            {/* Cartes collectibles - absolues a gauche, hors flux */}
+            <div className="absolute left-8 top-1/2 -translate-y-1/2 hidden 2xl:grid grid-cols-2 gap-3">
+              {HIGHLIGHTS.map((h, i) => {
+                const rotations = ['-2deg', '1.5deg', '-1.5deg', '2deg', '-1deg', '1.5deg']
+                const icons = [
+                  // Voyages - avion
+                  <svg key="v" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.49 12 19.79 19.79 0 0 1 1.44 3.4a2 2 0 0 1 1.98-2.19h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.4a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>,
+                  // Vacances - soleil
+                  <svg key="va" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="w-7 h-7"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>,
+                  // Restaurants - couverts
+                  <svg key="r" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>,
+                  // Experiences - etoile
+                  <svg key="e" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
+                  // Sports - eclair
+                  <svg key="s" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
+                  // Arts & Culture - note de musique
+                  <svg key="a" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>,
+                ]
+                return (
+                  <div
+                    key={h}
+                    className="w-[88px] h-[124px] bg-white border border-navy-100 rounded-[4px] flex flex-col items-center justify-center gap-2 transition-transform duration-200 hover:scale-105"
+                    style={{
+                      rotate: rotations[i],
+                      boxShadow: '0 4px 18px rgba(27,45,90,0.11), 0 1px 4px rgba(27,45,90,0.07)',
+                    }}
+                  >
+                    <div className="text-navy-700">{icons[i]}</div>
+                    <span className="text-[10px] font-semibold text-navy-600 text-center leading-tight px-2">{h}</span>
+                  </div>
+                )
+              })}
+            </div>
 
-              {/* Titre + CTA */}
+            {/* Texte + CTA - non affectes par les cartes */}
+            <div className="max-w-5xl mx-auto px-8 w-full">
               <div className="max-w-lg">
                 <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-navy-800 leading-[1.05] mb-10">
                   Profitez de chaque avantage
@@ -128,8 +135,8 @@ export default async function HomePage() {
                   </div>
                 </div>
               </div>
-
             </div>
+
           </div>
         </div>
 
