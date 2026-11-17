@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { prisma } from '@/lib/db'
 import { Badge, Card } from '@/components/ui'
 import { formatPrice, formatDate, getDiscountPercent } from '@/lib/utils'
+import { CATEGORY_IMAGES } from '@/lib/categoryImages'
 import { OrderButton } from './OrderButton'
 import { SaveButton } from '@/components/offers/SaveButton'
 import { auth } from '../../../../../auth'
@@ -36,6 +37,7 @@ export default async function OfferPage({ params }: Props) {
   const discount = getDiscountPercent(Number(offer.originalPrice), Number(offer.discountedPrice))
   const showDiscount = Number.isFinite(discount) && discount > 0
   const isSaved = savedEntry !== null
+  const imageUrl = offer.imageUrl ?? CATEGORY_IMAGES[offer.category.slug] ?? null
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-10">
@@ -50,11 +52,15 @@ export default async function OfferPage({ params }: Props) {
         {/* Contenu principal */}
         <div className="lg:col-span-2 space-y-6">
           <div className="relative h-64 md:h-80 rounded-lg overflow-hidden bg-[#f7f6f3]">
-            {offer.imageUrl ? (
-              <Image src={offer.imageUrl} alt={offer.title} fill className="object-cover" />
-            ) : (
-              <div className="h-full flex items-center justify-center text-7xl select-none text-gray-300">
-                {offer.category.icon}
+            {imageUrl && (
+              <>
+                <Image src={imageUrl} alt={offer.title} fill className="object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+              </>
+            )}
+            {showDiscount && (
+              <div className="absolute top-0 left-0 bg-navy-800 text-white text-xs font-bold px-3 py-2 leading-none tracking-wide">
+                -{discount}%
               </div>
             )}
           </div>
