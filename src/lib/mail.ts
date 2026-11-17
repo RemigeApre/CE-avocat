@@ -1,6 +1,5 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
 const from = process.env.RESEND_FROM ?? 'CE Avocats <noreply@ce-avocats.legeai-editions.com>'
 
 export async function sendOrderConfirmation(params: {
@@ -10,6 +9,8 @@ export async function sendOrderConfirmation(params: {
   items: { title: string; unitPrice: number; quantity: number }[]
   totalAmount: number
 }) {
+  const resend = new Resend(process.env.RESEND_API_KEY ?? '')
+
   const itemsHtml = params.items
     .map(
       (item) =>
@@ -59,6 +60,8 @@ export async function sendOrderConfirmation(params: {
 }
 
 export async function sendWelcome(params: { to: string; name: string }) {
+  const resend = new Resend(process.env.RESEND_API_KEY ?? '')
+
   await resend.emails.send({
     from,
     to: params.to,
