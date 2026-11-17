@@ -39,6 +39,13 @@ export default async function OfferPage({ params }: Props) {
   const isSaved = savedEntry !== null
   const imageUrl = offer.imageUrl ?? CATEGORY_IMAGES[offer.category.slug] ?? null
 
+  // Metadonnées de localisation selon la catégorie
+  const slug = offer.category.slug
+  const hasLocation =
+    (slug === 'restauration' && offer.addresses.length > 0) ||
+    ((slug === 'voyages' || slug === 'culture') && offer.locationCity) ||
+    (slug === 'shopping' && offer.contactEmail)
+
   return (
     <div className="max-w-5xl mx-auto px-6 py-10">
       <Link href="/offres" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-navy-800 transition-colors mb-6">
@@ -68,7 +75,6 @@ export default async function OfferPage({ params }: Props) {
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-3">
               <Badge>{offer.category.name}</Badge>
-              {showDiscount && <Badge variant="gold">-{discount}%</Badge>}
             </div>
             <h1 className="text-2xl font-bold text-navy-800 mb-3">{offer.title}</h1>
             <p className="text-gray-600 leading-relaxed">{offer.description}</p>
@@ -107,6 +113,61 @@ export default async function OfferPage({ params }: Props) {
               {session && <SaveButton offerId={offer.id} initialSaved={isSaved} />}
             </div>
           </Card>
+
+          {/* Localisation / contact */}
+          {hasLocation && (
+            <Card>
+              {slug === 'restauration' && offer.addresses.length > 0 && (
+                <>
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                    {offer.addresses.length > 1 ? 'Adresses' : 'Adresse'}
+                  </p>
+                  <ul className="space-y-1.5">
+                    {offer.addresses.map((addr, i) => (
+                      <li key={i} className="text-sm text-gray-600 flex items-start gap-2">
+                        <svg className="w-3.5 h-3.5 text-gray-400 mt-0.5 shrink-0" viewBox="0 0 16 16" fill="currentColor">
+                          <path fillRule="evenodd" clipRule="evenodd" d="M8 1.5a4.5 4.5 0 100 9 4.5 4.5 0 000-9zM2 6a6 6 0 1110.9 3.428l2.336 2.336a.75.75 0 11-1.06 1.06l-2.335-2.335A6 6 0 012 6z" />
+                        </svg>
+                        {addr}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+
+              {(slug === 'voyages' || slug === 'culture') && offer.locationCity && (
+                <>
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                    Lieu
+                  </p>
+                  <p className="text-sm text-gray-600 flex items-center gap-2">
+                    <svg className="w-3.5 h-3.5 text-gray-400 shrink-0" viewBox="0 0 16 16" fill="currentColor">
+                      <path fillRule="evenodd" clipRule="evenodd" d="M8 1a5 5 0 00-5 5c0 3.5 5 9 5 9s5-5.5 5-9a5 5 0 00-5-5zm0 7a2 2 0 110-4 2 2 0 010 4z" />
+                    </svg>
+                    {offer.locationCity}
+                    {offer.locationCountry && slug === 'voyages' && `, ${offer.locationCountry}`}
+                  </p>
+                </>
+              )}
+
+              {slug === 'shopping' && offer.contactEmail && (
+                <>
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                    Contact
+                  </p>
+                  <a
+                    href={`mailto:${offer.contactEmail}`}
+                    className="text-sm text-gold-600 hover:text-gold-700 transition-colors flex items-center gap-2"
+                  >
+                    <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M2 4l6 5 6-5M2 4h12v9H2V4z" />
+                    </svg>
+                    {offer.contactEmail}
+                  </a>
+                </>
+              )}
+            </Card>
+          )}
 
           <Card>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">

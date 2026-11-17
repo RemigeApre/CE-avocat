@@ -104,6 +104,10 @@ model Offer {
   partner         Partner     @relation(fields: [partnerId], references: [id], onDelete: Cascade)
   categoryId      String
   category        Category    @relation(fields: [categoryId], references: [id])
+  locationCity    String?
+  locationCountry String?
+  addresses       String[]
+  contactEmail    String?
   orderItems      OrderItem[]
   savedBy         SavedOffer[]
   createdAt       DateTime    @default(now())

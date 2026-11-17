@@ -13,7 +13,7 @@ export default async function PartnerOffresPage() {
       orderBy: { createdAt: 'desc' },
       include: { category: { select: { name: true, icon: true } } },
     }),
-    prisma.category.findMany({ orderBy: { name: 'asc' } }),
+    prisma.category.findMany({ orderBy: { name: 'asc' }, select: { id: true, name: true, slug: true, icon: true } }),
   ])
 
   return (

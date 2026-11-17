@@ -4,6 +4,27 @@ import { formatPrice, getDiscountPercent } from '@/lib/utils'
 import { CATEGORY_IMAGES } from '@/lib/categoryImages'
 import type { OfferWithRelations } from '@/types'
 
+function OfferMeta({ offer }: { offer: OfferWithRelations }) {
+  const slug = offer.category.slug
+
+  if (slug === 'restauration' && offer.addresses.length > 0) {
+    const cities = [...new Set(offer.addresses.map((a) => a.split(',').pop()?.trim()).filter(Boolean))]
+    return <span>{cities.join(' · ')}</span>
+  }
+  if ((slug === 'voyages' || slug === 'culture') && offer.locationCity) {
+    return (
+      <span>
+        {offer.locationCity}
+        {offer.locationCountry && slug === 'voyages' ? `, ${offer.locationCountry}` : ''}
+      </span>
+    )
+  }
+  if (slug === 'shopping' && offer.contactEmail) {
+    return <span className="truncate">{offer.contactEmail}</span>
+  }
+  return null
+}
+
 interface OfferCardProps {
   offer: OfferWithRelations
 }
@@ -14,7 +35,6 @@ export function OfferCard({ offer }: OfferCardProps) {
     Number(offer.discountedPrice),
   )
   const showDiscount = Number.isFinite(discount) && discount > 0
-
   const imageUrl = offer.imageUrl ?? CATEGORY_IMAGES[offer.category.slug] ?? null
 
   return (
@@ -34,8 +54,6 @@ export function OfferCard({ offer }: OfferCardProps) {
               <div className="absolute inset-0 bg-gradient-to-t from-black/25 to-transparent" />
             </>
           )}
-
-          {/* Badge reduction : carre colle haut gauche */}
           {showDiscount && (
             <div className="absolute top-0 left-0 bg-navy-800 text-white text-xs font-bold px-2.5 py-1.5 leading-none tracking-wide">
               -{discount}%
@@ -49,9 +67,13 @@ export function OfferCard({ offer }: OfferCardProps) {
             {offer.title}
           </h3>
 
-          <p className="text-sm text-gray-500 mb-3 line-clamp-2 flex-1 leading-relaxed">
+          <p className="text-sm text-gray-500 mb-2 line-clamp-2 flex-1 leading-relaxed">
             {offer.description}
           </p>
+
+          <div className="text-xs text-gray-400 mb-3 h-4 truncate">
+            <OfferMeta offer={offer} />
+          </div>
 
           <div className="flex items-center justify-between pt-3 border-t border-[#e5e3de]">
             <span className="text-xs text-gray-400 truncate max-w-[55%]">{offer.partner.name}</span>
@@ -59,7 +81,7 @@ export function OfferCard({ offer }: OfferCardProps) {
               <span className="text-base font-bold text-navy-800">
                 {formatPrice(Number(offer.discountedPrice))}
               </span>
-              {Number(offer.originalPrice) > 0 && (
+              {Number(offer.originalPrice) > 0 && showDiscount && (
                 <span className="text-xs text-gray-400 line-through">
                   {formatPrice(Number(offer.originalPrice))}
                 </span>

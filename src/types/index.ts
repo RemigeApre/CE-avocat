@@ -38,6 +38,10 @@ export type OfferWithRelations = {
   conditions: string | null
   validUntil: Date | null
   isActive: boolean
+  locationCity: string | null
+  locationCountry: string | null
+  addresses: string[]
+  contactEmail: string | null
   partner: {
     id: string
     name: string
