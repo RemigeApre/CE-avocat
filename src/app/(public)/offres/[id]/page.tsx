@@ -6,7 +6,7 @@ import { Badge, Card } from '@/components/ui'
 import { formatPrice, formatDate, getDiscountPercent } from '@/lib/utils'
 import { OrderButton } from './OrderButton'
 import { SaveButton } from '@/components/offers/SaveButton'
-import { auth } from '../../../../auth'
+import { auth } from '../../../../../auth'
 
 interface Props {
   params: Promise<{ id: string }>
