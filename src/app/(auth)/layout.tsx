@@ -14,25 +14,17 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         {/* Overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-navy-900/80 via-navy-800/60 to-navy-900/40" />
 
-        {/* Contenu gauche */}
-        <div className="relative z-10 flex flex-col h-full px-12 py-10">
-          {/* Logo */}
-          <div className="flex items-center gap-3">
-            <span className="w-9 h-9 bg-white/10 border border-white/20 flex items-center justify-center rounded-[3px]">
-              <span className="text-gold-400 font-bold text-sm tracking-tight">CE</span>
-            </span>
-            <span className="font-semibold text-white text-base">CE Avocats</span>
-          </div>
-
-          {/* Bas de colonne */}
-          <div className="mt-auto">
-            <p className="text-2xl font-bold text-white leading-snug mb-3">
-              Profitez de chaque avantage
-            </p>
-            <p className="text-sm text-white/50 leading-relaxed max-w-xs">
-              Le comite d'entreprise de votre ecole d'avocats. Des avantages negocies, des partenaires selectionnes.
-            </p>
-          </div>
+        {/* Bouton retour */}
+        <div className="relative z-10 p-8">
+          <a
+            href="/"
+            className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-white transition-colors"
+          >
+            <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10 3L5 8l5 5" />
+            </svg>
+            Retour
+          </a>
         </div>
       </div>
 

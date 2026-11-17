@@ -40,17 +40,6 @@ export default function LoginPage() {
 
   return (
     <div>
-      {/* Retour */}
-      <Link
-        href="/"
-        className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-navy-800 transition-colors mb-8"
-      >
-        <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M10 3L5 8l5 5" />
-        </svg>
-        Retour
-      </Link>
-
       {/* En-tete */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-navy-800">Connexion</h1>
