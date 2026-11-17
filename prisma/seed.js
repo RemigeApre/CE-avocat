@@ -47,18 +47,17 @@ async function main() {
 
   // ── Categories ────────────────────────────────────────────────────────
   const cats = await Promise.all([
-    prisma.category.upsert({ where: { slug: 'gastronomie' }, update: { name: 'Gastronomie',          icon: '🍽️' }, create: { name: 'Gastronomie',          slug: 'gastronomie', icon: '🍽️' } }),
-    prisma.category.upsert({ where: { slug: 'culture' },     update: { name: 'Culture',               icon: '🎭' }, create: { name: 'Culture',               slug: 'culture',     icon: '🎭' } }),
-    prisma.category.upsert({ where: { slug: 'bien-etre' },   update: { name: 'Bien-etre',             icon: '🧘' }, create: { name: 'Bien-etre',             slug: 'bien-etre',   icon: '🧘' } }),
-    prisma.category.upsert({ where: { slug: 'voyages' },     update: { name: 'Voyages',               icon: '✈️' }, create: { name: 'Voyages',               slug: 'voyages',     icon: '✈️' } }),
-    prisma.category.upsert({ where: { slug: 'loisirs' },     update: { name: 'Loisirs',               icon: '🎡' }, create: { name: 'Loisirs',               slug: 'loisirs',     icon: '🎡' } }),
-    prisma.category.upsert({ where: { slug: 'services' },    update: { name: 'Services',              icon: '🔧' }, create: { name: 'Services',              slug: 'services',    icon: '🔧' } }),
+    prisma.category.upsert({ where: { slug: 'gastronomie' }, update: { name: 'Flagrant delice',   icon: '🍽️' }, create: { name: 'Flagrant delice',   slug: 'gastronomie', icon: '🍽️' } }),
+    prisma.category.upsert({ where: { slug: 'culture' },     update: { name: 'Culture',           icon: '🎭' }, create: { name: 'Culture',           slug: 'culture',     icon: '🎭' } }),
+    prisma.category.upsert({ where: { slug: 'bien-etre' },   update: { name: 'Abandon de poste',  icon: '🧘' }, create: { name: 'Abandon de poste',  slug: 'bien-etre',   icon: '🧘' } }),
+    prisma.category.upsert({ where: { slug: 'voyages' },     update: { name: 'Delit de fuite',    icon: '✈️' }, create: { name: 'Delit de fuite',    slug: 'voyages',     icon: '✈️' } }),
+    prisma.category.upsert({ where: { slug: 'loisirs' },     update: { name: 'Mise en liberte',   icon: '🎡' }, create: { name: 'Mise en liberte',   slug: 'loisirs',     icon: '🎡' } }),
     // migration : mettre a jour les anciens slugs en base
-    prisma.category.upsert({ where: { slug: 'restauration'    }, update: { name: 'Gastronomie', slug: 'gastronomie' }, create: { name: 'Gastronomie', slug: 'restauration' } }).catch(() => null),
-    prisma.category.upsert({ where: { slug: 'sport-bien-etre' }, update: { name: 'Bien-etre',   slug: 'bien-etre'   }, create: { name: 'Bien-etre',   slug: 'sport-bien-etre' } }).catch(() => null),
-    prisma.category.upsert({ where: { slug: 'shopping'        }, update: { name: 'Culture',     slug: 'culture'     }, create: { name: 'Culture',     slug: 'shopping' } }).catch(() => null),
+    prisma.category.upsert({ where: { slug: 'restauration'    }, update: { name: 'Flagrant delice',  slug: 'gastronomie' }, create: { name: 'Flagrant delice',  slug: 'restauration' } }).catch(() => null),
+    prisma.category.upsert({ where: { slug: 'sport-bien-etre' }, update: { name: 'Abandon de poste', slug: 'bien-etre'   }, create: { name: 'Abandon de poste', slug: 'sport-bien-etre' } }).catch(() => null),
+    prisma.category.upsert({ where: { slug: 'shopping'        }, update: { name: 'Culture',          slug: 'culture'     }, create: { name: 'Culture',          slug: 'shopping' } }).catch(() => null),
   ])
-  const [CAT_GASTRO, CAT_CULTURE, CAT_BIEN_ETRE, CAT_VOYAGE, CAT_LOISIRS, CAT_SERVICES] = cats
+  const [CAT_GASTRO, CAT_CULTURE, CAT_BIEN_ETRE, CAT_VOYAGE, CAT_LOISIRS] = cats
 
   // ── 1. La Table du Palais — Gastronomie ──────────────────────────────
   const tablePalais = await upsertPartner(
@@ -160,15 +159,6 @@ async function main() {
   await upsertOffer('offer-aquapark',        { title: 'Aquapark journee famille',           description: 'Acces illimite a un parc aquatique indoor & outdoor : toboggans, riviere lente, espace enfants et espace detente.', originalPrice: 92,  discountedPrice: 58,  conditions: 'Pack 2 adultes + 2 enfants. Valable semaine et weekend.',            isActive: true, isDemo: true, partnerId: plaisirs.id, categoryId: CAT_LOISIRS.id, locationCity: 'Paris', locationCountry: 'France' })
   await upsertOffer('offer-karting',         { title: 'Session karting + bowling',          description: 'Sortie groupe : 2 sessions karting 10 min + 1 partie bowling pour 4 personnes. Boissons incluses.', originalPrice: 120, discountedPrice: 75,  conditions: 'Sur reservation. Valable semaine uniquement pour bowling.',          isActive: true, isDemo: true, partnerId: plaisirs.id, categoryId: CAT_LOISIRS.id, locationCity: 'Paris', locationCountry: 'France' })
 
-  // ── 11. Juridis Prevoyance — Services ────────────────────────────────
-  const juridis = await upsertPartner(
-    'mutuelle@demo-ce.fr', hashedPartner, 'Laurent Duval',
-    { name: 'Juridis Prevoyance', slug: 'juridis-prevoyance', description: 'Mutuelle sante et prevoyance specialisee pour les avocats liberaux. Garanties adaptees au statut d\'independant, sans frais de dossier, demarche 100% en ligne.' }
-  )
-  await upsertOffer('offer-mutuelle-solo',    { title: 'Couverture sante individuelle',      description: 'Formule sante complete : optique, dentaire, hospitalisation et medecines douces. Remboursements au-dela de la Secu.',  originalPrice: 72,  discountedPrice: 51,  conditions: 'Tarif mensuel. Sans frais de dossier. Resiliable a tout moment.', isActive: true, isDemo: true, partnerId: juridis.id, categoryId: CAT_SERVICES.id })
-  await upsertOffer('offer-mutuelle-famille', { title: 'Couverture sante famille',           description: 'Extension du contrat individuel a toute la famille : conjoint et enfants. Memes garanties, tarif degressif.',          originalPrice: 155, discountedPrice: 105, conditions: 'Jusqu\'a 3 enfants inclus. Au-dela : 10 EUR/enfant/mois.',         isActive: true, isDemo: true, partnerId: juridis.id, categoryId: CAT_SERVICES.id })
-  await upsertOffer('offer-prevoyance',       { title: 'Prevoyance incapacite-invalidite',   description: 'Protection du revenu en cas d\'arret : maintien a 90% du CA apres 30 jours de franchise. Deductible des charges.', originalPrice: 98,  discountedPrice: 68,  conditions: 'Franchise 30 jours. Resiliable annuellement.',                   isActive: true, isDemo: true, partnerId: juridis.id, categoryId: CAT_SERVICES.id })
-
   console.log('[seed] Termine.')
   console.log('  Admin       : admin@ce-avocats.fr    / Admin123!')
   console.log('  Partenaires : resto@ce-avocats.fr    / Partner123!')
@@ -181,7 +171,6 @@ async function main() {
   console.log('  Partenaires : hotel@demo-ce.fr       / Partner123!')
   console.log('  Partenaires : colonie@demo-ce.fr     / Partner123!')
   console.log('  Partenaires : loisirs@demo-ce.fr     / Partner123!')
-  console.log('  Partenaires : mutuelle@demo-ce.fr    / Partner123!')
   console.log('  Membre      : membre@ce-avocats.fr   / Member123!')
 }
 
