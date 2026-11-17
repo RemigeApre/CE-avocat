@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/db'
 
-export const metadata = { title: 'Partenaires - CE Avocats' }
+export const metadata = { title: 'Partenaires - Maitre en Pause' }
 
 export default async function PartenairesPage() {
   const partenaires = await prisma.partner.findMany({

@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui'
 
-export const metadata = { title: 'Adherer - CE Avocats' }
+export const metadata = { title: 'Adherer - Maitre en Pause' }
 
 const PLANS = [
   {
@@ -62,7 +62,7 @@ export default function AdhesionPage() {
 
       {/* En-tete */}
       <div className="text-center mb-14">
-        <h1 className="text-3xl font-bold text-navy-800 mb-3">Adherer au CE Avocats</h1>
+        <h1 className="text-3xl font-bold text-navy-800 mb-3">Adherer au Maitre en Pause</h1>
         <p className="text-gray-500 max-w-xl mx-auto leading-relaxed text-sm">
           Un comite d'entreprise pense pour les avocats. Choisissez la formule qui vous correspond.
         </p>

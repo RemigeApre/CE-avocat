@@ -11,8 +11,9 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'CE Avocats',
-  description: 'Le comite d\'entreprise de votre ecole d\'avocats. Profitez d\'avantages exclusifs negocies par et pour vous.',
+  title: 'Maitre en Pause',
+  description: 'Le comite d\'entreprise des avocats. Profitez d\'avantages exclusifs negocies par et pour vous.',
+  icons: { icon: '/icone robe.png' },
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

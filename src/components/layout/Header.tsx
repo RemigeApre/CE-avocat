@@ -25,13 +25,11 @@ export function Header() {
     '/tableau-de-bord'
 
   const Logo = () => (
-    <span className="flex items-center gap-3 shrink-0">
-      <span className="w-9 h-9 bg-navy-700 border border-navy-600 flex items-center justify-center rounded-[3px]">
-        <span className="text-gold-400 font-bold text-sm tracking-tight">CE</span>
-      </span>
-      <span className="font-semibold text-white text-base">
-        CE Avocats
-        <span className="text-gold-500 font-normal"> : demo</span>
+    <span className="flex items-center gap-2.5 shrink-0">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/icone robe.png" alt="" className="w-8 h-8 object-contain" style={{ filter: 'brightness(0) invert(1)' }} />
+      <span className="font-semibold text-white text-base tracking-wide">
+        Maitre en Pause
       </span>
     </span>
   )
@@ -94,13 +92,10 @@ export function Header() {
           {/* Droite — logo mobile / actions desktop */}
           <div className="flex items-center gap-3">
             {/* Logo mobile (droite) */}
-            <Link href="/" className="md:hidden flex items-center gap-2.5">
-              <span className="w-8 h-8 bg-navy-700 border border-navy-600 flex items-center justify-center rounded-[3px]">
-                <span className="text-gold-400 font-bold text-xs tracking-tight">CE</span>
-              </span>
-              <span className="font-semibold text-white text-sm">
-                CE Avocats
-              </span>
+            <Link href="/" className="md:hidden flex items-center gap-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/icone robe.png" alt="" className="w-7 h-7 object-contain" style={{ filter: 'brightness(0) invert(1)' }} />
+              <span className="font-semibold text-white text-sm tracking-wide">Maitre en Pause</span>
             </Link>
 
             {/* Actions desktop */}

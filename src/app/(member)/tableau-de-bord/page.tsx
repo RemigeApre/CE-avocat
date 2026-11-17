@@ -39,7 +39,7 @@ export default async function MemberDashboardPage() {
         <h1 className="text-2xl font-bold text-navy-800">
           Bonjour, {session!.user.name}
         </h1>
-        <p className="text-sm text-gray-500 mt-1">Bienvenue dans votre espace CE Avocats</p>
+        <p className="text-sm text-gray-500 mt-1">Bienvenue dans votre espace Maitre en Pause</p>
       </div>
 
       {/* Stats */}

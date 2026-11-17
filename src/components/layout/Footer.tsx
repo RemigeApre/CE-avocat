@@ -35,11 +35,11 @@ export function Footer() {
                 <span className="text-gold-400 font-bold text-sm tracking-tight">CE</span>
               </span>
               <span className="font-semibold text-white text-base group-hover:text-gold-300 transition-colors">
-                CE Avocats
+                Maitre en Pause
               </span>
             </Link>
             <p className="text-sm text-navy-300 leading-relaxed max-w-xs">
-              Le comite d'entreprise de votre ecole d'avocats. Des avantages negocies, des partenaires selectionnes.
+              Le comite d'entreprise des avocats. Des avantages negocies, des partenaires selectionnes.
             </p>
             <p className="mt-4 text-xs text-navy-500 italic">Site de demonstration</p>
           </div>
@@ -91,7 +91,7 @@ export function Footer() {
         {/* Barre de bas */}
         <div className="border-t border-navy-700 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-navy-500">
-            CE Avocats &copy; {new Date().getFullYear()}
+            Maitre en Pause &copy; {new Date().getFullYear()}
           </p>
           <p className="text-xs text-navy-500">
             Realise benevole par{' '}

@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { prisma } from '@/lib/db'
 import { formatDate } from '@/lib/utils'
 
-export const metadata = { title: 'Actualites - CE Avocats' }
+export const metadata = { title: 'Actualites - Maitre en Pause' }
 
 export default async function ActualitesPage() {
   const posts = await prisma.post.findMany({

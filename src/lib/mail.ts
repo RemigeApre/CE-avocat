@@ -1,6 +1,6 @@
 import { Resend } from 'resend'
 
-const from = process.env.RESEND_FROM ?? 'CE Avocats <noreply@ce-avocats.legeai-editions.com>'
+const from = process.env.RESEND_FROM ?? 'Maitre en Pause <noreply@ce-avocats.legeai-editions.com>'
 
 export async function sendOrderConfirmation(params: {
   to: string
@@ -29,7 +29,7 @@ export async function sendOrderConfirmation(params: {
     html: `
       <div style="font-family:system-ui,sans-serif;max-width:560px;margin:0 auto;color:#1a1a2e">
         <div style="background:#1b2d5a;padding:32px 40px">
-          <h1 style="color:#ffffff;margin:0;font-size:22px;font-weight:600">CE Avocats</h1>
+          <h1 style="color:#ffffff;margin:0;font-size:22px;font-weight:600">Maitre en Pause</h1>
           <p style="color:#c9a84c;margin:4px 0 0;font-size:14px">Votre comite d'entreprise</p>
         </div>
         <div style="padding:40px;background:#ffffff;border:1px solid #e5e3de;border-top:none">
@@ -65,17 +65,17 @@ export async function sendWelcome(params: { to: string; name: string }) {
   await resend.emails.send({
     from,
     to: params.to,
-    subject: 'Bienvenue sur CE Avocats',
+    subject: 'Bienvenue sur Maitre en Pause',
     html: `
       <div style="font-family:system-ui,sans-serif;max-width:560px;margin:0 auto;color:#1a1a2e">
         <div style="background:#1b2d5a;padding:32px 40px">
-          <h1 style="color:#ffffff;margin:0;font-size:22px;font-weight:600">CE Avocats</h1>
+          <h1 style="color:#ffffff;margin:0;font-size:22px;font-weight:600">Maitre en Pause</h1>
           <p style="color:#c9a84c;margin:4px 0 0;font-size:14px">Votre comite d'entreprise</p>
         </div>
         <div style="padding:40px;background:#ffffff;border:1px solid #e5e3de;border-top:none">
           <h2 style="margin:0 0 16px;font-size:18px">Bienvenue, ${params.name} !</h2>
           <p style="color:#4b5563;margin:0 0 16px;font-size:14px;line-height:1.6">
-            Votre compte CE Avocats est actif. Vous avez desormais acces a tous nos avantages
+            Votre compte Maitre en Pause est actif. Vous avez desormais acces a tous nos avantages
             negocies aupres de nos partenaires.
           </p>
           <a href="https://ce-avocats.legeai-editions.com/offres"

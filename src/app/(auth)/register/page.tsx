@@ -47,7 +47,7 @@ export default function RegisterPage() {
     <div className="w-full">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-navy-800">Creer un compte</h1>
-        <p className="text-sm text-gray-400 mt-1">Rejoignez le CE Avocats</p>
+        <p className="text-sm text-gray-400 mt-1">Rejoignez Maitre en Pause</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
