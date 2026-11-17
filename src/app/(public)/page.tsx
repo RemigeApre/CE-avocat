@@ -44,18 +44,6 @@ const HIGHLIGHTS = [
   'Arts & Culture',
 ]
 
-function PivotDecoration() {
-  return (
-    <svg viewBox="0 0 400 700" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-      <rect x="0" y="152" width="400" height="13" rx="6.5" fill="#1b2d5a" />
-      <circle cx="140" cy="158" r="72" stroke="#1b2d5a" strokeWidth="4" />
-      <circle cx="140" cy="158" r="44" stroke="#1b2d5a" strokeWidth="3" />
-      <circle cx="140" cy="158" r="20" fill="#1b2d5a" />
-      <rect x="133" y="230" width="14" height="470" rx="7" fill="#1b2d5a" />
-    </svg>
-  )
-}
-
 export default async function HomePage() {
   const [offers, categories, offerCount, partners] = await Promise.all([
     getFeaturedOffers(),
@@ -67,7 +55,6 @@ export default async function HomePage() {
   const marqueeItems = partners.length > 0
     ? partners
     : HIGHLIGHTS.map((h, i) => ({ id: String(i), name: h, logo: null as string | null }))
-  // 4 repetitions par groupe pour depasser la largeur de n'importe quel ecran
   const groupItems = [...marqueeItems, ...marqueeItems, ...marqueeItems, ...marqueeItems]
 
   return (
@@ -78,46 +65,55 @@ export default async function HomePage() {
         style={{ height: 'calc(100vh - 4rem)' }}
       >
         {/* Zone principale */}
-        <div className="relative flex-1 flex items-center justify-center overflow-hidden">
+        <div className="relative flex-1 overflow-hidden">
 
-          {/* Pivot - coupe par le bord gauche */}
-          <div
-            className="absolute top-1/2 -translate-y-1/2 pointer-events-none select-none opacity-[0.18]"
-            style={{ left: '-140px', width: '400px', height: '700px' }}
-          >
-            <PivotDecoration />
+          {/* Image droite - habillage, rien par dessus */}
+          <div className="absolute right-0 top-0 h-full w-[44%] pointer-events-none select-none">
+            {/* Fondu blanc a gauche */}
+            <div className="absolute left-0 top-0 bottom-0 w-48 bg-gradient-to-r from-white to-transparent z-10" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/Sans titre.png"
+              alt=""
+              className="h-full w-full object-cover object-center"
+            />
           </div>
 
-          {/* Contenu centré */}
-          <div className="relative z-10 flex flex-col items-center text-center px-6 max-w-3xl">
+          {/* Contenu principal - gauche, non affecte par l'image */}
+          <div className="relative z-10 h-full flex items-center">
+            <div className="max-w-5xl mx-auto px-8 w-full">
+              <div className="max-w-lg">
 
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-navy-800 leading-[1.05] mb-8">
-              Profitez de chaque avantage
-            </h1>
+                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-navy-800 leading-[1.05] mb-8">
+                  Profitez de chaque avantage
+                </h1>
 
-            {/* Categories + compteur fusionnes */}
-            <div className="flex flex-wrap justify-center gap-2 mb-10">
-              {HIGHLIGHTS.map((h) => (
-                <span
-                  key={h}
-                  className="px-5 py-2 rounded-full border border-navy-200 text-navy-700 font-medium text-sm"
-                >
-                  {h}
-                </span>
-              ))}
-              <span className="px-5 py-2 rounded-full bg-gold-50 border border-gold-300 text-gold-700 font-semibold text-sm">
-                {offerCount} offres
-              </span>
+                {/* Cartes categories minimalistes */}
+                <div className="grid grid-cols-3 gap-px bg-navy-100 border border-navy-100 mb-10">
+                  {HIGHLIGHTS.map((h) => (
+                    <div
+                      key={h}
+                      className="bg-white px-3 py-2.5 text-sm font-medium text-navy-600"
+                    >
+                      {h}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex items-center gap-8">
+                  <Link href="/login">
+                    <Button size="lg" className="px-10 py-3 h-auto rounded-sm">
+                      Se connecter
+                    </Button>
+                  </Link>
+                  <div>
+                    <span className="text-4xl font-bold text-gold-500 leading-none">{offerCount}</span>
+                    <span className="block text-xs text-gray-400 mt-0.5 uppercase tracking-wider">offres disponibles</span>
+                  </div>
+                </div>
+
+              </div>
             </div>
-
-            <Link href="/login">
-              <Button
-                size="lg"
-                className="px-12 py-4 text-base h-auto rounded-full"
-              >
-                Se connecter
-              </Button>
-            </Link>
           </div>
         </div>
 
@@ -131,11 +127,8 @@ export default async function HomePage() {
             <div className="h-px w-8 bg-gold-400" />
           </div>
           <div className="relative overflow-hidden">
-            {/* Fondu gauche */}
             <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#f7f6f3] to-transparent z-10 pointer-events-none" />
-            {/* Fondu droit */}
             <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#f7f6f3] to-transparent z-10 pointer-events-none" />
-
             <div className="animate-marquee">
               <div className="marquee-group">
                 {groupItems.map((p, i) => (
