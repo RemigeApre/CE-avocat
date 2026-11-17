@@ -30,14 +30,9 @@ export function Footer() {
 
           {/* Marque */}
           <div className="md:col-span-1">
-            <Link href="/" className="inline-flex items-center gap-3 mb-5 group">
-              <span className="w-9 h-9 rounded-full bg-navy-700 border border-navy-600 overflow-hidden flex items-center justify-center shrink-0">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/icone robe.png" alt="" className="w-7 h-7 object-contain" />
-              </span>
-              <span className="font-semibold text-white text-base group-hover:text-gold-300 transition-colors">
-                Maître en Pause
-              </span>
+            <Link href="/" className="inline-flex mb-5">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo complet.jpg" alt="Maître en Pause" className="h-10 w-auto object-contain rounded-sm" />
             </Link>
             <p className="text-sm text-navy-300 leading-relaxed max-w-xs">
               Le Comité Professionnel des avocats. Des avantages négociés, des partenaires sélectionnés.

@@ -126,14 +126,9 @@ export default async function HomePage() {
             <div className="max-w-5xl mx-auto px-6 md:px-8 w-full">
               <div className="max-w-lg">
                 {/* Logo marque */}
-                <div className="flex items-center gap-2.5 mb-6">
-                  <span className="w-9 h-9 rounded-full bg-navy-800 overflow-hidden shrink-0 flex items-center justify-center">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/icone robe.png" alt="" className="w-7 h-7 object-contain" />
-                  </span>
-                  <span className="font-semibold text-navy-700 text-sm tracking-wide">
-                    Maître en <span className="text-gold-500">Pause</span>
-                  </span>
+                <div className="mb-6">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/logo complet.jpg" alt="Maître en Pause" className="h-12 w-auto object-contain" />
                 </div>
                 <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-navy-800 leading-[1.05] mb-8 md:mb-10">
                   Le Comité Professionnel des avocats
