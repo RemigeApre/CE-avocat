@@ -46,15 +46,17 @@ const HIGHLIGHTS = [
 
 function PivotDecoration() {
   return (
-    <svg viewBox="0 0 240 580" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-      {/* Beam */}
-      <rect x="0" y="82" width="240" height="10" rx="5" fill="#1b2d5a" />
-      {/* Pivot rings */}
-      <circle cx="120" cy="82" r="42" stroke="#1b2d5a" strokeWidth="3" />
-      <circle cx="120" cy="82" r="24" stroke="#1b2d5a" strokeWidth="2" />
-      <circle cx="120" cy="82" r="10" fill="#1b2d5a" />
-      {/* Column */}
-      <rect x="114" y="124" width="12" height="456" rx="6" fill="#1b2d5a" />
+    <svg viewBox="0 0 400 700" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+      {/* Beam - extends far to the right */}
+      <rect x="0" y="152" width="400" height="13" rx="6.5" fill="#1b2d5a" />
+      {/* Outer ring */}
+      <circle cx="140" cy="158" r="72" stroke="#1b2d5a" strokeWidth="4" />
+      {/* Inner ring */}
+      <circle cx="140" cy="158" r="44" stroke="#1b2d5a" strokeWidth="3" />
+      {/* Center */}
+      <circle cx="140" cy="158" r="20" fill="#1b2d5a" />
+      {/* Column - goes off bottom */}
+      <rect x="133" y="230" width="14" height="470" rx="7" fill="#1b2d5a" />
     </svg>
   )
 }
@@ -76,37 +78,38 @@ export default async function HomePage() {
     <>
       {/* Hero */}
       <section className="relative min-h-screen bg-white flex items-center overflow-hidden">
-        {/* Pivot de la balance - decoration gauche */}
-        <div className="absolute left-[-48px] top-1/2 -translate-y-1/2 w-52 h-[520px] opacity-[0.13] pointer-events-none select-none">
+
+        {/* Pivot de la balance - coupe par le bord gauche */}
+        <div
+          className="absolute top-1/2 -translate-y-1/2 pointer-events-none select-none opacity-[0.17]"
+          style={{ left: '-140px', width: '400px', height: '700px' }}
+        >
           <PivotDecoration />
         </div>
 
-        {/* Content - deux colonnes */}
-        <div className="relative z-10 max-w-6xl mx-auto px-8 w-full grid grid-cols-1 md:grid-cols-2 gap-16 items-center py-24">
-          {/* Colonne gauche : titre + CTA */}
-          <div>
-            <h1 className="text-5xl md:text-6xl lg:text-[5rem] font-bold text-navy-800 leading-[1.05] mb-10">
-              Profitez de chaque avantage
-            </h1>
-            <Link href="/login">
-              <Button size="lg">Se connecter</Button>
-            </Link>
-            <div className="mt-4">
-              <span className="text-4xl font-bold text-gold-500">{offerCount}</span>
-              <span className="text-gray-400 text-sm ml-2">offres disponibles</span>
-            </div>
-          </div>
+        {/* Categories - absolues a droite, hors flux */}
+        <div className="absolute right-14 top-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-3">
+          {HIGHLIGHTS.map((h) => (
+            <span
+              key={h}
+              className="px-6 py-2.5 rounded-full border border-navy-200 text-navy-700 font-medium text-base"
+            >
+              {h}
+            </span>
+          ))}
+        </div>
 
-          {/* Colonne droite : categories */}
-          <div className="flex flex-col items-start gap-3">
-            {HIGHLIGHTS.map((h) => (
-              <span
-                key={h}
-                className="px-6 py-2.5 rounded-full border border-navy-200 text-navy-700 font-medium text-base"
-              >
-                {h}
-              </span>
-            ))}
+        {/* Contenu principal - pleine largeur, non affecte par les pills */}
+        <div className="relative z-10 max-w-5xl mx-auto px-8 w-full py-24">
+          <h1 className="text-5xl md:text-6xl lg:text-[5.25rem] font-bold text-navy-800 leading-[1.05] mb-10 max-w-2xl">
+            Profitez de chaque avantage
+          </h1>
+          <Link href="/login">
+            <Button size="lg">Se connecter</Button>
+          </Link>
+          <div className="mt-4">
+            <span className="text-4xl font-bold text-gold-500">{offerCount}</span>
+            <span className="text-gray-400 text-sm ml-2">offres disponibles</span>
           </div>
         </div>
       </section>
