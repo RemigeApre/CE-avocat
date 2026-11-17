@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
 import { useState } from 'react'
 
@@ -13,6 +14,7 @@ const NAV_PUBLIC = [
 export function Header() {
   const { data: session } = useSession()
   const [menuOpen, setMenuOpen] = useState(false)
+  const pathname = usePathname()
   const role = session?.user?.role
 
   const dashboardHref =
@@ -36,19 +38,32 @@ export function Header() {
 
         {/* Nav public */}
         <nav className="hidden md:flex items-center gap-8">
-          {NAV_PUBLIC.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="text-sm text-white/65 hover:text-white transition-colors font-medium"
-            >
-              {item.label}
-            </Link>
-          ))}
+          {NAV_PUBLIC.map((item) => {
+            const active = pathname === item.href || pathname.startsWith(item.href + '/')
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={[
+                  'text-base font-medium transition-colors pb-0.5',
+                  active
+                    ? 'text-white border-b-2 border-gold-400'
+                    : 'text-white/70 hover:text-white border-b-2 border-transparent',
+                ].join(' ')}
+              >
+                {item.label}
+              </Link>
+            )
+          })}
           {role === 'ADMIN' && (
             <Link
               href="/admin"
-              className="text-sm text-white/65 hover:text-white transition-colors font-medium"
+              className={[
+                'text-base font-medium transition-colors pb-0.5',
+                pathname.startsWith('/admin')
+                  ? 'text-white border-b-2 border-gold-400'
+                  : 'text-white/70 hover:text-white border-b-2 border-transparent',
+              ].join(' ')}
             >
               Administration
             </Link>
@@ -110,7 +125,7 @@ export function Header() {
           ) : (
             <Link
               href="/login"
-              className="px-5 py-2 text-sm font-semibold bg-gold-500 hover:bg-gold-400 text-white rounded-sm transition-colors"
+              className="px-6 py-2.5 text-base font-semibold bg-gold-500 hover:bg-gold-400 text-white rounded-sm transition-colors"
             >
               Connexion
             </Link>
