@@ -106,14 +106,9 @@ export function Header() {
               )}
             </div>
           ) : (
-            <>
-              <Link href="/login">
-                <Button variant="ghost" size="sm">Connexion</Button>
-              </Link>
-              <Link href="/register">
-                <Button size="sm">S'inscrire</Button>
-              </Link>
-            </>
+            <Link href="/login">
+              <Button size="sm">Se connecter &rarr;</Button>
+            </Link>
           )}
         </div>
       </div>
