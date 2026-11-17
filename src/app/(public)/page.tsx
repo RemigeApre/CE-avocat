@@ -71,44 +71,52 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Hero + marquee = exactement 100vh */}
-      <section className="h-screen flex flex-col overflow-hidden bg-white">
-
-        {/* Zone principale : contenu centré */}
+      {/* Hero + marquee = exactement le viewport moins le header */}
+      <section
+        className="flex flex-col overflow-hidden bg-white"
+        style={{ height: 'calc(100vh - 4rem)' }}
+      >
+        {/* Zone principale */}
         <div className="relative flex-1 flex items-center justify-center overflow-hidden">
 
-          {/* Pivot de la balance - coupe par le bord gauche */}
+          {/* Pivot - coupe par le bord gauche */}
           <div
-            className="absolute top-1/2 -translate-y-1/2 pointer-events-none select-none opacity-[0.17]"
+            className="absolute top-1/2 -translate-y-1/2 pointer-events-none select-none opacity-[0.18]"
             style={{ left: '-140px', width: '400px', height: '700px' }}
           >
             <PivotDecoration />
           </div>
 
-          {/* Categories - absolues a droite */}
-          <div className="absolute right-14 top-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-3">
-            {HIGHLIGHTS.map((h) => (
-              <span
-                key={h}
-                className="px-6 py-2.5 rounded-full border border-navy-200 text-navy-700 font-medium text-base"
-              >
-                {h}
-              </span>
-            ))}
-          </div>
-
           {/* Contenu centré */}
-          <div className="relative z-10 text-center px-8">
-            <h1 className="text-5xl md:text-6xl lg:text-[5.25rem] font-bold text-navy-800 leading-[1.05] mb-10">
+          <div className="relative z-10 flex flex-col items-center text-center px-6 max-w-3xl">
+
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-navy-800 leading-[1.05] mb-8">
               Profitez de chaque avantage
             </h1>
-            <Link href="/login">
-              <Button size="lg">Se connecter</Button>
-            </Link>
-            <div className="mt-4">
-              <span className="text-4xl font-bold text-gold-500">{offerCount}</span>
-              <span className="text-gray-400 text-sm ml-2">offres disponibles</span>
+
+            {/* Categories + compteur fusionnes */}
+            <div className="flex flex-wrap justify-center gap-2 mb-10">
+              {HIGHLIGHTS.map((h) => (
+                <span
+                  key={h}
+                  className="px-5 py-2 rounded-full border border-navy-200 text-navy-700 font-medium text-sm"
+                >
+                  {h}
+                </span>
+              ))}
+              <span className="px-5 py-2 rounded-full bg-gold-50 border border-gold-300 text-gold-700 font-semibold text-sm">
+                {offerCount} offres
+              </span>
             </div>
+
+            <Link href="/login">
+              <Button
+                size="lg"
+                className="px-12 py-4 text-base h-auto rounded-full"
+              >
+                Se connecter
+              </Button>
+            </Link>
           </div>
         </div>
 
