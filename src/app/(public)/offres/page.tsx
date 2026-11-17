@@ -35,45 +35,67 @@ export default async function OffresPage({ searchParams }: Props) {
   const activeCategory = categories.find((c) => c.slug === categorie)
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-10">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-navy-800 mb-1">
+    <div className="flex min-h-[calc(100vh-72px)]">
+
+      {/* Sidebar filtres */}
+      <aside className="hidden lg:flex flex-col w-56 shrink-0 sticky top-[72px] self-start max-h-[calc(100vh-72px)] overflow-y-auto border-r border-[#e5e3de] bg-white py-7 px-5">
+
+        <h1 className="text-base font-bold text-navy-800 mb-0.5">
           {activeCategory ? activeCategory.name : 'Toutes les offres'}
         </h1>
-        <p className="text-sm text-gray-500">
-          {offers.length} offre{offers.length > 1 ? 's' : ''} disponible{offers.length > 1 ? 's' : ''}
+        <p className="text-xs text-gray-400 mb-6">
+          {offers.length} offre{offers.length > 1 ? 's' : ''}
         </p>
-      </div>
 
-      {/* Filtres categories */}
-      <div className="flex flex-wrap gap-2 mb-8">
-        <a
-          href="/offres"
-          className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors border ${
-            !categorie
-              ? 'bg-navy-800 text-white border-navy-800'
-              : 'border-[#e5e3de] text-gray-600 hover:border-navy-800 hover:text-navy-800'
-          }`}
-        >
-          Tout
-        </a>
-        {categories.map((cat) => (
+        <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-gray-400 mb-3">
+          Categories
+        </p>
+
+        <nav className="flex flex-col gap-0.5">
           <a
-            key={cat.id}
-            href={`/offres?categorie=${cat.slug}`}
-            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-colors border ${
-              categorie === cat.slug
-                ? 'bg-navy-800 text-white border-navy-800'
-                : 'border-[#e5e3de] text-gray-600 hover:border-navy-800 hover:text-navy-800'
-            }`}
+            href="/offres"
+            className={[
+              'flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors',
+              !categorie
+                ? 'bg-navy-50 text-navy-800 font-medium'
+                : 'text-gray-500 hover:bg-gray-50 hover:text-navy-800',
+            ].join(' ')}
           >
-            {cat.icon && <span>{cat.icon}</span>}
-            {cat.name}
+            <span className="text-base leading-none">◎</span>
+            Tout
           </a>
-        ))}
+          {categories.map((cat) => (
+            <a
+              key={cat.id}
+              href={`/offres?categorie=${cat.slug}`}
+              className={[
+                'flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors',
+                categorie === cat.slug
+                  ? 'bg-navy-50 text-navy-800 font-medium'
+                  : 'text-gray-500 hover:bg-gray-50 hover:text-navy-800',
+              ].join(' ')}
+            >
+              {cat.icon && <span className="text-base leading-none">{cat.icon}</span>}
+              {cat.name}
+            </a>
+          ))}
+        </nav>
+      </aside>
+
+      {/* Grille d'offres */}
+      <div className="flex-1 min-w-0 px-6 py-8">
+        {/* Titre mobile uniquement */}
+        <div className="lg:hidden mb-6">
+          <h1 className="text-xl font-bold text-navy-800 mb-1">
+            {activeCategory ? activeCategory.name : 'Toutes les offres'}
+          </h1>
+          <p className="text-sm text-gray-400">
+            {offers.length} offre{offers.length > 1 ? 's' : ''}
+          </p>
+        </div>
+        <OfferGrid offers={offers} emptyMessage="Aucune offre dans cette categorie pour le moment." />
       </div>
 
-      <OfferGrid offers={offers} emptyMessage="Aucune offre dans cette categorie pour le moment." />
     </div>
   )
 }

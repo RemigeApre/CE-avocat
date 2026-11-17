@@ -33,6 +33,7 @@ export function Header() {
           </span>
           <span className="font-semibold text-white text-base hidden sm:block group-hover:text-gold-300 transition-colors">
             CE Avocats
+            <span className="text-gold-500 font-normal"> : demo</span>
           </span>
         </Link>
 
