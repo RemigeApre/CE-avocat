@@ -10,11 +10,11 @@ async function upsertPartner(email, hashedPwd, userName, partnerData) {
     update: {},
     create: { email, password: hashedPwd, name: userName, role: 'PARTNER_ADMIN', isDemo: true },
   })
-  const partner = await prisma.partner.upsert({
-    where:  { slug: partnerData.slug },
-    update: {},
-    create: { ...partnerData, adminId: admin.id, isDemo: true },
-  })
+  // Cherche par adminId d'abord (evite le conflit si le slug a change)
+  const existing = await prisma.partner.findUnique({ where: { adminId: admin.id } })
+  const partner = existing
+    ? await prisma.partner.update({ where: { id: existing.id }, data: { ...partnerData, isDemo: true } })
+    : await prisma.partner.create({ data: { ...partnerData, adminId: admin.id, isDemo: true } })
   await prisma.user.update({ where: { id: admin.id }, data: { partnerId: partner.id } })
   return partner
 }
