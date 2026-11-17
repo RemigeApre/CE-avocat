@@ -2,6 +2,7 @@ import type { Role, OrderStatus } from '@prisma/client'
 
 export type { Role, OrderStatus }
 
+// Augmentation de la session next-auth v5
 declare module 'next-auth' {
   interface User {
     role: Role
@@ -18,11 +19,12 @@ declare module 'next-auth' {
   }
 }
 
-declare module 'next-auth/jwt' {
+// En v5, le JWT est gere par @auth/core (dependance interne de next-auth)
+declare module '@auth/core/jwt' {
   interface JWT {
-    id: string
-    role: Role
-    partnerId: string | null
+    id?: string
+    role?: Role
+    partnerId?: string | null
   }
 }
 
