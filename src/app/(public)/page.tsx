@@ -30,7 +30,6 @@ async function getOfferCount() {
 
 async function getPartners() {
   return prisma.partner.findMany({
-    where: { isActive: true },
     select: { id: true, name: true, logo: true },
     orderBy: { name: 'asc' },
   })
