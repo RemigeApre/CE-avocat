@@ -47,12 +47,12 @@ async function getLatestPosts() {
 }
 
 const HIGHLIGHTS = [
-  'Voyages',
+  'Parcs & loisirs',
   'Vacances',
+  'Cinéma & spectacles',
+  'Sport & bien-être',
   'Restaurants',
-  'Expériences',
-  'Sports',
-  'Arts & Culture',
+  'Voyages',
 ]
 
 export default async function HomePage() {
@@ -126,7 +126,7 @@ export default async function HomePage() {
             <div className="max-w-5xl mx-auto px-6 md:px-8 w-full">
               <div className="max-w-lg">
                 <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-navy-800 leading-[1.05] mb-8 md:mb-10">
-                  Profitez de chaque avantage
+                  Le CE des avocats
                 </h1>
                 <div className="flex items-center gap-6 md:gap-8">
                   <Link href="/login">
@@ -139,8 +139,13 @@ export default async function HomePage() {
                     <span className="block text-xs text-gray-400 mt-0.5 uppercase tracking-wider">offres disponibles</span>
                   </div>
                 </div>
-                <p className="mt-4 text-xs text-gray-400 leading-relaxed">
-                  Un CE pour les avocats. Partenariats et contribution mutuelle.
+                <p className="mt-4 text-sm text-gray-500 leading-relaxed max-w-sm">
+                  Dans les entreprises, les salariés accèdent à des offres negociées à tarifs
+                  préférentiels. Les avocats libéraux, eux, n'y ont pas droit.
+                  Maître en Pause change ça.
+                </p>
+                <p className="mt-2 text-xs text-gray-400">
+                  81 640 avocats en France. 4 132 élèves avocats.
                 </p>
               </div>
             </div>

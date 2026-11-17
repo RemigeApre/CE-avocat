@@ -5,53 +5,60 @@ export const metadata = { title: 'Adherer - Maitre en Pause' }
 
 const PLANS = [
   {
-    id: 'membre',
-    name: 'Membre',
-    price: '24',
+    id: 'classique',
+    name: 'Classique',
+    badge: null,
+    price: '29,90',
     period: 'par an',
-    description: "Pour l'avocat qui souhaite profiter des avantages negocies du CE.",
+    description: "Pour l'avocat qui souhaite accéder aux avantages négociés du CE.",
     features: [
-      'Acces a toutes les offres partenaires',
-      'Tarifs negocies exclusifs',
-      'Newsletter mensuelle',
-      'Acces a l\'espace membre',
+      'Acces a tout le catalogue partenaires',
+      'Tarifs négociés exclusifs',
+      'Restaurants, cinémas, sport, culture',
+      'Livres et abonnements presse',
+      'Acces a votre espace membre',
     ],
-    cta: 'Rejoindre',
+    note: 'Hors offres vacances et colonies enfants',
+    cta: 'Choisir Classique',
     href: '/register',
     highlight: false,
   },
   {
-    id: 'soutien',
-    name: 'Membre soutien',
-    price: '48',
+    id: 'premium',
+    name: 'Premium',
+    badge: 'Recommandé',
+    price: '69,90',
     period: 'par an',
-    description: "Pour ceux qui souhaitent soutenir activement le CE et ses initiatives.",
+    description: "Le catalogue complet : parcs, séjours, colonies de vacances inclus.",
     features: [
-      'Tous les avantages Membre',
-      'Badge soutien visible',
-      'Acces prioritaire aux nouvelles offres',
-      'Participation aux votes du CE',
-      'Contribue au financement des aides',
+      'Tout l\'abonnement Classique',
+      'Offres vacances et séjours',
+      'Colonies et activités enfants',
+      'Parcs d\'attractions et thermaux',
+      'Accès prioritaire aux événements',
     ],
-    cta: 'Rejoindre',
+    note: 'Facturation annuelle — déductible en frais professionnels',
+    cta: 'Choisir Premium',
     href: '/register',
     highlight: true,
   },
   {
     id: 'cabinet',
     name: 'Cabinet',
+    badge: null,
     price: 'Sur devis',
     period: '',
-    description: "Pour les cabinets et structures souhaitant inscrire plusieurs avocats.",
+    description: "Pour les cabinets souhaitant inscrire plusieurs avocats et collaborateurs.",
     features: [
-      'Tarif degressif par avocat',
+      'Tarif dégressif par avocat',
       'Facturation unique annuelle',
-      'Gestionnaire de compte dedie',
-      'Adhesions individuelles incluses',
+      'Accès pour salariés du cabinet',
+      'Gestionnaire de compte dédié',
       'Suivi des avantages par collaborateur',
     ],
+    note: 'Passable en frais de cabinet',
     cta: 'Nous contacter',
-    href: 'mailto:contact@ce-avocats.fr',
+    href: 'mailto:contact@maitre-en-pause.fr',
     highlight: false,
   },
 ]
@@ -62,10 +69,12 @@ export default function AdhesionPage() {
 
       {/* En-tete */}
       <div className="text-center mb-14">
-        <h1 className="text-3xl font-bold text-navy-800 mb-3">Adherer au Maitre en Pause</h1>
+        <h1 className="text-3xl font-bold text-navy-800 mb-3">Adhérer à Maître en Pause</h1>
         <p className="text-gray-500 max-w-xl mx-auto leading-relaxed text-sm">
-          Un comite d'entreprise pense pour les avocats. Choisissez la formule qui vous correspond.
+          Un comité d&apos;entreprise pensé pour les avocats libéraux, les cabinets et leurs familles.
+          Choisissez la formule qui vous correspond.
         </p>
+        <p className="text-xs text-gray-400 mt-3">Abonnement annuel uniquement. Résiliable chaque année.</p>
       </div>
 
       {/* Cartes */}
@@ -80,20 +89,18 @@ export default function AdhesionPage() {
                 : 'border-[#e5e3de]',
             ].join(' ')}
           >
-            {/* Badge recommande */}
             <div className={['h-1 w-full', plan.highlight ? 'bg-gold-400' : 'bg-transparent'].join(' ')} />
 
             <div className="p-7 flex flex-col flex-1">
-              {plan.highlight && (
+              {plan.badge && (
                 <span className="self-start text-xs font-semibold uppercase tracking-widest text-gold-600 mb-3">
-                  Recommande
+                  {plan.badge}
                 </span>
               )}
 
               <h2 className="text-lg font-bold text-navy-800 mb-1">{plan.name}</h2>
               <p className="text-sm text-gray-500 leading-relaxed mb-6">{plan.description}</p>
 
-              {/* Prix */}
               <div className="mb-7">
                 {plan.period ? (
                   <div className="flex items-baseline gap-1.5">
@@ -105,8 +112,7 @@ export default function AdhesionPage() {
                 )}
               </div>
 
-              {/* Fonctionnalites */}
-              <ul className="space-y-2.5 mb-8 flex-1">
+              <ul className="space-y-2.5 mb-6 flex-1">
                 {plan.features.map((f) => (
                   <li key={f} className="flex items-start gap-2.5 text-sm text-gray-600">
                     <svg className="w-4 h-4 text-gold-500 shrink-0 mt-0.5" viewBox="0 0 16 16" fill="none">
@@ -117,11 +123,12 @@ export default function AdhesionPage() {
                 ))}
               </ul>
 
+              {plan.note && (
+                <p className="text-xs text-gray-400 italic mb-6">{plan.note}</p>
+              )}
+
               <Link href={plan.href}>
-                <Button
-                  className="w-full"
-                  variant={plan.highlight ? 'primary' : 'outline'}
-                >
+                <Button className="w-full" variant={plan.highlight ? 'primary' : 'outline'}>
                   {plan.cta}
                 </Button>
               </Link>
@@ -130,10 +137,28 @@ export default function AdhesionPage() {
         ))}
       </div>
 
-      {/* Note bas */}
-      <p className="text-center text-xs text-gray-400 mt-10">
-        Tarifs indicatifs pour la demonstration. L'adhesion est gerable depuis votre espace membre.
-      </p>
+      {/* Eleve avocat */}
+      <div className="mt-8 border border-[#e5e3de] rounded-lg px-7 py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <p className="text-sm font-semibold text-navy-800">Élève avocat</p>
+          <p className="text-sm text-gray-500 mt-0.5">
+            Tarif préférentiel pour les 4 132 élèves avocats en formation. Accès identique au Classique.
+          </p>
+        </div>
+        <Link href="/register" className="shrink-0">
+          <Button variant="outline" className="text-sm">Tarif élève</Button>
+        </Link>
+      </div>
+
+      {/* CNB */}
+      <div className="mt-4 border border-dashed border-[#e5e3de] rounded-lg px-7 py-5">
+        <p className="text-xs text-gray-400 leading-relaxed">
+          <span className="font-semibold text-gray-500">Conseil National des Barreaux (CNB).</span>{' '}
+          Une cotisation symbolique du CNB permettrait d&apos;afficher son soutien institutionnel et
+          d&apos;augmenter la visibilité de la plateforme auprès des 81 640 avocats français.
+          Un lien depuis le site du CNB représenterait un signal fort pour la profession.
+        </p>
+      </div>
 
     </div>
   )
