@@ -3,6 +3,7 @@ import Credentials from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
 import { prisma } from '@/lib/db'
+import type { Role } from '@prisma/client'
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -49,7 +50,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     session({ session, token }) {
       session.user.id = token.id as string
-      session.user.role = token.role as string
+      session.user.role = token.role as Role
       session.user.partnerId = (token.partnerId as string) ?? null
       return session
     },
