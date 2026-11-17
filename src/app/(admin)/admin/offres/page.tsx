@@ -23,7 +23,7 @@ export default async function AdminOffresPage() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-[#e5e3de]">
-              {['Titre', 'Partenaire', 'Categorie', 'Prix', 'Statut', 'Cree le'].map((h) => (
+              {['Titre', 'Partenaire', 'Categorie', 'Prix', 'Statut', 'Cree le', ''].map((h) => (
                 <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   {h}
                 </th>
@@ -56,6 +56,7 @@ export default async function AdminOffresPage() {
                   </Badge>
                 </td>
                 <td className="px-5 py-3 text-gray-400 text-xs">{formatDate(o.createdAt)}</td>
+                <td className="px-5 py-3">{o.isDemo && <Badge variant="default">Demo</Badge>}</td>
               </tr>
             ))}
           </tbody>

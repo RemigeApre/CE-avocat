@@ -65,6 +65,7 @@ model Partner {
   description String?
   logo        String?
   website     String?
+  isDemo      Boolean  @default(false)
   adminId     String   @unique
   admin       User     @relation("PartnerAdmin", fields: [adminId], references: [id])
   members     User[]   @relation("PartnerMembers")
@@ -97,6 +98,7 @@ model Offer {
   conditions      String?
   validUntil      DateTime?
   isActive        Boolean     @default(true)
+  isDemo          Boolean     @default(false)
   partnerId       String
   partner         Partner     @relation(fields: [partnerId], references: [id], onDelete: Cascade)
   categoryId      String

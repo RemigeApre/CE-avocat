@@ -23,7 +23,7 @@ export default async function AdminPartenairesPage() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-[#e5e3de]">
-              {['Nom', 'Responsable', 'Offres', 'Equipe', 'Cree le'].map((h) => (
+              {['Nom', 'Responsable', 'Offres', 'Equipe', 'Cree le', ''].map((h) => (
                 <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   {h}
                 </th>
@@ -47,6 +47,7 @@ export default async function AdminPartenairesPage() {
                 </td>
                 <td className="px-5 py-3 text-gray-500">{p._count.members} / 3</td>
                 <td className="px-5 py-3 text-gray-400 text-xs">{formatDate(p.createdAt)}</td>
+                <td className="px-5 py-3">{p.isDemo && <Badge variant="default">Demo</Badge>}</td>
               </tr>
             ))}
           </tbody>
