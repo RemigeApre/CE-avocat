@@ -269,6 +269,122 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Cercle vertueux */}
+      <section className="bg-white py-16 border-t border-[#e5e3de]">
+        <div className="max-w-5xl mx-auto px-6">
+
+          <div className="text-center mb-12">
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold-600 mb-3">Modele collectif</p>
+            <h2 className="text-2xl font-bold text-navy-800">Plus on est nombreux, mieux c&apos;est pour tous</h2>
+            <p className="text-sm text-gray-500 mt-3 max-w-md mx-auto leading-relaxed">
+              Chaque adhesion renforce le pouvoir de negociation collectif et permet d&apos;obtenir de meilleures conditions pour tout le monde.
+            </p>
+          </div>
+
+          {/* Le cycle */}
+          <div className="flex items-center justify-center gap-0 mb-14">
+
+            {/* Noeud 1 */}
+            <div className="flex flex-col items-center text-center w-40">
+              <div className="w-16 h-16 rounded-full bg-navy-800 flex items-center justify-center mb-3">
+                <svg className="w-7 h-7 text-gold-400" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+              </div>
+              <p className="text-sm font-bold text-navy-800 leading-tight">Plus d&apos;adherents</p>
+              <p className="text-xs text-gray-400 mt-1 leading-snug">La profession se reunit</p>
+            </div>
+
+            {/* Fleche droite */}
+            <div className="flex flex-col items-center gap-1 w-16 shrink-0">
+              <svg className="w-10 h-5 text-gold-400" viewBox="0 0 40 20" fill="none">
+                <path d="M2 10h32M28 4l8 6-8 6" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+
+            {/* Noeud 2 */}
+            <div className="flex flex-col items-center text-center w-40">
+              <div className="w-16 h-16 rounded-full bg-navy-800 flex items-center justify-center mb-3">
+                <svg className="w-7 h-7 text-gold-400" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                  <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+              </div>
+              <p className="text-sm font-bold text-navy-800 leading-tight">Plus de budget</p>
+              <p className="text-xs text-gray-400 mt-1 leading-snug">Pouvoir de negociation accru</p>
+            </div>
+
+            {/* Fleche droite */}
+            <div className="flex flex-col items-center gap-1 w-16 shrink-0">
+              <svg className="w-10 h-5 text-gold-400" viewBox="0 0 40 20" fill="none">
+                <path d="M2 10h32M28 4l8 6-8 6" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+
+            {/* Noeud 3 */}
+            <div className="flex flex-col items-center text-center w-40">
+              <div className="w-16 h-16 rounded-full bg-gold-500 flex items-center justify-center mb-3">
+                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                  <polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+                </svg>
+              </div>
+              <p className="text-sm font-bold text-navy-800 leading-tight">Plus d&apos;offres</p>
+              <p className="text-xs text-gray-400 mt-1 leading-snug">Meilleurs tarifs negocies</p>
+            </div>
+
+          </div>
+
+          {/* Retour : fleche qui boucle */}
+          <div className="flex justify-center mb-14">
+            <div className="flex items-center gap-3 bg-[#f7f6f3] border border-[#e5e3de] rounded-full px-5 py-2">
+              <svg className="w-4 h-4 text-gold-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/>
+              </svg>
+              <span className="text-xs text-gray-500 font-medium">Ce qui attire de nouveaux adherents, qui renforcent le collectif</span>
+            </div>
+          </div>
+
+          {/* CTA collectif */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="border border-[#e5e3de] rounded-lg p-7 flex flex-col gap-4">
+              <div className="w-10 h-10 rounded-sm bg-navy-800 flex items-center justify-center shrink-0">
+                <svg className="w-5 h-5 text-gold-400" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm font-bold text-navy-800 mb-1">Parlez-en autour de vous</p>
+                <p className="text-sm text-gray-500 leading-relaxed">
+                  Chaque avocat que vous convainquez d&apos;adherer enrichit le catalogue pour tous.
+                  Un mot suffit a faire la difference.
+                </p>
+              </div>
+              <Link href="/adhesion" className="mt-auto inline-flex">
+                <Button variant="outline" className="text-sm">Partager la page d&apos;adhesion</Button>
+              </Link>
+            </div>
+
+            <div className="border border-navy-800 rounded-lg p-7 flex flex-col gap-4 bg-navy-800">
+              <div className="w-10 h-10 rounded-sm bg-gold-500 flex items-center justify-center shrink-0">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                  <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm font-bold text-white mb-1">Offrez-le a vos collaborateurs</p>
+                <p className="text-sm text-white/60 leading-relaxed">
+                  Inscrivez votre cabinet en formule collective. Tarif degressif, facturation unique,
+                  un avantage concret pour chaque membre de l&apos;equipe.
+                </p>
+              </div>
+              <Link href="/adhesion" className="mt-auto inline-flex">
+                <Button className="text-sm bg-gold-500 hover:bg-gold-400 border-0">Decouvrir le tarif cabinet</Button>
+              </Link>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
       {/* Actualites */}
       {posts.length > 0 && (
         <section className="bg-white py-14 border-t border-[#e5e3de]">
