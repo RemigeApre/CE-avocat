@@ -1,8 +1,8 @@
 'use client'
 
-import 'leaflet/dist/leaflet.css'
+import 'maplibre-gl/dist/maplibre-gl.css'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { Map as LeafletMap, Marker, LayerGroup } from 'leaflet'
+import type { Map as MapLibreMap, Marker, StyleSpecification } from 'maplibre-gl'
 import { LocateFixed, Loader2, MapPin } from 'lucide-react'
 import { distanceKm } from '@/lib/cityCoords'
 import { formatPrice } from '@/lib/utils'
@@ -26,7 +26,28 @@ export interface CityGroup {
 
 type GeoStatus = 'idle' | 'loading' | 'ok' | 'denied' | 'error' | 'unsupported'
 
-const FRANCE_CENTER: [number, number] = [46.6, 2.4]
+/**
+ * Fond de carte : OpenFreeMap (style "Positron"), sans cle d'API, sans inscription ni limite de requetes,
+ * open source et auto-hebergeable (il suffirait de changer cette URL). Donnees OpenStreetMap.
+ */
+const MAP_STYLE = 'https://tiles.openfreemap.org/styles/positron'
+
+/** Secours si OpenFreeMap est injoignable : tuiles raster OpenStreetMap standard */
+const FALLBACK_STYLE: StyleSpecification = {
+  version: 8,
+  sources: {
+    osm: {
+      type: 'raster',
+      tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+      tileSize: 256,
+      maxzoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    },
+  },
+  layers: [{ id: 'osm', type: 'raster', source: 'osm' }],
+}
+
+const FRANCE_CENTER: [number, number] = [2.4, 46.6] // [lng, lat]
 
 /** Approximation volontaire : ~1 km (2 decimales). La position ne quitte jamais le navigateur. */
 const approx = (v: number) => Math.round(v * 100) / 100
@@ -36,11 +57,11 @@ const fmtKm = (km: number) => (km < 1 ? 'à moins de 1 km' : km < 10 ? `à ${km.
 
 export function OffersMap({ groups }: { groups: CityGroup[] }) {
   const mapEl = useRef<HTMLDivElement>(null)
-  const mapRef = useRef<LeafletMap | null>(null)
-  const markersRef = useRef<Map<string, Marker>>(new Map())
-  const meLayer = useRef<LayerGroup | null>(null)
+  const mapRef = useRef<MapLibreMap | null>(null)
+  const markersRef = useRef<Map<string, { marker: Marker; el: HTMLButtonElement }>>(new Map())
+  const meMarker = useRef<Marker | null>(null)
   const [selected, setSelected] = useState<string | null>(null)
-  const [me, setMe] = useState<[number, number] | null>(null)
+  const [me, setMe] = useState<[number, number] | null>(null) // [lat, lng]
   const [geo, setGeo] = useState<GeoStatus>('idle')
 
   // Villes triees : par distance si on connait la position, sinon par nombre d'offres
@@ -49,72 +70,104 @@ export function OffersMap({ groups }: { groups: CityGroup[] }) {
     return withDist.sort((a, b) => (a.km !== null && b.km !== null ? a.km - b.km : b.offers.length - a.offers.length))
   }, [groups, me])
 
-  // Initialisation de la carte (Leaflet charge cote navigateur uniquement)
+  // Initialisation (MapLibre charge cote navigateur uniquement)
   useEffect(() => {
     let cancelled = false
-    let map: LeafletMap | null = null
-    import('leaflet').then((L) => {
-      if (cancelled || !mapEl.current) return
-      map = L.map(mapEl.current, { scrollWheelZoom: false, zoomControl: true, attributionControl: true })
-      mapRef.current = map
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        subdomains: 'abcd',
-        maxZoom: 18,
-      }).addTo(map)
+    let map: MapLibreMap | null = null
+    let fallbackTimer: number | undefined
 
-      // Molette : active seulement apres un clic dans la carte (evite de "pieger" le defilement de la page)
-      map.on('click', () => map?.scrollWheelZoom.enable())
-      map.on('mouseout', () => map?.scrollWheelZoom.disable())
+    import('maplibre-gl').then((maplibregl) => {
+      if (cancelled || !mapEl.current) return
+      const m = new maplibregl.Map({
+        container: mapEl.current,
+        style: MAP_STYLE,
+        center: FRANCE_CENTER,
+        zoom: 5,
+        attributionControl: { compact: true },
+        // Molette : Ctrl + molette ; mobile : deux doigts. La page reste defilable normalement.
+        cooperativeGestures: true,
+        locale: {
+          'CooperativeGesturesHandler.WindowsHelpText': 'Utilisez Ctrl + molette pour zoomer sur la carte',
+          'CooperativeGesturesHandler.MacHelpText': 'Utilisez ⌘ + molette pour zoomer sur la carte',
+          'CooperativeGesturesHandler.MobileHelpText': 'Utilisez deux doigts pour déplacer la carte',
+          'NavigationControl.ZoomIn': 'Zoomer',
+          'NavigationControl.ZoomOut': 'Dézoomer',
+        },
+      })
+      map = m
+      mapRef.current = m
+      m.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right')
+
+      // Fiabilite : si le fond OpenFreeMap ne charge pas (panne, reseau filtrant), bascule sur OpenStreetMap
+      let usingFallback = false
+      const useFallback = () => {
+        if (usingFallback) return
+        usingFallback = true
+        m.setStyle(FALLBACK_STYLE)
+      }
+      fallbackTimer = window.setTimeout(() => { if (!m.isStyleLoaded()) useFallback() }, 8000)
+      m.on('load', () => window.clearTimeout(fallbackTimer))
+      // Bascule si le style n'a pas pu charger, ou si plusieurs tuiles echouent (vraie panne, pas une tuile isolee)
+      let tileErrors = 0
+      m.on('error', () => {
+        if (!m.isStyleLoaded()) { useFallback(); return }
+        if (++tileErrors >= 6) useFallback()
+      })
 
       // Vue initiale : la France metropolitaine (les offres a l'etranger restent dans la liste)
       const fr = groups.filter((g) => g.lat > 41 && g.lat < 51.5 && g.lng > -5.5 && g.lng < 10)
-      if (fr.length > 1) map.fitBounds(L.latLngBounds(fr.map((g) => [g.lat, g.lng])), { padding: [32, 32], maxZoom: 7 })
-      else map.setView(FRANCE_CENTER, 5)
+      if (fr.length > 1) {
+        const bounds = new maplibregl.LngLatBounds()
+        fr.forEach((g) => bounds.extend([g.lng, g.lat]))
+        m.fitBounds(bounds, { padding: 40, maxZoom: 7, duration: 0 })
+      }
 
+      // Reperes (elements DOM : conserves meme si le fond de carte change)
       for (const g of groups) {
         const size = g.offers.length >= 10 ? 40 : g.offers.length >= 3 ? 34 : 30
-        const icon = L.divIcon({
-          className: '',
-          html: `<span class="map-pin">${g.offers.length}</span>`,
-          iconSize: [size, size],
-          iconAnchor: [size / 2, size / 2],
-          popupAnchor: [0, -size / 2],
-        })
-        const marker = L.marker([g.lat, g.lng], { icon, title: `${g.city} : ${plural(g.offers.length)}`, keyboard: true, riseOnHover: true })
-          .addTo(map)
-          .bindPopup(() => popupContent(g), { maxWidth: 280, minWidth: 220 })
-        marker.on('click', () => setSelected(g.city))
-        marker.on('popupclose', () => setSelected((s) => (s === g.city ? null : s)))
-        markersRef.current.set(g.city, marker)
+        const el = document.createElement('button')
+        el.type = 'button'
+        el.className = 'map-pin'
+        el.style.width = `${size}px`
+        el.style.height = `${size}px`
+        el.textContent = String(g.offers.length)
+        el.setAttribute('aria-label', `${g.city} : ${plural(g.offers.length)}`)
+        const popup = new maplibregl.Popup({ offset: size / 2 + 4, maxWidth: '280px', closeButton: true })
+          .setDOMContent(popupContent(g))
+        popup.on('close', () => setSelected((s) => (s === g.city ? null : s)))
+        const marker = new maplibregl.Marker({ element: el }).setLngLat([g.lng, g.lat]).setPopup(popup).addTo(m)
+        el.addEventListener('click', () => setSelected(g.city))
+        markersRef.current.set(g.city, { marker, el })
       }
     })
+
+    const markers = markersRef.current
     return () => {
       cancelled = true
+      window.clearTimeout(fallbackTimer)
       map?.remove()
       mapRef.current = null
-      markersRef.current.clear()
+      markers.clear()
     }
   }, [groups])
 
   // Repere actif mis en valeur
   useEffect(() => {
-    for (const [city, m] of markersRef.current) {
-      m.getElement()?.querySelector('.map-pin')?.classList.toggle('is-active', city === selected)
-    }
+    for (const [city, { el }] of markersRef.current) el.classList.toggle('is-active', city === selected)
   }, [selected])
 
-  // Position de l'utilisateur : cercle de precision + point
+  // Position de l'utilisateur : point bleu (halo en CSS)
   useEffect(() => {
     const map = mapRef.current
     if (!map || !me) return
-    import('leaflet').then((L) => {
-      meLayer.current?.remove()
-      meLayer.current = L.layerGroup([
-        L.circle(me, { radius: 3000, color: '#2563eb', weight: 1, fillColor: '#2563eb', fillOpacity: 0.08, interactive: false }),
-        L.marker(me, { icon: L.divIcon({ className: '', html: '<span class="map-me"></span>', iconSize: [18, 18], iconAnchor: [9, 9] }), title: 'Votre position approximative', keyboard: false }),
-      ]).addTo(map)
-      map.flyTo(me, 8, { duration: 0.8 })
+    import('maplibre-gl').then((maplibregl) => {
+      meMarker.current?.remove()
+      const el = document.createElement('span')
+      el.className = 'map-me'
+      el.setAttribute('role', 'img')
+      el.setAttribute('aria-label', 'Votre position approximative')
+      meMarker.current = new maplibregl.Marker({ element: el }).setLngLat([me[1], me[0]]).addTo(map)
+      map.flyTo({ center: [me[1], me[0]], zoom: 8, duration: 800 })
     })
   }, [me])
 
@@ -131,10 +184,10 @@ export function OffersMap({ groups }: { groups: CityGroup[] }) {
   function focusCity(g: CityGroup) {
     setSelected(g.city)
     const map = mapRef.current
-    const marker = markersRef.current.get(g.city)
-    if (!map || !marker) return
-    map.flyTo([g.lat, g.lng], Math.max(map.getZoom(), 9), { duration: 0.6 })
-    window.setTimeout(() => marker.openPopup(), 650)
+    const entry = markersRef.current.get(g.city)
+    if (!map || !entry) return
+    map.flyTo({ center: [g.lng, g.lat], zoom: Math.max(map.getZoom(), 9), duration: 600 })
+    map.once('moveend', () => { if (!entry.marker.getPopup()?.isOpen()) entry.marker.togglePopup() })
     mapEl.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   }
 
@@ -161,7 +214,7 @@ export function OffersMap({ groups }: { groups: CityGroup[] }) {
           type="button"
           onClick={locate}
           disabled={geo === 'loading'}
-          className="absolute z-[500] bottom-4 left-1/2 -translate-x-1/2 lg:left-auto lg:translate-x-0 lg:right-4 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-navy-800 shadow-lg ring-1 ring-black/5 hover:bg-gray-50 disabled:opacity-70 transition-colors"
+          className="absolute z-10 bottom-4 left-1/2 -translate-x-1/2 lg:left-4 lg:translate-x-0 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-navy-800 shadow-lg ring-1 ring-black/5 hover:bg-gray-50 disabled:opacity-70 transition-colors"
         >
           {geo === 'loading'
             ? <Loader2 className="w-4 h-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
@@ -235,7 +288,7 @@ function popupContent(g: CityGroup): HTMLElement {
     a.style.cssText = 'color:#1b2d5a;text-decoration:none;font-size:13px;display:block'
     a.textContent = o.title
     const meta = document.createElement('span')
-    meta.style.cssText = 'display:block;color:#6b7280;font-size:11px'
+    meta.style.cssText = 'display:block;color:#5a6170;font-size:11px'
     meta.textContent = `${o.partner} · ${formatPrice(o.price)}${o.discount ? ` (-${o.discount} %)` : ''}`
     a.appendChild(meta)
     li.appendChild(a)
