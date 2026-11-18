@@ -23,7 +23,7 @@ export default async function AdminOffresPage() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-[#e5e3de]">
-              {['Titre', 'Partenaire', 'Categorie', 'Prix', 'Statut', 'Cree le', ''].map((h) => (
+              {['Titre', 'Partenaire', 'Catégorie', 'Prix', 'Statut', 'Créé le', ''].map((h) => (
                 <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   {h}
                 </th>

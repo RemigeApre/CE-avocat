@@ -480,7 +480,7 @@ const freshState = () => ({
   hearts: [] as Heart[],
   bonuses: [] as Bonus[],
   power: null as Power | null,
-  coffeeSafe: false,     // apres un cafe : amendes inoffensives et plateformes solides jusqu'a l'atterrissage
+  coffeeSafe: false,     // après un cafe : amendes inoffensives et plateformes solides jusqu'a l'atterrissage
   floats: [] as FloatText[],
   enemies: [] as Enemy[],
   lastEnemyScore: 0,

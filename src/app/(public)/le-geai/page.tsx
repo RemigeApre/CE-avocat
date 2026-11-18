@@ -15,7 +15,7 @@ import {
 } from 'lucide-react'
 
 export const metadata = {
-  title: 'Le Geai - Maitre en Pause',
+  title: 'Le Geai',
   description:
     "Le Geai, maison d'édition et entreprise de services informatiques : sites sur mesure, applications ordinateur et mobile, maintenance, conférences et formations.",
 }

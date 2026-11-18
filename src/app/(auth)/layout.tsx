@@ -42,11 +42,11 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             Retour
           </a>
         </div>
-        <div className="flex-1 flex items-center justify-center px-8 py-8">
+        <main id="contenu" tabIndex={-1} className="flex-1 flex items-center justify-center px-8 py-8 outline-none">
           <div className="w-full max-w-sm">
             {children}
           </div>
-        </div>
+        </main>
       </div>
 
     </div>

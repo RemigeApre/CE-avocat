@@ -23,7 +23,7 @@ export default async function PartnerLayout({ children }: { children: React.Reac
       <Header />
       <div className="flex flex-1">
         <Sidebar role="partner" partnerName={partner?.name} />
-        <main className="flex-1 p-8">{children}</main>
+        <main id="contenu" tabIndex={-1} className="outline-none flex-1 p-8">{children}</main>
       </div>
     </div>
   )

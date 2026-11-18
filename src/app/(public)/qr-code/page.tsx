@@ -1,7 +1,7 @@
 import { Download } from 'lucide-react'
 import { getHomeUrl, qrSvg } from '@/lib/qrcode'
 
-export const metadata = { title: 'QR code - Maitre en Pause' }
+export const metadata = { title: 'QR code' }
 
 // L'URL vient de l'environnement d'execution (AUTH_URL) : rendu a la requete, pas au build
 export const dynamic = 'force-dynamic'

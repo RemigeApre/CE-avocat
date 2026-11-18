@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/db'
-import { Card, Badge, Button } from '@/components/ui'
+import { Card, Badge, buttonClass } from '@/components/ui'
 import { formatDate } from '@/lib/utils'
 import { deletePost } from './actions'
 
@@ -21,12 +21,10 @@ export default async function AdminActualitesPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-navy-800">Actualites</h1>
+          <h1 className="text-2xl font-bold text-navy-800">Actualités</h1>
           <p className="text-sm text-gray-500 mt-1">{posts.length} article{posts.length > 1 ? 's' : ''}</p>
         </div>
-        <Link href="/admin/actualites/nouveau">
-          <Button>+ Nouvel article</Button>
-        </Link>
+        <Link href="/admin/actualites/nouveau" className={buttonClass()}>+ Nouvel article</Link>
       </div>
 
       {posts.length === 0 ? (
@@ -38,7 +36,7 @@ export default async function AdminActualitesPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-[#e5e3de]">
-                {['Titre', 'Statut', 'Publie le', 'Cree le', ''].map((h) => (
+                {['Titre', 'Statut', 'Publié le', 'Créé le', ''].map((h) => (
                   <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                     {h}
                   </th>
@@ -54,7 +52,7 @@ export default async function AdminActualitesPage() {
                   </td>
                   <td className="px-5 py-3">
                     <Badge variant={p.isPublished ? 'success' : 'default'}>
-                      {p.isPublished ? 'Publie' : 'Brouillon'}
+                      {p.isPublished ? 'Publié' : 'Brouillon'}
                     </Badge>
                   </td>
                   <td className="px-5 py-3 text-gray-400 text-xs">

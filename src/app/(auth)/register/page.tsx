@@ -19,7 +19,7 @@ export default function RegisterPage() {
     setError('')
 
     if (password.length < 8) {
-      setError('Le mot de passe doit contenir au moins 8 caracteres.')
+      setError('Le mot de passe doit contenir au moins 8 caractères.')
       return
     }
 
@@ -46,15 +46,15 @@ export default function RegisterPage() {
   return (
     <div className="w-full">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-navy-800">Creer un compte</h1>
-        <p className="text-sm text-gray-400 mt-1">Rejoignez Maitre en Pause</p>
+        <h1 className="text-2xl font-bold text-navy-800">Créer un compte</h1>
+        <p className="text-sm text-gray-400 mt-1">Rejoignez Maître en Pause</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input
           label="Nom complet"
           type="text"
-          placeholder="Prenom Nom"
+          placeholder="Prénom Nom"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
@@ -72,12 +72,12 @@ export default function RegisterPage() {
         <Input
           label="Mot de passe"
           type="password"
-          placeholder="8 caracteres minimum"
+          placeholder="8 caractères minimum"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
           autoComplete="new-password"
-          hint="Au moins 8 caracteres"
+          hint="Au moins 8 caractères"
         />
 
         {error && (
@@ -85,7 +85,7 @@ export default function RegisterPage() {
         )}
 
         <Button type="submit" className="w-full" loading={loading}>
-          Creer mon compte
+          Créer mon compte
         </Button>
       </form>
 

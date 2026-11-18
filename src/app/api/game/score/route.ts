@@ -9,7 +9,7 @@ const schema = z.object({ score: z.number().int().min(0).max(MAX_GAME_SCORE) })
 // Enregistre le score d'une partie : ne remplace le record que s'il est battu
 export async function POST(req: Request) {
   const session = await auth()
-  if (!session) return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 })
+  if (!session) return NextResponse.json({ error: 'Non authentifié.' }, { status: 401 })
 
   const parsed = schema.safeParse(await req.json().catch(() => null))
   if (!parsed.success) return NextResponse.json({ error: 'Score invalide.' }, { status: 400 })

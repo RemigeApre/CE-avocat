@@ -29,7 +29,7 @@ export function EvolutionsCarousel({ items }: Props) {
       <button
         onClick={() => scroll('left')}
         className="hidden lg:flex absolute left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 items-center justify-center bg-white border border-[#e5e3de] rounded-full shadow-sm hover:border-navy-300 hover:shadow-md transition-all"
-        aria-label="Precedent"
+        aria-label="Précédent"
       >
         <svg className="w-4 h-4 text-navy-800" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M15 18l-6-6 6-6" />

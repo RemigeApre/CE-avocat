@@ -52,9 +52,9 @@ export default async function OrderDetailPage({ params, searchParams }: Props) {
         <div className="bg-green-50 border border-green-200 rounded-lg px-5 py-4 mb-6 flex items-start gap-3">
           <span className="text-green-600 text-lg mt-0.5">✓</span>
           <div>
-            <p className="text-sm font-semibold text-green-800">Commande enregistree</p>
+            <p className="text-sm font-semibold text-green-800">Commande enregistrée</p>
             <p className="text-sm text-green-700 mt-0.5">
-              Un email de confirmation vous a ete envoye.
+              Un email de confirmation vous a été envoyé.
             </p>
           </div>
         </div>
@@ -78,7 +78,7 @@ export default async function OrderDetailPage({ params, searchParams }: Props) {
       </div>
 
       <Card className="mb-4">
-        <h2 className="text-sm font-semibold text-navy-800 mb-4">Recapitulatif</h2>
+        <h2 className="text-sm font-semibold text-navy-800 mb-4">Récapitulatif</h2>
         <div className="space-y-3">
           {order.items.map((item) => (
             <div key={item.id} className="flex items-center justify-between gap-4">
@@ -107,7 +107,7 @@ export default async function OrderDetailPage({ params, searchParams }: Props) {
       </Card>
 
       <p className="text-xs text-gray-400 text-center">
-        Ce recapitulatif est fourni a titre indicatif. Presentez-le lors de votre visite chez le partenaire.
+        Ce récapitulatif est fourni à titre indicatif. Présentez-le lors de votre visite chez le partenaire.
       </p>
     </div>
   )

@@ -3,7 +3,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
-import { ChevronDown, Trophy } from 'lucide-react'
+import { Check, ChevronDown, Download, Share2, Trophy } from 'lucide-react'
+import { displayName } from '@/lib/displayName'
+import { cardQuery, formatMeters } from '@/lib/gameCard'
 import { LawyerGame } from '@/components/ui/LawyerGame'
 import type { LeaderboardData } from '@/lib/gameLeaderboard'
 
@@ -14,7 +16,9 @@ const MEDALS = ['🥇', '🥈', '🥉']
  * l'enregistrement du record sur le compte + le classement entre membres.
  */
 export function GamePanel() {
-  const { status } = useSession()
+  const { status, data: session } = useSession()
+  const [last, setLast] = useState<{ score: number; record: boolean } | null>(null)
+  const [copied, setCopied] = useState(false)
   const [board, setBoard] = useState<LeaderboardData | null>(null)
   const [newRecord, setNewRecord] = useState(false)
   const [error, setError] = useState(false)
@@ -30,6 +34,8 @@ export function GamePanel() {
   }, [status])
 
   const handleGameOver = useCallback((score: number) => {
+    setLast(score > 0 ? { score, record: false } : null)
+    setCopied(false)
     if (status !== 'authenticated' || score <= 0) return
     setNewRecord(false)
     fetch('/api/game/score', {
@@ -41,6 +47,7 @@ export function GamePanel() {
       .then((d: LeaderboardData & { isNewRecord: boolean }) => {
         setBoard(d)
         setNewRecord(d.isNewRecord)
+        if (d.isNewRecord) setLast({ score, record: true })
         setError(false)
       })
       .catch(() => setError(true))
@@ -53,6 +60,48 @@ export function GamePanel() {
       {/* Consigne selon l'appareil : souris/clavier ou ecran tactile */}
       <p className="text-xs text-gray-400 text-center mt-3 [@media(pointer:coarse)]:hidden">← → ou clic gauche / droit · P pour pause · sautez sur l’huissier !</p>
       <p className="text-xs text-gray-400 text-center mt-3 hidden [@media(pointer:coarse)]:block">Gardez le doigt à gauche ou à droite · sautez sur l’huissier !</p>
+
+      {/* Carte de score a partager : lien (apercu image) ou image a telecharger */}
+      {last && (() => {
+        const name = session?.user?.name ? displayName(session.user.name) : undefined
+        const q = cardQuery({ score: last.score, name, record: last.record })
+        const shareLink = async () => {
+          const url = `${window.location.origin}/jeu?${q}`
+          const text = `J’ai atteint ${formatMeters(last.score)} au Maître en cavale. Saurez-vous faire mieux ?`
+          if (navigator.share) {
+            try { await navigator.share({ title: 'Le Maître en cavale', text, url }); return }
+            catch (err) { if (err instanceof DOMException && err.name === 'AbortError') return }
+          }
+          try { await navigator.clipboard.writeText(url); setCopied(true); window.setTimeout(() => setCopied(false), 2500) }
+          catch { window.open(url, '_blank', 'noopener') }
+        }
+        return (
+          <div className="mt-4 rounded-lg bg-[#f7f6f3] border border-[#e5e3de] p-3">
+            <p className="text-sm text-navy-800 text-center">
+              Votre partie : <span className="font-bold tabular-nums">{formatMeters(last.score)}</span>
+              {last.record && <span className="text-gold-700 font-semibold"> · nouveau record</span>}
+            </p>
+            <div className="mt-2.5 grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={shareLink}
+                className="inline-flex items-center justify-center gap-1.5 rounded-md bg-navy-800 hover:bg-navy-700 px-3 py-2 text-xs font-semibold text-white transition-colors"
+              >
+                {copied ? <Check className="w-4 h-4" aria-hidden="true" /> : <Share2 className="w-4 h-4" aria-hidden="true" />}
+                <span aria-live="polite">{copied ? 'Lien copié !' : 'Partager le lien'}</span>
+              </button>
+              <a
+                href={`/api/game/card?${q}&download=1`}
+                download={`maitre-en-cavale-${last.score}m.png`}
+                className="inline-flex items-center justify-center gap-1.5 rounded-md border border-navy-800 px-3 py-2 text-xs font-semibold text-navy-800 hover:bg-white transition-colors"
+              >
+                <Download className="w-4 h-4" aria-hidden="true" />
+                Télécharger l’image
+              </a>
+            </div>
+          </div>
+        )
+      })()}
 
       {/* Classement : reserve aux membres connectes */}
       <div className="mt-4 border-t border-[#e5e3de] pt-3">

@@ -6,9 +6,27 @@ import type { Metadata } from 'next'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
-  const post = await prisma.post.findUnique({ where: { slug }, select: { title: true, excerpt: true } })
+  const post = await prisma.post.findUnique({
+    where: { slug, isPublished: true },
+    select: { title: true, excerpt: true, imageUrl: true, publishedAt: true },
+  })
   if (!post) return {}
-  return { title: `${post.title} - Maitre en Pause`, description: post.excerpt ?? undefined }
+  const description = post.excerpt ?? undefined
+  return {
+    title: post.title,
+    description,
+    alternates: { canonical: `/actualites/${slug}` },
+    openGraph: {
+      type: 'article',
+      title: post.title,
+      description,
+      url: `/actualites/${slug}`,
+      publishedTime: post.publishedAt?.toISOString(),
+      // sans image propre, l'apercu par defaut du site s'applique
+      ...(post.imageUrl ? { images: [{ url: post.imageUrl, alt: post.title }] } : {}),
+    },
+    twitter: { card: 'summary_large_image', title: post.title, description },
+  }
 }
 
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {

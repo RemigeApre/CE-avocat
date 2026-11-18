@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useId } from 'react'
 
 interface OfferFiltersProps {
   offerCount: number
@@ -18,6 +18,7 @@ const REDUCTION_OPTIONS = [
 export function OfferFilters({ offerCount }: OfferFiltersProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const uid = useId() // composant present deux fois (barre laterale + panneau mobile) : ids uniques
 
   const [prixMax, setPrixMax] = useState(searchParams.get('prixMax') ?? '')
   const [reductionMin, setReductionMin] = useState(searchParams.get('reductionMin') ?? '')
@@ -53,19 +54,21 @@ export function OfferFilters({ offerCount }: OfferFiltersProps) {
             onClick={reset}
             className="text-xs text-gold-600 hover:text-gold-700 transition-colors"
           >
-            Reinitialiser les filtres
+            Réinitialiser les filtres
           </button>
         )}
       </div>
 
       {/* Prix maximum */}
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.15em] text-gray-400 mb-3">
+        <label htmlFor={`${uid}-prix`} className="block text-xs font-semibold uppercase tracking-[0.15em] text-gray-400 mb-3">
           Prix maximum
-        </p>
+        </label>
         <div className="flex items-center gap-2">
           <input
+            id={`${uid}-prix`}
             type="number"
+            inputMode="numeric"
             min="0"
             step="10"
             placeholder="ex. 100"
@@ -81,13 +84,14 @@ export function OfferFilters({ offerCount }: OfferFiltersProps) {
 
       {/* Reduction minimale */}
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.15em] text-gray-400 mb-3">
-          Reduction
+        <p id={`${uid}-reduction`} className="text-xs font-semibold uppercase tracking-[0.15em] text-gray-400 mb-3">
+          Réduction
         </p>
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1" role="group" aria-labelledby={`${uid}-reduction`}>
           {REDUCTION_OPTIONS.map((opt) => (
             <button
               key={opt.value}
+              aria-pressed={reductionMin === opt.value}
               onClick={() => {
                 setReductionMin(opt.value)
                 apply(prixMax, opt.value)

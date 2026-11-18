@@ -3,14 +3,17 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useDialog } from '@/lib/useDialog'
 import { CATEGORY_PUNS, categoryHref } from '@/lib/categoryPuns'
+import { SearchButton } from '@/components/search/SearchDialog'
 
 const NAV_PUBLIC = [
   { href: '/offres', label: 'Offres' },
+  { href: '/carte', label: 'Carte' },
   { href: '/partenaires', label: 'Partenaires' },
-  { href: '/actualites', label: 'Actualites' },
-  { href: '/adhesion', label: 'Adherer' },
+  { href: '/actualites', label: 'Actualités' },
+  { href: '/adhesion', label: 'Adhérer' },
 ]
 
 export function Header() {
@@ -30,18 +33,20 @@ export function Header() {
   }
   const closeMobileMenu = () => setMobileMenuOpen(false)
 
-  // Menu ouvert : bloque le defilement de la page et ferme avec Echap
+  // Menu mobile : focus piege, Echap, page figee, focus rendu au bouton burger a la fermeture
+  const mobileMenuRef = useRef<HTMLDivElement>(null)
+  useDialog(mobileMenuOpen, mobileMenuRef, closeMobileMenu)
+
+  // Menu utilisateur (desktop) : ferme avec Echap ou un clic en dehors
+  const userMenuRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    if (!mobileMenuOpen) return
-    const prev = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setMobileMenuOpen(false) }
-    window.addEventListener('keydown', onKey)
-    return () => {
-      document.body.style.overflow = prev
-      window.removeEventListener('keydown', onKey)
-    }
-  }, [mobileMenuOpen])
+    if (!userMenuOpen) return
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setUserMenuOpen(false) }
+    const onClick = (e: MouseEvent) => { if (!userMenuRef.current?.contains(e.target as Node)) setUserMenuOpen(false) }
+    document.addEventListener('keydown', onKey)
+    document.addEventListener('mousedown', onClick)
+    return () => { document.removeEventListener('keydown', onKey); document.removeEventListener('mousedown', onClick) }
+  }, [userMenuOpen])
   const role = session?.user?.role
 
   const dashboardHref =
@@ -84,13 +89,14 @@ export function Header() {
           </div>
 
           {/* Centre — nav desktop */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-8" aria-label="Navigation principale">
             {NAV_PUBLIC.map((item) => {
               const active = pathname === item.href || pathname.startsWith(item.href + '/')
               return (
                 <Link
                   key={item.href}
                   href={item.href}
+                  aria-current={active ? 'page' : undefined}
                   className={[
                     'text-base font-medium transition-colors pb-0.5',
                     active
@@ -119,6 +125,10 @@ export function Header() {
 
           {/* Droite — logo mobile / actions desktop */}
           <div className="flex items-center gap-3">
+            {/* Recherche : loupe (mobile) / bouton + Ctrl K (desktop) */}
+            <SearchButton variant="mobile" />
+            <SearchButton variant="desktop" />
+
             {/* Logo mobile (droite) */}
             <Link href="/" className="md:hidden" aria-label="Maître en Pause — accueil">
               {/* overflow-hidden + image < diametre/sqrt(2) : la robe reste entierement dans le cercle */}
@@ -130,20 +140,27 @@ export function Header() {
 
             {/* Actions desktop */}
             {session ? (
-              <div className="hidden md:block relative">
+              <div
+                className="hidden md:block relative"
+                ref={userMenuRef}
+                onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setUserMenuOpen(false) }}
+              >
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  aria-expanded={userMenuOpen}
+                  aria-controls="user-menu"
+                  aria-label={`Compte de ${session.user.name}`}
                   className="flex items-center gap-1.5 text-sm font-medium text-white/80 hover:text-white transition-colors"
                 >
                   <span className="max-w-[140px] truncate">{session.user.name}</span>
-                  <svg className="h-4 w-4 text-white/40" viewBox="0 0 20 20" fill="currentColor">
+                  <svg className="h-4 w-4 text-white/40" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                     <path fillRule="evenodd" clipRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" />
                   </svg>
                 </button>
                 {userMenuOpen && (
                   <div
+                    id="user-menu"
                     className="absolute right-0 mt-2 w-48 bg-white rounded-lg border border-[#e5e3de] shadow-md py-1 z-50"
-                    onMouseLeave={() => setUserMenuOpen(false)}
                   >
                     <Link href={dashboardHref} onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Mon espace</Link>
                     {(role === 'MEMBER' || role === 'ADMIN') && (
@@ -157,7 +174,7 @@ export function Header() {
                       onClick={() => { setUserMenuOpen(false); signOut({ callbackUrl: '/' }) }}
                       className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                     >
-                      Se deconnecter
+                      Se déconnecter
                     </button>
                   </div>
                 )}
@@ -165,7 +182,7 @@ export function Header() {
             ) : (
               <Link
                 href="/login"
-                className="hidden md:block px-6 py-2.5 text-base font-semibold bg-gold-500 hover:bg-gold-400 text-white rounded-sm transition-colors"
+                className="hidden md:block px-6 py-2.5 text-base font-semibold bg-gold-500 hover:bg-gold-400 text-navy-900 rounded-sm transition-colors"
               >
                 Connexion
               </Link>
@@ -177,7 +194,7 @@ export function Header() {
 
       {/* Menu mobile plein ecran */}
       {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 z-50 bg-navy-800 flex flex-col overflow-y-auto overscroll-contain" role="dialog" aria-modal="true" aria-label="Menu">
+        <div ref={mobileMenuRef} className="md:hidden fixed inset-0 z-50 bg-navy-800 flex flex-col overflow-y-auto overscroll-contain" role="dialog" aria-modal="true" aria-label="Menu">
 
           {/* Barre haute */}
           <div className="flex items-center justify-between px-6 h-[72px] border-b border-navy-700 shrink-0">
@@ -196,7 +213,7 @@ export function Header() {
           </div>
 
           {/* Nav principale */}
-          <nav className="flex flex-col px-6 pt-6 gap-1">
+          <nav className="flex flex-col px-6 pt-6 gap-1" aria-label="Navigation">
             {/* Accueil */}
             <Link
               href="/"
@@ -256,7 +273,7 @@ export function Header() {
                               {active && <span className="w-1.5 h-1.5 rounded-full bg-gold-400" aria-hidden="true" />}
                               {item.label}
                             </span>
-                            {item.sub && <span className="text-xs text-white/35">{item.sub}</span>}
+                            {item.sub && <span className="text-xs text-white/55">{item.sub}</span>}
                           </Link>
                         </li>
                       )
@@ -325,7 +342,7 @@ export function Header() {
                   </span>
                   <div>
                     <p className="text-white text-sm font-medium">{session.user.name}</p>
-                    <p className="text-white/40 text-xs">{session.user.email}</p>
+                    <p className="text-white/65 text-xs">{session.user.email}</p>
                   </div>
                 </div>
                 <Link
@@ -360,14 +377,14 @@ export function Header() {
                   onClick={() => { setMobileMenuOpen(false); signOut({ callbackUrl: '/' }) }}
                   className="w-full text-left px-4 py-3 rounded-md text-sm text-red-400 hover:bg-navy-700 hover:text-red-300 transition-colors"
                 >
-                  Se deconnecter
+                  Se déconnecter
                 </button>
               </div>
             ) : (
               <Link
                 href="/login"
                 onClick={closeMobileMenu}
-                className="block w-full text-center px-6 py-3 text-base font-semibold bg-gold-500 hover:bg-gold-400 text-white rounded-sm transition-colors"
+                className="block w-full text-center px-6 py-3 text-base font-semibold bg-gold-500 hover:bg-gold-400 text-navy-900 rounded-sm transition-colors"
               >
                 Connexion
               </Link>

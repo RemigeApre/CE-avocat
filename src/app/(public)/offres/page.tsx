@@ -5,11 +5,18 @@ import { CategorySubNav } from '@/components/offers/CategorySubNav'
 import { OfferFilters } from '@/components/offers/OfferFilters'
 import { MobileFilters } from '@/components/offers/MobileFilters'
 import { categoryPun } from '@/lib/categoryPuns'
+import { searchItems } from '@/lib/search'
+import { OfferSearchInput } from '@/components/offers/OfferSearchInput'
 import { getDiscountPercent } from '@/lib/utils'
 import type { OfferWithRelations } from '@/types'
 
+export const metadata = {
+  title: 'Offres',
+  description: 'Toutes les offres négociées pour les avocats : gastronomie, culture, bien-être, voyages et loisirs.',
+}
+
 interface Props {
-  searchParams: Promise<{ categorie?: string; prixMax?: string; reductionMin?: string }>
+  searchParams: Promise<{ categorie?: string; prixMax?: string; reductionMin?: string; q?: string }>
 }
 
 async function getCategories() {
@@ -35,7 +42,7 @@ async function getOffers(categorySlug?: string): Promise<OfferWithRelations[]> {
 }
 
 export default async function OffresPage({ searchParams }: Props) {
-  const { categorie, prixMax, reductionMin } = await searchParams
+  const { categorie, prixMax, reductionMin, q } = await searchParams
 
   const [offers, categories] = await Promise.all([
     getOffers(categorie),
@@ -46,7 +53,8 @@ export default async function OffresPage({ searchParams }: Props) {
   const maxPrice = prixMax ? Number(prixMax) : undefined
   const minDiscount = reductionMin ? Number(reductionMin) : 0
 
-  const filtered = offers.filter((o) => {
+  const query = (q ?? '').slice(0, 80)
+  const filtered = searchItems(offers, query).filter((o) => {
     if (maxPrice && Number(o.discountedPrice) > maxPrice) return false
     if (minDiscount > 0) {
       const disc = getDiscountPercent(Number(o.originalPrice), Number(o.discountedPrice))
@@ -77,6 +85,18 @@ export default async function OffresPage({ searchParams }: Props) {
         <div className="flex-1 min-w-0 px-6 py-8">
 
           {/* Mobile : filtres condensés */}
+          {/* Recherche (titre, partenaire, description) */}
+          <div className="mb-4 lg:mb-6 lg:max-w-md">
+            <Suspense fallback={null}>
+              <OfferSearchInput />
+            </Suspense>
+          </div>
+          {query.trim() && (
+            <p className="mb-4 text-sm text-gray-600" aria-live="polite">
+              {filtered.length} résultat{filtered.length > 1 ? 's' : ''} pour « <span className="font-semibold text-navy-800">{query.trim()}</span> »
+            </p>
+          )}
+
           {/* Mobile / tablette : nombre d'offres (+ categorie active) a gauche, lien Filtres a droite */}
           <div className="lg:hidden mb-5 flex items-center justify-between gap-3">
             <span className="text-sm text-gray-400 min-w-0 truncate">
@@ -90,7 +110,7 @@ export default async function OffresPage({ searchParams }: Props) {
 
           <OfferGrid
             offers={filtered}
-            emptyMessage="Aucune offre ne correspond a ces criteres."
+            emptyMessage={query.trim() ? `Aucune offre ne correspond à « ${query.trim()} ».` : 'Aucune offre ne correspond à ces critères.'}
           />
         </div>
 

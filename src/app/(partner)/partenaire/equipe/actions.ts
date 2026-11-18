@@ -39,7 +39,7 @@ export async function createTeamMember(formData: FormData) {
   })
 
   const existing = await prisma.user.findUnique({ where: { email: data.email } })
-  if (existing) throw new Error('Cet email est deja utilise.')
+  if (existing) throw new Error('Cet email est déjà utilisé.')
 
   const hashed = await bcrypt.hash(data.password, 12)
 

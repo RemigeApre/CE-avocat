@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect, type ReactNode } from 'react'
+import { useState, useEffect, useRef, useCallback, type ReactNode } from 'react'
+import { useDialog } from '@/lib/useDialog'
 import { UtensilsCrossed, Drama, Flower2, Plane, FerrisWheel, Gift } from 'lucide-react'
 import { FlipCard } from '@/components/ui/FlipCard'
 import { Carousel } from '@/components/ui/Carousel'
@@ -56,18 +57,21 @@ export function HeroCards({ counts, variant = 'rail' }: HeroCardsProps) {
 
   useEffect(() => { setMounted(true) }, [])
 
-  // Jeu ouvert : page figee derriere, Echap pour fermer
+  // Lien partage "A vous de jouer" (/?jeu=1) : ouvre le jeu. Deux instances existent (desktop / mobile) :
+  // seule celle qui est visible reagit, puis le parametre est retire de l'adresse.
+  const surpriseRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    if (!gameOpen) return
-    const prev = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setGameOpen(false) }
-    window.addEventListener('keydown', onKey)
-    return () => {
-      document.body.style.overflow = prev
-      window.removeEventListener('keydown', onKey)
-    }
-  }, [gameOpen])
+    const url = new URL(window.location.href)
+    if (url.searchParams.get('jeu') !== '1' || surpriseRef.current?.offsetParent == null) return
+    setGameOpen(true)
+    url.searchParams.delete('jeu')
+    window.history.replaceState(null, '', url.pathname + url.search + url.hash)
+  }, [])
+
+  // Jeu ouvert : focus piege dans la fenetre, Echap pour fermer, page figee, focus rendu a la carte Surprise
+  const gamePanelRef = useRef<HTMLDivElement>(null)
+  const closeGame = useCallback(() => setGameOpen(false), [])
+  useDialog(gameOpen, gamePanelRef, closeGame)
 
   const modal = gameOpen && (
     <div
@@ -78,6 +82,7 @@ export function HeroCards({ counts, variant = 'rail' }: HeroCardsProps) {
       aria-label="Mini-jeu Le Maître en cavale"
     >
       <div
+        ref={gamePanelRef}
         className="bg-white rounded-xl shadow-2xl p-4 sm:p-6 w-full max-w-sm max-h-full overflow-y-auto select-none touch-manipulation [-webkit-touch-callout:none]"
         onClick={(e) => e.stopPropagation()}
       >
@@ -130,7 +135,7 @@ export function HeroCards({ counts, variant = 'rail' }: HeroCardsProps) {
     }),
 
     /* Carte mystère : pas de verso, un clic ouvre directement le mini-jeu */
-    <div key="surprise" className={CARD_PROPS.className} style={{ rotate: ROTATIONS[5] }}>
+    <div key="surprise" ref={surpriseRef} className={CARD_PROPS.className} style={{ rotate: ROTATIONS[5] }}>
       <button
         type="button"
         onClick={() => setGameOpen(true)}

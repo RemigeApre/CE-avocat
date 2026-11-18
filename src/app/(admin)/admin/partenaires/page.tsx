@@ -23,7 +23,7 @@ export default async function AdminPartenairesPage() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-[#e5e3de]">
-              {['Nom', 'Responsable', 'Offres', 'Equipe', 'Cree le', ''].map((h) => (
+              {['Nom', 'Responsable', 'Offres', 'Équipe', 'Créé le', ''].map((h) => (
                 <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   {h}
                 </th>
@@ -53,7 +53,7 @@ export default async function AdminPartenairesPage() {
           </tbody>
         </table>
         {partners.length === 0 && (
-          <p className="text-sm text-gray-400 text-center py-10">Aucun partenaire enregistre.</p>
+          <p className="text-sm text-gray-400 text-center py-10">Aucun partenaire enregistré.</p>
         )}
       </Card>
     </div>

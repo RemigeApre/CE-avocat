@@ -4,13 +4,13 @@ import { CATEGORY_PUNS, categoryHref } from '@/lib/categoryPuns'
 const NAV_LINKS = [
   { href: '/offres', label: 'Offres' },
   { href: '/partenaires', label: 'Partenaires' },
-  { href: '/actualites', label: 'Actualites' },
-  { href: '/adhesion', label: 'Adherer' },
+  { href: '/actualites', label: 'Actualités' },
+  { href: '/adhesion', label: 'Adhérer' },
   { href: '/login', label: 'Connexion' },
 ]
 
 const EXTRA_LINKS = [
-  { href: '/evolutions', label: 'Evolutions envisagees' },
+  { href: '/evolutions', label: 'Évolutions envisagées' },
   { href: '/qr-code', label: 'QR code du site' },
   { href: '/le-geai', label: 'Le Geai, concepteur du site' },
 ]
@@ -40,7 +40,7 @@ export function Footer() {
             <p className="text-sm text-navy-300 leading-relaxed max-w-xs">
               Le Comité Professionnel des avocats. Des avantages négociés, des partenaires sélectionnés.
             </p>
-            <p className="mt-4 text-xs text-navy-500 italic">Site de demonstration</p>
+            <p className="mt-4 text-xs text-navy-300 italic">Site de démonstration</p>
           </div>
 
           {/* Navigation */}
@@ -75,7 +75,7 @@ export function Footer() {
                     className="group inline-flex flex-wrap items-baseline gap-x-1.5 text-sm"
                   >
                     <span className="text-navy-300 group-hover:text-white transition-colors">{pun}</span>
-                    <span className="text-xs text-navy-500 group-hover:text-gold-400 transition-colors">
+                    <span className="text-xs text-navy-300 group-hover:text-gold-400 transition-colors">
                       <span aria-hidden="true">· </span>{category}
                     </span>
                   </Link>
@@ -111,11 +111,11 @@ export function Footer() {
 
         {/* Barre de bas */}
         <div className="border-t border-navy-700 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs text-navy-500">
+          <p className="text-xs text-navy-300">
             Maitre en Pause &copy; {new Date().getFullYear()}
           </p>
-          <p className="text-xs text-navy-500">
-            Realise benevole par{' '}
+          <p className="text-xs text-navy-300">
+            Réalisé bénévolement par{' '}
             <Link href="/le-geai" className="text-navy-300 font-medium hover:text-white transition-colors">Le Geai</Link>
           </p>
         </div>

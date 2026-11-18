@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
+import { useDialog } from '@/lib/useDialog'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { SlidersHorizontal, X } from 'lucide-react'
 import { OfferFilters } from './OfferFilters'
@@ -28,18 +29,10 @@ export function MobileFilters({ offerCount, categories }: MobileFiltersProps) {
   const activeSlug = searchParams.get('categorie')
   const activeCount = ['prixMax', 'reductionMin'].filter((k) => searchParams.get(k)).length
 
-  // Panneau ouvert : page figee derriere, Echap pour fermer
-  useEffect(() => {
-    if (!open) return
-    const prev = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false) }
-    window.addEventListener('keydown', onKey)
-    return () => {
-      document.body.style.overflow = prev
-      window.removeEventListener('keydown', onKey)
-    }
-  }, [open])
+  // Panneau ouvert : focus piege, Echap pour fermer, page figee, focus rendu au lien Filtres
+  const sheetRef = useRef<HTMLDivElement>(null)
+  const close = useCallback(() => setOpen(false), [])
+  useDialog(open, sheetRef, close)
 
   // Changer de categorie en conservant les autres filtres
   function selectCategory(slug: string | null) {
@@ -79,7 +72,7 @@ export function MobileFilters({ offerCount, categories }: MobileFiltersProps) {
           <div className="absolute inset-0 bg-navy-950/50 backdrop-blur-[2px] animate-[fade-in_.2s_ease-out]" onClick={() => setOpen(false)} />
 
           {/* Panneau */}
-          <div className="relative w-full max-h-[85svh] flex flex-col bg-white rounded-t-2xl shadow-2xl animate-[sheet-up_.28s_cubic-bezier(.2,.8,.3,1)] motion-reduce:animate-none">
+          <div ref={sheetRef} className="relative w-full max-h-[85svh] flex flex-col bg-white rounded-t-2xl shadow-2xl animate-[sheet-up_.28s_cubic-bezier(.2,.8,.3,1)] motion-reduce:animate-none">
             <div className="pt-2.5 pb-1 flex justify-center" aria-hidden="true">
               <span className="w-10 h-1 rounded-full bg-gray-200" />
             </div>

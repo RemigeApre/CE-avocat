@@ -87,7 +87,7 @@ export function PostForm({ initial }: { initial?: PostData }) {
           onChange={handleChange}
           required
           placeholder="titre-de-l-article"
-          hint="Genere automatiquement depuis le titre"
+          hint="Généré automatiquement depuis le titre"
         />
       </div>
 
@@ -98,10 +98,10 @@ export function PostForm({ initial }: { initial?: PostData }) {
           value={form.excerpt}
           onChange={handleChange}
           rows={2}
-          placeholder="Resume court de l'article (optionnel)"
+          placeholder="Résumé court de l'article (optionnel)"
           className="w-full border border-[#e5e3de] rounded-md px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-navy-800 focus:border-transparent resize-none"
         />
-        <p className="text-xs text-gray-400 mt-1">400 caracteres max. Affiche dans les listings.</p>
+        <p className="text-xs text-gray-400 mt-1">400 caractères max. Affiché dans les listings.</p>
       </div>
 
       <div>
@@ -141,8 +141,8 @@ export function PostForm({ initial }: { initial?: PostData }) {
           Publier cet article
           <span className="block text-xs text-gray-400 font-normal mt-0.5">
             {isEdit && initial?.isPublished
-              ? 'Deja publie. Decocher mettra en brouillon.'
-              : 'La date de publication sera fixee a la premiere publication.'}
+              ? 'Déjà publié. Décocher mettra en brouillon.'
+              : 'La date de publication sera fixée à la première publication.'}
           </span>
         </span>
       </label>
@@ -151,7 +151,7 @@ export function PostForm({ initial }: { initial?: PostData }) {
 
       <div className="flex items-center gap-3 pt-2 border-t border-[#e5e3de]">
         <Button type="submit" loading={isPending}>
-          {isEdit ? 'Enregistrer' : 'Creer l\'article'}
+          {isEdit ? 'Enregistrer' : 'Créer l\'article'}
         </Button>
         <Button
           type="button"

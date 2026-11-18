@@ -43,7 +43,7 @@ export function CreateUserButton() {
     <>
       <Button onClick={() => setOpen(true)}>+ Nouvel utilisateur</Button>
 
-      <Modal open={open} onClose={handleClose} title="Creer un compte membre">
+      <Modal open={open} onClose={handleClose} title="Créer un compte membre">
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             label="Nom complet"
@@ -51,7 +51,7 @@ export function CreateUserButton() {
             value={form.name}
             onChange={handleChange}
             required
-            placeholder="Prenom Nom"
+            placeholder="Prénom Nom"
           />
           <Input
             label="Adresse email"
@@ -69,7 +69,7 @@ export function CreateUserButton() {
             value={form.password}
             onChange={handleChange}
             required
-            hint="8 caracteres minimum"
+            hint="8 caractères minimum"
           />
 
           <label className="flex items-start gap-3 cursor-pointer select-none">
@@ -94,7 +94,7 @@ export function CreateUserButton() {
 
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="ghost" onClick={handleClose}>Annuler</Button>
-            <Button type="submit" loading={isPending}>Creer</Button>
+            <Button type="submit" loading={isPending}>Créer</Button>
           </div>
         </form>
       </Modal>

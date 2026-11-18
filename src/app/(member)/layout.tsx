@@ -13,7 +13,7 @@ export default async function MemberLayout({ children }: { children: React.React
       <Header />
       <div className="flex flex-1">
         <Sidebar role="member" />
-        <main className="flex-1 p-8 max-w-5xl">{children}</main>
+        <main id="contenu" tabIndex={-1} className="outline-none flex-1 p-8 max-w-5xl">{children}</main>
       </div>
       <Footer />
     </div>

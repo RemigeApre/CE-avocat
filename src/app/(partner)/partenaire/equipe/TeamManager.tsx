@@ -53,7 +53,7 @@ export function TeamManager({ members, isAdmin }: Props) {
     <>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-navy-800">Mon equipe</h1>
+          <h1 className="text-2xl font-bold text-navy-800">Mon équipe</h1>
           <p className="text-sm text-gray-500 mt-1">
             {members.length}/{MAX} membre{members.length > 1 ? 's' : ''}
           </p>
@@ -68,7 +68,7 @@ export function TeamManager({ members, isAdmin }: Props) {
       {members.length === 0 ? (
         <Card>
           <p className="text-sm text-gray-400 text-center py-10">
-            Aucun membre dans l'equipe pour le moment.
+            Aucun membre dans l'équipe pour le moment.
           </p>
         </Card>
       ) : (
@@ -132,7 +132,7 @@ export function TeamManager({ members, isAdmin }: Props) {
             value={form.password}
             onChange={handleChange}
             required
-            hint="8 caracteres minimum. Le membre pourra le modifier."
+            hint="8 caractères minimum. Le membre pourra le modifier."
           />
           {error && (
             <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-md">{error}</p>
@@ -142,7 +142,7 @@ export function TeamManager({ members, isAdmin }: Props) {
               Annuler
             </Button>
             <Button type="submit" loading={isPending}>
-              Creer le compte
+              Créer le compte
             </Button>
           </div>
         </form>

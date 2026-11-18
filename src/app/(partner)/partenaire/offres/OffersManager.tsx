@@ -130,7 +130,7 @@ export function OffersManager({ offers, categories }: Props) {
 
       {offers.length === 0 ? (
         <Card>
-          <p className="text-sm text-gray-400 text-center py-10">Aucune offre. Creez la premiere !</p>
+          <p className="text-sm text-gray-400 text-center py-10">Aucune offre. Créez la première !</p>
         </Card>
       ) : (
         <div className="space-y-3">
@@ -154,7 +154,7 @@ export function OffersManager({ offers, categories }: Props) {
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 <button onClick={() => handleToggle(offer.id, offer.isActive)} className="text-xs text-gray-500 hover:text-navy-800 transition-colors">
-                  {offer.isActive ? 'Desactiver' : 'Activer'}
+                  {offer.isActive ? 'Désactiver' : 'Activer'}
                 </button>
                 <button onClick={() => openEdit(offer)} className="text-xs text-gold-600 hover:text-gold-700 transition-colors">
                   Modifier
@@ -179,10 +179,10 @@ export function OffersManager({ offers, categories }: Props) {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-navy-800">Categorie</label>
+            <label className="text-sm font-medium text-navy-800">Catégorie</label>
             <select name="categoryId" value={form.categoryId} onChange={handleChange} required
               className="w-full px-3 py-2 text-sm rounded-md border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-navy-800">
-              <option value="">Choisir une categorie</option>
+              <option value="">Choisir une catégorie</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
@@ -231,7 +231,7 @@ export function OffersManager({ offers, categories }: Props) {
 
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="ghost" onClick={() => setModalOpen(false)}>Annuler</Button>
-            <Button type="submit" loading={isPending}>{editing ? 'Enregistrer' : 'Creer'}</Button>
+            <Button type="submit" loading={isPending}>{editing ? 'Enregistrer' : 'Créer'}</Button>
           </div>
         </form>
       </Modal>

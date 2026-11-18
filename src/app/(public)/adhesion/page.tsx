@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { BadgeCheck, CalendarCheck, Check, ChevronDown, GraduationCap, Minus, Receipt, type LucideIcon } from 'lucide-react'
 import { Carousel } from '@/components/ui'
 
-export const metadata = { title: 'Adhérer - Maitre en Pause' }
+export const metadata = { title: 'Adhérer' }
 
 // Encart sur le Conseil National des Barreaux, masque pour l'instant
 const SHOW_CNB_NOTE = false

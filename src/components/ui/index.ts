@@ -1,4 +1,5 @@
 export { Button } from './Button'
+export { buttonClass } from './buttonStyles'
 export { CountUp } from './CountUp'
 export { Card } from './Card'
 export { Input } from './Input'

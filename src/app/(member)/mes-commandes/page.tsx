@@ -49,7 +49,7 @@ export default async function MesCommandesPage() {
           <p className="text-sm text-gray-400 text-center py-10">
             Aucune commande.{' '}
             <Link href="/offres" className="text-gold-600 hover:underline">
-              Decouvrir les offres
+              Découvrir les offres
             </Link>
           </p>
         </Card>

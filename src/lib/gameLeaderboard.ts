@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db'
+import { displayName } from '@/lib/displayName'
 
 /** Score maximal accepte : garde-fou contre les valeurs absurdes (le jeu reste cote client) */
 export const MAX_GAME_SCORE = 50_000
@@ -15,13 +16,7 @@ export interface LeaderboardData {
   me: { best: number; rank: number | null }
 }
 
-/** "Sophie Bernard" -> "Sophie B." : classement entre membres, sans exposer les noms complets */
-export function displayName(full: string): string {
-  const parts = full.trim().split(/\s+/).filter(Boolean)
-  if (parts.length === 0) return 'Membre'
-  if (parts.length === 1) return parts[0]
-  return `${parts[0]} ${parts[parts.length - 1].charAt(0).toUpperCase()}.`
-}
+export { displayName }
 
 export async function getLeaderboard(userId: string, limit = 10): Promise<LeaderboardData> {
   const [rows, meRow] = await Promise.all([

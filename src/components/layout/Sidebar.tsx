@@ -17,14 +17,14 @@ const navItems: Record<SidebarRole, NavItem[]> = {
     { href: '/admin', label: 'Tableau de bord', icon: '◈' },
     { href: '/admin/utilisateurs', label: 'Utilisateurs', icon: '◉' },
     { href: '/admin/partenaires', label: 'Partenaires', icon: '◎' },
-    { href: '/admin/categories', label: 'Categories', icon: '◫' },
+    { href: '/admin/categories', label: 'Catégories', icon: '◫' },
     { href: '/admin/offres', label: 'Offres', icon: '◆' },
-    { href: '/admin/actualites', label: 'Actualites', icon: '◩' },
+    { href: '/admin/actualites', label: 'Actualités', icon: '◩' },
   ],
   partner: [
     { href: '/partenaire', label: 'Tableau de bord', icon: '◈' },
     { href: '/partenaire/offres', label: 'Mes offres', icon: '◆' },
-    { href: '/partenaire/equipe', label: 'Mon equipe', icon: '◉' },
+    { href: '/partenaire/equipe', label: 'Mon équipe', icon: '◉' },
   ],
   member: [
     { href: '/tableau-de-bord', label: 'Tableau de bord', icon: '◈' },

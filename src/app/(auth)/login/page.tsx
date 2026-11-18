@@ -43,7 +43,7 @@ export default function LoginPage() {
       {/* En-tete */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-navy-800">Connexion</h1>
-        <p className="text-sm text-gray-400 mt-1">Acces a votre espace Maitre en Pause</p>
+        <p className="text-sm text-gray-400 mt-1">Accès à votre espace Maître en Pause</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">

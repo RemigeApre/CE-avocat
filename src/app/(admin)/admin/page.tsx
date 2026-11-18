@@ -45,7 +45,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       <div>
-        <h2 className="text-base font-semibold text-navy-800 mb-4">Dernieres commandes</h2>
+        <h2 className="text-base font-semibold text-navy-800 mb-4">Dernières commandes</h2>
         {recentOrders.length === 0 ? (
           <Card>
             <p className="text-sm text-gray-400 text-center py-6">Aucune commande.</p>

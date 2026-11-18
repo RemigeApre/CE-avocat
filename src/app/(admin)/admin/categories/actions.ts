@@ -26,7 +26,7 @@ export async function createCategory(formData: FormData) {
   })
   const slug = slugify(data.name)
   const existing = await prisma.category.findUnique({ where: { slug } })
-  if (existing) throw new Error('Une categorie avec ce nom existe deja.')
+  if (existing) throw new Error('Une catégorie avec ce nom existe déjà.')
   await prisma.category.create({ data: { ...data, slug, icon: data.icon ?? null, description: data.description ?? null } })
   revalidatePath('/admin/categories')
 }
@@ -34,7 +34,7 @@ export async function createCategory(formData: FormData) {
 export async function deleteCategory(id: string) {
   await assertAdmin()
   const count = await prisma.offer.count({ where: { categoryId: id } })
-  if (count > 0) throw new Error(`Impossible : ${count} offre(s) utilisent cette categorie.`)
+  if (count > 0) throw new Error(`Impossible : ${count} offre(s) utilisent cette catégorie.`)
   await prisma.category.delete({ where: { id } })
   revalidatePath('/admin/categories')
 }

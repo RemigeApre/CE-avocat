@@ -44,7 +44,7 @@ export function SaveButton({ offerId, initialSaved }: SaveButtonProps) {
           d="M5 3h10a1 1 0 011 1v13.382a.5.5 0 01-.776.416L10 15.118l-5.224 2.68A.5.5 0 014 17.382V4a1 1 0 011-1z"
         />
       </svg>
-      {saved ? 'Enregistre' : 'Enregistrer'}
+      {saved ? 'Enregistré' : 'Enregistrer'}
     </button>
   )
 }

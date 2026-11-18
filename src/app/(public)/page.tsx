@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/db'
-import { Button, CountUp, FlipCard, Avocado, Carousel, type AvocadoEmotion } from '@/components/ui'
+import { buttonClass, CountUp, FlipCard, Avocado, Carousel, type AvocadoEmotion } from '@/components/ui'
 import { HeroCards } from '@/components/hero/HeroCards'
 import { VirtuousCircle } from '@/components/home/VirtuousCircle'
 import { OfferCard } from '@/components/offers/OfferCard'
@@ -125,10 +125,8 @@ export default async function HomePage() {
                   Le Comité Professionnel des avocats
                 </h1>
                 <div className="flex items-center justify-center md:justify-start gap-6 md:gap-8">
-                  <Link href="/login">
-                    <Button size="lg" className="px-8 md:px-10 py-3 h-auto rounded-sm bg-gold-500 text-navy-900 hover:bg-gold-400 md:bg-navy-800 md:text-white md:hover:bg-navy-700">
-                      Se connecter
-                    </Button>
+                  <Link href="/login" className={buttonClass({ size: 'lg', className: 'px-8 md:px-10 py-3 h-auto rounded-sm bg-gold-500 text-navy-900 hover:bg-gold-400 md:bg-navy-800 md:text-white md:hover:bg-navy-700' })}>
+                    Se connecter
                   </Link>
                   <div className="flex items-baseline gap-1.5">
                     <span className="text-3xl md:text-4xl font-bold text-gold-400 md:text-gold-500 leading-none">{offerCount}</span>
@@ -239,9 +237,7 @@ export default async function HomePage() {
           </div>
 
           <div className="mt-8 md:mt-10">
-            <Link href="/adhesion">
-              <Button size="lg" className="px-10">Rejoindre le Comité</Button>
-            </Link>
+            <Link href="/adhesion" className={buttonClass({ size: 'lg', className: 'px-10' })}>Rejoindre le Comité</Link>
           </div>
         </div>
       </section>
@@ -267,9 +263,7 @@ export default async function HomePage() {
           )}
           {offerCount > 4 && (
             <div className="mt-7 md:mt-8 text-center">
-              <Link href="/offres" className="block sm:inline-block">
-                <Button variant="outline" className="w-full sm:w-auto">Voir toutes les offres</Button>
-              </Link>
+              <Link href="/offres" className={buttonClass({ variant: 'outline', className: 'w-full sm:w-auto' })}>Voir toutes les offres</Link>
             </div>
           )}
         </div>
@@ -302,9 +296,7 @@ export default async function HomePage() {
             </div>
 
             <div className="mt-7 md:hidden">
-              <Link href="/actualites" className="block">
-                <Button variant="outline" className="w-full">Toutes les actualités</Button>
-              </Link>
+              <Link href="/actualites" className={buttonClass({ variant: 'outline', className: 'w-full' })}>Toutes les actualités</Link>
             </div>
           </div>
         </section>

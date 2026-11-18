@@ -39,7 +39,7 @@ export default async function MemberDashboardPage() {
         <h1 className="text-2xl font-bold text-navy-800">
           Bonjour, {session!.user.name}
         </h1>
-        <p className="text-sm text-gray-500 mt-1">Bienvenue dans votre espace Maitre en Pause</p>
+        <p className="text-sm text-gray-500 mt-1">Bienvenue dans votre espace Maître en Pause</p>
       </div>
 
       {/* Stats */}
@@ -50,7 +50,7 @@ export default async function MemberDashboardPage() {
         </Card>
         <Card className="sm:col-span-2 flex items-center justify-between">
           <div>
-            <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Decouvrir</p>
+            <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Découvrir</p>
             <p className="text-sm font-medium text-navy-800">Nouvelles offres disponibles</p>
           </div>
           <Link

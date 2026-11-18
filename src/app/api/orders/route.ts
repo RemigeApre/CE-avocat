@@ -13,13 +13,13 @@ export async function POST(req: Request) {
   try {
     const session = await auth()
     if (!session) {
-      return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 })
+      return NextResponse.json({ error: 'Non authentifié.' }, { status: 401 })
     }
 
     const body = await req.json()
     const data = schema.safeParse(body)
     if (!data.success) {
-      return NextResponse.json({ error: 'Donnees invalides.' }, { status: 400 })
+      return NextResponse.json({ error: 'Données invalides.' }, { status: 400 })
     }
 
     const offer = await prisma.offer.findUnique({

@@ -41,7 +41,7 @@ export default async function MesFavorisPage() {
 
       {offers.length === 0 && (
         <div className="text-center py-16">
-          <p className="text-gray-400 text-sm mb-4">Vous n&apos;avez pas encore enregistre d&apos;offres.</p>
+          <p className="text-gray-400 text-sm mb-4">Vous n&apos;avez pas encore enregistré d&apos;offres.</p>
           <Link
             href="/offres"
             className="text-sm font-medium text-gold-600 hover:text-gold-700 transition-colors"

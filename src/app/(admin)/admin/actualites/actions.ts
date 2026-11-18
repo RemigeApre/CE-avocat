@@ -34,7 +34,7 @@ export async function createPost(formData: FormData) {
   })
 
   const existing = await prisma.post.findUnique({ where: { slug: data.slug } })
-  if (existing) throw new Error('Un article avec ce slug existe deja.')
+  if (existing) throw new Error('Un article avec ce slug existe déjà.')
 
   await prisma.post.create({
     data: {

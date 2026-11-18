@@ -1,4 +1,4 @@
-export const metadata = { title: 'Mentions légales - Maitre en Pause' }
+export const metadata = { title: 'Mentions légales' }
 
 export default function MentionsLegalesPage() {
   return (
@@ -17,7 +17,7 @@ export default function MentionsLegalesPage() {
 
         <section>
           <h2 className="text-base font-semibold text-navy-800 mb-3 pb-2 border-b border-[#e5e3de]">Editeur du site</h2>
-          <p><strong className="text-navy-700">Dénomination :</strong> Maitre en Pause (projet de démonstration)</p>
+          <p><strong className="text-navy-700">Dénomination :</strong> Maître en Pause (projet de démonstration)</p>
           <p className="mt-1"><strong className="text-navy-700">Nature :</strong> Site de démonstration, sans personnalité morale propre</p>
           <p className="mt-1"><strong className="text-navy-700">Conception et développement :</strong> Le Geai</p>
         </section>

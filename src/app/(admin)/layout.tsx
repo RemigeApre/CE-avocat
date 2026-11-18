@@ -12,7 +12,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <Header />
       <div className="flex flex-1">
         <Sidebar role="admin" />
-        <main className="flex-1 p-8">{children}</main>
+        <main id="contenu" tabIndex={-1} className="outline-none flex-1 p-8">{children}</main>
       </div>
     </div>
   )

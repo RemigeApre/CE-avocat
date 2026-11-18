@@ -45,7 +45,8 @@ export function OfferCard({ offer }: OfferCardProps) {
             <>
               <Image
                 src={imageUrl}
-                alt={offer.title}
+                alt=""
+                sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 80vw"
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
               />
@@ -54,7 +55,7 @@ export function OfferCard({ offer }: OfferCardProps) {
           )}
           {showDiscount && (
             <div className="absolute top-0 left-0 bg-navy-800 text-white text-xs font-bold px-2.5 py-1.5 leading-none tracking-wide">
-              -{discount}%
+              <span className="sr-only">Réduction de </span>-{discount}%
             </div>
           )}
         </div>

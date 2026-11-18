@@ -1,4 +1,4 @@
-export const metadata = { title: 'Politique de confidentialité - Maitre en Pause' }
+export const metadata = { title: 'Politique de confidentialité' }
 
 export default function PolitiqueConfidentialitePage() {
   return (

@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     const data = schema.safeParse(body)
 
     if (!data.success) {
-      return NextResponse.json({ error: 'Donnees invalides.' }, { status: 400 })
+      return NextResponse.json({ error: 'Données invalides.' }, { status: 400 })
     }
 
     const domain = data.data.email.split('@')[1]
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
 
     const existing = await prisma.user.findUnique({ where: { email: data.data.email } })
     if (existing) {
-      return NextResponse.json({ error: 'Cet email est deja utilise.' }, { status: 409 })
+      return NextResponse.json({ error: 'Cet email est déjà utilisé.' }, { status: 409 })
     }
 
     const hashed = await bcrypt.hash(data.data.password, 12)

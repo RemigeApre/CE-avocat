@@ -8,6 +8,16 @@ interface Props {
   params: Promise<{ slug: string }>
 }
 
+export async function generateMetadata({ params }: Props) {
+  const { slug } = await params
+  const p = await prisma.partner.findUnique({ where: { slug }, select: { name: true, description: true } })
+  if (!p) return {}
+  return {
+    title: p.name,
+    description: p.description ?? `Les offres négociées par ${p.name} pour les adhérents de Maître en Pause.`,
+  }
+}
+
 export default async function PartenaireDetailPage({ params }: Props) {
   const { slug } = await params
 

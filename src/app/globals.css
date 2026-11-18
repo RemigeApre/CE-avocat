@@ -17,6 +17,22 @@
     min-height: 100dvh;
   }
 
+  /* Focus clavier toujours visible (la souris ne l'affiche pas) */
+  :focus-visible {
+    outline: 2px solid #c9a84c;
+    outline-offset: 2px;
+  }
+
+  /* Mouvements reduits demandes par le systeme : animations et transitions quasi instantanees */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
   dialog::backdrop {
     background: rgba(0, 0, 0, 0.4);
   }
@@ -85,6 +101,30 @@
   to { opacity: 1; }
 }
 
+/* Carte des offres (Leaflet) : repere = pastille bleu nuit, nombre d'offres en blanc, liseré or */
+.map-pin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 9999px;
+  background: #1b2d5a;
+  color: #fff;
+  font: 600 12px/1 var(--font-inter), system-ui, sans-serif;
+  border: 2px solid #c9a84c;
+  box-shadow: 0 4px 12px rgba(14, 26, 63, 0.35);
+  transition: transform 0.15s ease;
+}
+.map-pin.is-active { background: #c9a84c; color: #0e1a3f; border-color: #fff; transform: scale(1.15); }
+.leaflet-marker-icon:focus-visible .map-pin { outline: 3px solid #c9a84c; outline-offset: 2px; }
+.map-me {
+  width: 100%; height: 100%; border-radius: 9999px;
+  background: #2563eb; border: 3px solid #fff; box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.35);
+}
+.leaflet-container { font-family: var(--font-inter), system-ui, sans-serif; }
+.leaflet-popup-content { margin: 12px 14px; }
+
 @keyframes marquee {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
@@ -94,6 +134,12 @@
   display: flex;
   width: max-content;
   animation: marquee 50s linear infinite;
+}
+/* Defilement automatique : se met en pause au survol ou au focus (WCAG 2.2.2) */
+.animate-marquee:hover,
+.animate-marquee:focus-within { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee { animation: none; }
 }
 
 .marquee-group {

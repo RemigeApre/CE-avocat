@@ -28,7 +28,7 @@ export default async function AdminUsersPage() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-[#e5e3de]">
-              {['Nom', 'Email', 'Role', 'Partenaire', 'Inscription', ''].map((h) => (
+              {['Nom', 'Email', 'Rôle', 'Partenaire', 'Inscription', ''].map((h) => (
                 <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   {h}
                 </th>

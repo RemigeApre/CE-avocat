@@ -40,23 +40,23 @@ export default async function PartnerDashboardPage() {
           <p className="text-2xl font-bold text-navy-800">{partner._count.offers}</p>
         </Card>
         <Card>
-          <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Membres equipe</p>
+          <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Membres équipe</p>
           <p className="text-2xl font-bold text-navy-800">{partner._count.members}</p>
           <p className="text-xs text-gray-400 mt-1">3 max</p>
         </Card>
         <Card className="flex flex-col justify-between">
           <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Actions rapides</p>
           <Link href="/partenaire/offres" className="text-sm font-medium text-gold-600 hover:text-gold-700 transition-colors">
-            Gerer les offres
+            Gérer les offres
           </Link>
         </Card>
       </div>
 
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-base font-semibold text-navy-800">Dernieres offres</h2>
+          <h2 className="text-base font-semibold text-navy-800">Dernières offres</h2>
           <Link href="/partenaire/offres" className="text-sm text-gold-600 hover:text-gold-700 transition-colors">
-            Tout gerer
+            Tout gérer
           </Link>
         </div>
 
@@ -65,7 +65,7 @@ export default async function PartnerDashboardPage() {
             <p className="text-sm text-gray-400 text-center py-6">
               Aucune offre.{' '}
               <Link href="/partenaire/offres" className="text-gold-600 hover:underline">
-                Creer la premiere
+                Créer la première
               </Link>
             </p>
           </Card>
