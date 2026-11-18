@@ -51,11 +51,11 @@ async function getLatestPosts() {
 
 
 // Parcours d'adhesion : recto = etape, verso = emotion de l'avocat a ce moment-la
-const JOIN_STEPS: { n: string; title: string; emotion: AvocadoEmotion; mood: string; quote: string }[] = [
-  { n: '01', title: "S'inscrire gratuitement", emotion: 'curious', mood: 'Curieux', quote: 'Gratuit ? Vraiment ?' },
-  { n: '02', title: 'Prouver son inscription au barreau', emotion: 'focused', mood: 'Concentré', quote: 'Ma carte pro… elle était là !' },
-  { n: '03', title: 'Choisir sa cotisation', emotion: 'hesitant', mood: 'Hésitant', quote: 'Laquelle me ressemble ?' },
-  { n: '04', title: 'Accès aux offres et avantages', emotion: 'delighted', mood: 'Ravi', quote: 'Enfin en pause.' },
+const JOIN_STEPS: { n: string; title: string; emotion: AvocadoEmotion }[] = [
+  { n: '01', title: "S'inscrire gratuitement", emotion: 'curious' },
+  { n: '02', title: 'Prouver son inscription au barreau', emotion: 'focused' },
+  { n: '03', title: 'Choisir sa cotisation', emotion: 'hesitant' },
+  { n: '04', title: 'Accès aux offres et avantages', emotion: 'delighted' },
 ]
 
 export default async function HomePage() {
@@ -207,17 +207,11 @@ export default async function HomePage() {
                       <span className="text-lg font-bold text-gold-400 tabular-nums tracking-tight">{step.n}</span>
                     </div>
                     <p className="text-sm font-semibold text-navy-800 leading-snug">{step.title}</p>
-                    {/* Indice : la carte se retourne */}
-                    <svg aria-hidden="true" className="absolute bottom-3 right-3 w-4 h-4 text-navy-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M3 12a9 9 0 0 1 15.5-6.2L21 8" /><path d="M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16" /><path d="M3 21v-5h5" />
-                    </svg>
                   </div>
                 }
                 back={
-                  <div className="h-full flex flex-col items-center justify-center gap-2 px-4">
-                    <Avocado emotion={step.emotion} className="w-24 h-[125px]" />
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-400">{step.mood}</p>
-                    <p className="text-sm italic text-white/80 leading-snug">« {step.quote} »</p>
+                  <div className="h-full flex items-center justify-center">
+                    <Avocado emotion={step.emotion} className="w-32 h-[166px]" />
                   </div>
                 }
               />
@@ -235,12 +229,7 @@ export default async function HomePage() {
       {/* Offres en vedette */}
       <section className="bg-[#f7f6f3] py-14">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold text-navy-800">Dernieres offres</h2>
-            <Link href="/offres" className="text-sm text-gold-600 hover:text-gold-700 font-medium transition-colors shrink-0">
-              Tout voir &rarr;
-            </Link>
-          </div>
+          <h2 className="text-2xl font-bold text-navy-800 text-center mb-8">Dernières offres</h2>
           <OfferGrid offers={offers} emptyMessage="Aucune offre disponible pour le moment." />
           {offerCount > 4 && (
             <div className="mt-8 text-center">

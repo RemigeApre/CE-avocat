@@ -1,43 +1,21 @@
 'use client'
 
 import { useState, useEffect, type ReactNode } from 'react'
+import { UtensilsCrossed, Drama, Flower2, Plane, FerrisWheel, Gift } from 'lucide-react'
 import { FlipCard } from '@/components/ui/FlipCard'
 import { createPortal } from 'react-dom'
 import { LawyerGame } from '@/components/ui/LawyerGame'
 import { CATEGORY_PUNS, categoryHref, type CategoryPunSlug } from '@/lib/categoryPuns'
 
-// Icone par categorie ; libelles et slugs viennent de CATEGORY_PUNS
+// Icone par categorie (Lucide) ; libelles et slugs viennent de CATEGORY_PUNS
+const ICON_CLASS = 'w-9 h-9'
+const ICON_STROKE = 1.5
 const ICONS: Record<CategoryPunSlug, ReactNode> = {
-  'gastronomie': (
-    // Couteau + fourchette
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-9 h-9">
-      <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6h3v7"/>
-    </svg>
-  ),
-  'culture': (
-    // Masques de théâtre
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-9 h-9">
-      <path d="M2 10s3-3 3-8h14c0 5 3 8 3 8"/><path d="M6 17c.83.83 1.94 1 3 1s2.17-.17 3-1"/><path d="M13 17c.83.83 1.94 1 3 1s2.17-.17 3-1"/><path d="M2 10s0 8 7 8"/><path d="M22 10s0 8-7 8"/>
-    </svg>
-  ),
-  'bien-etre': (
-    // Lotus / fleur zen
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-9 h-9">
-      <path d="M12 22c0 0-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><path d="M12 22s-4-3-4-7c0-2.2 1.8-4 4-4s4 1.8 4 4c0 4-4 7-4 7z"/>
-    </svg>
-  ),
-  'voyages': (
-    // Avion
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-9 h-9">
-      <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21 4 19 2c-2-2-4-2-5.5-.5L10 5 1.8 6.2a.5.5 0 0 0-.3.8l1.6 1.6a1 1 0 0 0 .9.3l5-1 1.5 1.5-5.5 4.5a.5.5 0 0 0 0 .8l1.5 1.5a1 1 0 0 0 .9.3l4.5-1 1.5 1.5-1 5a1 1 0 0 0 .3.9l1.6 1.6a.5.5 0 0 0 .8-.3z"/>
-    </svg>
-  ),
-  'loisirs': (
-    // Ticket / billet
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-9 h-9">
-      <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/>
-    </svg>
-  ),
+  gastronomie: <UtensilsCrossed className={ICON_CLASS} strokeWidth={ICON_STROKE} aria-hidden="true" />,
+  culture: <Drama className={ICON_CLASS} strokeWidth={ICON_STROKE} aria-hidden="true" />,
+  'bien-etre': <Flower2 className={ICON_CLASS} strokeWidth={ICON_STROKE} aria-hidden="true" />,
+  voyages: <Plane className={ICON_CLASS} strokeWidth={ICON_STROKE} aria-hidden="true" />,
+  loisirs: <FerrisWheel className={ICON_CLASS} strokeWidth={ICON_STROKE} aria-hidden="true" />,
 }
 
 const CARDS = CATEGORY_PUNS.map(({ pun, slug }) => ({
@@ -141,8 +119,8 @@ export function HeroCards({ counts, total }: HeroCardsProps) {
           label="Surprise"
           front={
             <div className="h-full flex flex-col items-center justify-center gap-3">
-              <span className="text-4xl font-bold text-navy-200 leading-none select-none">?</span>
-              <span className="text-[11px] font-semibold text-navy-300 text-center leading-tight px-3">Surprise</span>
+              <Gift className={`${ICON_CLASS} text-navy-700`} strokeWidth={ICON_STROKE} aria-hidden="true" />
+              <span className="text-[11px] font-semibold text-navy-600 text-center leading-tight px-3">Surprise</span>
             </div>
           }
           back={
