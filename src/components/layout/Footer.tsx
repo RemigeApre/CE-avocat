@@ -12,6 +12,7 @@ const NAV_LINKS = [
 const EXTRA_LINKS = [
   { href: '/evolutions', label: 'Evolutions envisagees' },
   { href: '/qr-code', label: 'QR code du site' },
+  { href: '/le-geai', label: 'Le Geai, concepteur du site' },
 ]
 
 const LEGAL_LINKS = [
@@ -115,7 +116,7 @@ export function Footer() {
           </p>
           <p className="text-xs text-navy-500">
             Realise benevole par{' '}
-            <span className="text-navy-300 font-medium">Le Geai</span>
+            <Link href="/le-geai" className="text-navy-300 font-medium hover:text-white transition-colors">Le Geai</Link>
           </p>
         </div>
 
