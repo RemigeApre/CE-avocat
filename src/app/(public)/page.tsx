@@ -188,6 +188,16 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Mobile : les 6 cartes du hero en carrousel, sous la ligne partenaires (desktop : rail dans le hero) */}
+      <section className="md:hidden bg-white pt-8 pb-7 border-b border-[#e5e3de]" aria-label="Nos catégories">
+        <div className="flex items-center justify-center gap-3">
+          <div className="h-px w-8 bg-gold-400" />
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-navy-800">Nos catégories</p>
+          <div className="h-px w-8 bg-gold-400" />
+        </div>
+        <HeroCards counts={countsByCategory} variant="carousel" />
+      </section>
+
       {/* Nous rejoindre */}
       <section className="bg-white py-16 border-b border-[#e5e3de]">
         <div className="max-w-5xl mx-auto px-6 text-center">

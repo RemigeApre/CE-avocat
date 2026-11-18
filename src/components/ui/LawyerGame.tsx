@@ -12,6 +12,8 @@ const MOVE_SPEED = 3.8
 const PLAT_H = 14
 const FEUILLE_BREAK = 80
 const HEART_EVERY = 200   // metres entre chaque coeur
+const STEP_MS = 1000 / 60 // physique a pas fixe : meme vitesse a 60, 90, 120 Hz
+const TAP_MIN_MS = 160    // un appui bref deplace au moins ce temps (comme avant au clic)
 const NAVY = '#1b2d5a'
 const NAVY_LIGHT = '#2d4a7a'
 const GOLD = '#c9a84c'
@@ -203,7 +205,7 @@ function drawScoreHUD(ctx: CanvasRenderingContext2D, score: number, best: number
   ctx.fillText('📁 solide   🌿 fragile   ⚠ amende', 8, H - 6)
 }
 
-function drawGameOver(ctx: CanvasRenderingContext2D, score: number, best: number, isRecord: boolean) {
+function drawGameOver(ctx: CanvasRenderingContext2D, score: number, best: number, isRecord: boolean, touch: boolean) {
   // Fond sombre
   ctx.fillStyle = 'rgba(10,15,30,0.72)'
   ctx.fillRect(0, 0, W, H)
@@ -242,12 +244,19 @@ function drawGameOver(ctx: CanvasRenderingContext2D, score: number, best: number
 
   // CTA
   ctx.fillStyle = NAVY; ctx.font = 'bold 12px system-ui'; ctx.textAlign = 'center'
-  ctx.fillText('[ Espace ou clic pour rejouer ]', W / 2, by + 174)
+  ctx.fillText(touch ? '[ Touchez pour rejouer ]' : '[ Espace ou clic pour rejouer ]', W / 2, by + 174)
 }
 
 export function LawyerGame() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const keys = useRef({ left: false, right: false })
+  const keys = useRef({ left: false, right: false })      // clavier
+  const ptrKeys = useRef({ left: false, right: false })   // souris / doigts
+  const pointers = useRef(new Map<number, { side: 'left' | 'right'; at: number }>())
+  const touchRef = useRef(false)  // ecran tactile : textes adaptes
+  const dprRef = useRef(1)
+  const lastTs = useRef<number | null>(null)
+  const acc = useRef(0)
+  const deadAt = useRef(0)
 
   const st = useRef({
     phase: 'idle' as 'idle' | 'playing' | 'dead',
@@ -266,15 +275,28 @@ export function LawyerGame() {
   })
 
   useEffect(() => {
+    touchRef.current = window.matchMedia('(pointer: coarse)').matches
+    const canvas = canvasRef.current
+    if (canvas) {
+      const dpr = Math.min(window.devicePixelRatio || 1, 3)
+      dprRef.current = dpr
+      canvas.width = W * dpr
+      canvas.height = H * dpr
+    }
+  }, [])
+
+  useEffect(() => {
     try {
       const saved = localStorage.getItem('lawyergame_best')
       if (saved) st.current.bestScore = parseInt(saved, 10)
     } catch { /* SSR ou privacy */ }
   }, [])
 
-  const loop = useCallback(() => {
+  // Une iteration de jeu (mise a jour + dessin). La planification est dans `tick`.
+  const step = useCallback(() => {
     const canvas = canvasRef.current; if (!canvas) return
     const ctx = canvas.getContext('2d')!
+    ctx.setTransform(dprRef.current, 0, 0, dprRef.current, 0, 0)
     const s = st.current
     const p = s.player
 
@@ -301,7 +323,7 @@ export function LawyerGame() {
       ctx.fillText('Le Maître en cavale', W / 2, H / 2 - 50)
       ctx.fillStyle = '#6b7280'; ctx.font = '11px system-ui'
       ctx.fillText('Sautez de plateforme en plateforme', W / 2, H / 2 - 25)
-      ctx.fillText('← → ou clic gauche/droit', W / 2, H / 2 - 5)
+      ctx.fillText(touchRef.current ? 'Touchez à gauche ou à droite' : '← → ou clic gauche/droit', W / 2, H / 2 - 5)
       ctx.fillStyle = RED; ctx.font = '10px system-ui'
       ctx.fillText('⚠ Évitez les amendes rouges !', W / 2, H / 2 + 18)
       if (s.bestScore > 0) {
@@ -309,9 +331,7 @@ export function LawyerGame() {
         ctx.fillText('record : ' + s.bestScore + 'm', W / 2, H / 2 + 38)
       }
       ctx.fillStyle = NAVY; ctx.font = 'bold 12px system-ui'
-      ctx.fillText('[ Clic ou Espace pour démarrer ]', W / 2, H / 2 + 58)
-
-      s.animId = requestAnimationFrame(loop)
+      ctx.fillText(touchRef.current ? '[ Touchez pour démarrer ]' : '[ Clic ou Espace pour démarrer ]', W / 2, H / 2 + 58)
       return
     }
 
@@ -321,9 +341,11 @@ export function LawyerGame() {
       if (p.hurt > 0) p.hurt--
       if (p.stun > 0) p.stun--
 
+      const left = keys.current.left || ptrKeys.current.left
+      const right = keys.current.right || ptrKeys.current.right
       if (!p.stun) {
-        if (keys.current.left) { p.vx = -MOVE_SPEED; p.face = -1 }
-        else if (keys.current.right) { p.vx = MOVE_SPEED; p.face = 1 }
+        if (left) { p.vx = -MOVE_SPEED; p.face = -1 }
+        else if (right) { p.vx = MOVE_SPEED; p.face = 1 }
         else p.vx *= 0.72
       } else { p.vx *= 0.72 }
 
@@ -397,6 +419,7 @@ export function LawyerGame() {
           s.isRecord = false
         }
         s.phase = 'dead'
+        deadAt.current = performance.now()
       }
     }
 
@@ -414,12 +437,30 @@ export function LawyerGame() {
     drawScoreHUD(ctx, s.score, s.bestScore, p.hp)
 
     if (s.phase === 'dead') {
-      drawGameOver(ctx, s.score, s.bestScore, s.isRecord)
-      return
+      drawGameOver(ctx, s.score, s.bestScore, s.isRecord, touchRef.current)
     }
-
-    s.animId = requestAnimationFrame(loop)
   }, [])
+
+  // Boucle d'animation a pas fixe : la vitesse du jeu ne depend plus de l'ecran (60/90/120 Hz)
+  const tick = useCallback((ts: number) => {
+    const s = st.current
+    if (lastTs.current === null) { lastTs.current = ts; acc.current = STEP_MS }
+    acc.current += Math.min(ts - lastTs.current, 100) // onglet en arriere-plan : pas de rattrapage geant
+    lastTs.current = ts
+    while (acc.current >= STEP_MS) {
+      step()
+      acc.current -= STEP_MS
+      if (s.phase === 'dead') return // ecran de fin fige, plus de planification
+    }
+    s.animId = requestAnimationFrame(tick)
+  }, [step])
+
+  // Une seule boucle a la fois (corrige le double rythme au demarrage depuis l'ecran d'accueil)
+  const schedule = useCallback(() => {
+    cancelAnimationFrame(st.current.animId)
+    lastTs.current = null
+    st.current.animId = requestAnimationFrame(tick)
+  }, [tick])
 
   const startOrRestart = useCallback(() => {
     const s = st.current
@@ -432,20 +473,21 @@ export function LawyerGame() {
       s.lastPlatWasAmende = false
       s.nextHeartScore = HEART_EVERY
       s.phase = 'playing'
-      s.animId = requestAnimationFrame(loop)
+      schedule()
     }
-  }, [loop])
+  }, [schedule])
 
   useEffect(() => {
-    st.current.animId = requestAnimationFrame(loop)
-    return () => cancelAnimationFrame(st.current.animId)
-  }, [loop])
+    schedule()
+    const s = st.current
+    return () => cancelAnimationFrame(s.animId)
+  }, [schedule])
 
   useEffect(() => {
     const dn = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft' || e.key === 'a') keys.current.left = true
       if (e.key === 'ArrowRight' || e.key === 'd') keys.current.right = true
-      if (e.code === 'Space') { e.preventDefault(); startOrRestart() }
+      if (e.code === 'Space') { e.preventDefault(); if (st.current.phase !== 'playing') startOrRestart() }
     }
     const up = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft' || e.key === 'a') keys.current.left = false
@@ -455,20 +497,48 @@ export function LawyerGame() {
     return () => { window.removeEventListener('keydown', dn); window.removeEventListener('keyup', up) }
   }, [startOrRestart])
 
-  const handleClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+  // Souris et doigts : moitie gauche / droite, appui maintenu, plusieurs doigts geres
+  const syncPointers = () => {
+    let left = false, right = false
+    for (const { side } of pointers.current.values()) { if (side === 'left') left = true; else right = true }
+    ptrKeys.current = { left, right }
+  }
+
+  const handlePointerDown = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
+    e.preventDefault()
     const s = st.current
-    if (s.phase !== 'playing') { startOrRestart(); return }
-    const rect = (e.target as HTMLCanvasElement).getBoundingClientRect()
-    const cx = e.clientX - rect.left
-    if (cx < rect.width / 2) { keys.current.left = true; setTimeout(() => { keys.current.left = false }, 160) }
-    else { keys.current.right = true; setTimeout(() => { keys.current.right = false }, 160) }
+    if (s.phase !== 'playing') {
+      // Evite de relancer par accident avec le doigt encore pose au moment de la chute
+      if (s.phase === 'dead' && performance.now() - deadAt.current < 600) return
+      startOrRestart()
+      return
+    }
+    e.currentTarget.setPointerCapture(e.pointerId)
+    const rect = e.currentTarget.getBoundingClientRect()
+    const side = e.clientX - rect.left < rect.width / 2 ? 'left' : 'right'
+    pointers.current.set(e.pointerId, { side, at: performance.now() })
+    syncPointers()
   }, [startOrRestart])
+
+  const handlePointerEnd = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
+    const ptr = pointers.current.get(e.pointerId)
+    if (!ptr) return
+    const release = () => { pointers.current.delete(e.pointerId); syncPointers() }
+    const held = performance.now() - ptr.at
+    if (held < TAP_MIN_MS) setTimeout(release, TAP_MIN_MS - held)
+    else release()
+  }, [])
 
   return (
     <canvas
-      ref={canvasRef} width={W} height={H} onClick={handleClick}
-      className="cursor-pointer w-full rounded-lg border border-[#e5e3de]"
+      ref={canvasRef} width={W} height={H}
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerEnd}
+      onPointerCancel={handlePointerEnd}
+      onContextMenu={(e) => e.preventDefault()}
+      className="cursor-pointer w-full h-auto rounded-lg border border-[#e5e3de] touch-none select-none [-webkit-touch-callout:none] [-webkit-tap-highlight-color:transparent]"
       style={{ maxWidth: W }}
+      aria-label="Mini-jeu Le Maître en cavale"
     />
   )
 }

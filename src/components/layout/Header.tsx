@@ -74,7 +74,7 @@ export function Header() {
               aria-label="Ouvrir le menu"
               aria-expanded={mobileMenuOpen}
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
+              <svg className="w-6 h-6" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
                 <path d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
@@ -189,7 +189,7 @@ export function Header() {
               className="p-1 text-white/70 hover:text-white transition-colors"
               aria-label="Fermer le menu"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
+              <svg className="w-6 h-6" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
                 <path d="M6 6l12 12M6 18L18 6" />
               </svg>
             </button>
@@ -263,7 +263,7 @@ export function Header() {
                   ].join(' ')}
                 >
                   {item.label}
-                  <svg className="w-4 h-4 text-white/30" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                  <svg className="w-4 h-4 shrink-0 text-white/30" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M9 18l6-6-6-6" />
                   </svg>
                 </Link>
@@ -279,7 +279,7 @@ export function Header() {
                 ].join(' ')}
               >
                 Administration
-                <svg className="w-4 h-4 text-white/30" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                <svg className="w-4 h-4 shrink-0 text-white/30" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M9 18l6-6-6-6" />
                 </svg>
               </Link>
@@ -318,7 +318,7 @@ export function Header() {
                   className="flex items-center justify-between px-4 py-3 rounded-md text-sm text-white/70 hover:bg-navy-700 hover:text-white transition-colors"
                 >
                   Mon espace
-                  <svg className="w-4 h-4 text-white/30" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
+                  <svg className="w-4 h-4 shrink-0 text-white/30" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
                 </Link>
                 {(role === 'MEMBER' || role === 'ADMIN') && (
                   <Link
@@ -327,7 +327,7 @@ export function Header() {
                     className="flex items-center justify-between px-4 py-3 rounded-md text-sm text-white/70 hover:bg-navy-700 hover:text-white transition-colors"
                   >
                     Mes favoris
-                    <svg className="w-4 h-4 text-white/30" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
+                    <svg className="w-4 h-4 shrink-0 text-white/30" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
                   </Link>
                 )}
                 {(role === 'MEMBER' || role === 'ADMIN') && (
@@ -337,7 +337,7 @@ export function Header() {
                     className="flex items-center justify-between px-4 py-3 rounded-md text-sm text-white/70 hover:bg-navy-700 hover:text-white transition-colors"
                   >
                     Mes commandes
-                    <svg className="w-4 h-4 text-white/30" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
+                    <svg className="w-4 h-4 shrink-0 text-white/30" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
                   </Link>
                 )}
                 <button
