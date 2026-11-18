@@ -197,6 +197,22 @@ export function Header() {
 
           {/* Nav principale */}
           <nav className="flex flex-col px-6 pt-6 gap-1">
+            {/* Accueil */}
+            <Link
+              href="/"
+              onClick={closeMobileMenu}
+              aria-current={pathname === '/' ? 'page' : undefined}
+              className={[
+                'flex items-center justify-between px-4 py-3.5 rounded-md text-base font-medium transition-colors',
+                pathname === '/' ? 'bg-navy-700 text-white' : 'text-white/70 hover:bg-navy-700 hover:text-white',
+              ].join(' ')}
+            >
+              Accueil
+              <svg className="w-4 h-4 shrink-0 text-white/30" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 18l6-6-6-6" />
+              </svg>
+            </Link>
+
             {/* Offres : sous-menu depliable (tout + chaque categorie) */}
             <div>
               <button
