@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/db'
-import { Button, CountUp } from '@/components/ui'
+import { Button, CountUp, FlipCard, Avocado, type AvocadoEmotion } from '@/components/ui'
 import { HeroCards } from '@/components/hero/HeroCards'
 import { OfferGrid } from '@/components/offers/OfferGrid'
 import { cn } from '@/lib/utils'
@@ -49,6 +49,14 @@ async function getLatestPosts() {
   })
 }
 
+
+// Parcours d'adhesion : recto = etape, verso = emotion de l'avocat a ce moment-la
+const JOIN_STEPS: { n: string; title: string; emotion: AvocadoEmotion; mood: string; quote: string }[] = [
+  { n: '01', title: "S'inscrire gratuitement", emotion: 'curious', mood: 'Curieux', quote: 'Gratuit ? Vraiment ?' },
+  { n: '02', title: 'Prouver son inscription au barreau', emotion: 'focused', mood: 'Concentré', quote: 'Ma carte pro… elle était là !' },
+  { n: '03', title: 'Choisir sa cotisation', emotion: 'hesitant', mood: 'Hésitant', quote: 'Laquelle me ressemble ?' },
+  { n: '04', title: 'Accès aux offres et avantages', emotion: 'delighted', mood: 'Ravi', quote: 'Enfin en pause.' },
+]
 
 export default async function HomePage() {
   const [offers, offerCount, countsByCategory, partners, posts] = await Promise.all([
@@ -184,22 +192,35 @@ export default async function HomePage() {
         <div className="max-w-5xl mx-auto px-6 text-center">
           <h2 className="text-2xl font-bold text-navy-800 mb-12">Nous rejoindre</h2>
 
+          {/* Etapes : recto = etape, verso = l'avocat dans l'emotion du moment (clic pour retourner) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[
-              { n: '01', title: "S'inscrire gratuitement" },
-              { n: '02', title: "Prouver son inscription au barreau" },
-              { n: '03', title: "Choisir sa cotisation" },
-              { n: '04', title: "Acces aux offres et avantages" },
-            ].map((step) => (
-              <div
+            {JOIN_STEPS.map((step) => (
+              <FlipCard
                 key={step.n}
-                className="flex flex-col items-center gap-4 bg-[#f7f6f3] rounded-sm px-6 py-8 border border-[#e5e3de]"
-              >
-                <div className="w-14 h-14 rounded-sm bg-navy-800 flex items-center justify-center shrink-0">
-                  <span className="text-lg font-bold text-gold-400 tabular-nums tracking-tight">{step.n}</span>
-                </div>
-                <p className="text-sm font-semibold text-navy-800 leading-snug">{step.title}</p>
-              </div>
+                label={`Étape ${step.n} : ${step.title}`}
+                className="h-64"
+                frontClassName="rounded-sm bg-[#f7f6f3] border border-[#e5e3de] transition-colors hover:border-navy-200"
+                backClassName="rounded-sm bg-navy-800 border border-navy-700"
+                front={
+                  <div className="h-full flex flex-col items-center justify-center gap-4 px-6">
+                    <div className="w-14 h-14 rounded-sm bg-navy-800 flex items-center justify-center shrink-0">
+                      <span className="text-lg font-bold text-gold-400 tabular-nums tracking-tight">{step.n}</span>
+                    </div>
+                    <p className="text-sm font-semibold text-navy-800 leading-snug">{step.title}</p>
+                    {/* Indice : la carte se retourne */}
+                    <svg aria-hidden="true" className="absolute bottom-3 right-3 w-4 h-4 text-navy-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M3 12a9 9 0 0 1 15.5-6.2L21 8" /><path d="M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16" /><path d="M3 21v-5h5" />
+                    </svg>
+                  </div>
+                }
+                back={
+                  <div className="h-full flex flex-col items-center justify-center gap-2 px-4">
+                    <Avocado emotion={step.emotion} className="w-24 h-[125px]" />
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-400">{step.mood}</p>
+                    <p className="text-sm italic text-white/80 leading-snug">« {step.quote} »</p>
+                  </div>
+                }
+              />
             ))}
           </div>
 

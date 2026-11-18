@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, type ReactNode } from 'react'
+import { FlipCard } from '@/components/ui/FlipCard'
 import { createPortal } from 'react-dom'
 import { LawyerGame } from '@/components/ui/LawyerGame'
 import { CATEGORY_PUNS, categoryHref, type CategoryPunSlug } from '@/lib/categoryPuns'
@@ -48,64 +49,17 @@ const CARDS = CATEGORY_PUNS.map(({ pun, slug }) => ({
 
 const ROTATIONS = ['-2deg', '1.5deg', '-1.5deg', '2deg', '-1deg', '1.5deg']
 
-const CARD_SHADOW = '0 6px 24px rgba(27,45,90,0.14), 0 2px 6px rgba(27,45,90,0.08)'
-const FACE = 'absolute inset-0 backface-hidden rounded-[4px] border flex flex-col items-center justify-center'
+// Apparence commune des deux faces d'une carte du hero
+const FACE = 'rounded-[4px] border shadow-[0_6px_24px_rgba(27,45,90,0.14),0_2px_6px_rgba(27,45,90,0.08)]'
+const CARD_PROPS = {
+  className: 'w-[108px] h-[152px] transition-transform duration-200 hover:scale-105',
+  frontClassName: `${FACE} bg-white border-navy-100`,
+  backClassName: `${FACE} bg-navy-800 border-navy-700`,
+}
 
 const plural = (n: number) => `offre${n > 1 ? 's' : ''}`
 
-interface FlipCardProps {
-  rotation: string
-  label: string
-  flipped: boolean
-  onToggle: () => void
-  front: ReactNode
-  /** Contenu du verso ; `action` est un element interactif pose au-dessus de la zone de retournement */
-  back: ReactNode
-  action: ReactNode
-}
-
-/**
- * Carte qui se retourne au clic (recto <-> verso).
- * Chaque face a son propre bouton plein cadre ; la face cachee est `inert`
- * pour ne pas etre atteignable au clavier ni par les lecteurs d'ecran.
- */
-function FlipCard({ rotation, label, flipped, onToggle, front, back, action }: FlipCardProps) {
-  return (
-    <div
-      className="w-[108px] h-[152px] perspective-800 transition-transform duration-200 hover:scale-105"
-      style={{ rotate: rotation }}
-    >
-      <div
-        className={`relative h-full w-full preserve-3d transition-transform duration-500 ease-[cubic-bezier(.2,.7,.3,1)] motion-reduce:transition-none ${flipped ? 'rotate-y-180' : ''}`}
-      >
-        {/* Recto */}
-        <div className={`${FACE} bg-white border-navy-100`} style={{ boxShadow: CARD_SHADOW }} inert={flipped}>
-          <button
-            type="button"
-            onClick={onToggle}
-            aria-label={`${label} : voir le nombre d'offres`}
-            className="absolute inset-0 rounded-[4px] cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-500 focus-visible:outline-offset-2"
-          />
-          <div className="pointer-events-none flex flex-col items-center gap-3">{front}</div>
-        </div>
-
-        {/* Verso */}
-        <div className={`${FACE} rotate-y-180 bg-navy-800 border-navy-700`} style={{ boxShadow: CARD_SHADOW }} inert={!flipped}>
-          <button
-            type="button"
-            onClick={onToggle}
-            aria-label={`${label} : revenir au recto`}
-            className="absolute inset-0 rounded-[4px] cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-500 focus-visible:outline-offset-2"
-          />
-          <div className="pointer-events-none flex flex-col items-center px-2 text-center">{back}</div>
-          <div className="relative mt-3">{action}</div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-const ACTION_CLASS = 'inline-flex items-center gap-1 rounded-sm px-2.5 py-1 text-[11px] font-semibold text-navy-900 bg-gold-500 hover:bg-gold-400 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2'
+const ACTION_CLASS = 'pointer-events-auto mt-3 inline-flex items-center gap-1 rounded-sm px-2.5 py-1 text-[11px] font-semibold text-navy-900 bg-gold-500 hover:bg-gold-400 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2'
 
 interface HeroCardsProps {
   /** Nombre d'offres actives par slug de categorie */
@@ -117,9 +71,6 @@ interface HeroCardsProps {
 export function HeroCards({ counts, total }: HeroCardsProps) {
   const [gameOpen, setGameOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
-  // Cartes retournees, par cle (slug ou 'surprise') ; chacune se retourne independamment
-  const [flipped, setFlipped] = useState<Record<string, boolean>>({})
-  const toggle = (key: string) => setFlipped((f) => ({ ...f, [key]: !f[key] }))
 
   useEffect(() => { setMounted(true) }, [])
 
@@ -162,26 +113,22 @@ export function HeroCards({ counts, total }: HeroCardsProps) {
           return (
             <FlipCard
               key={card.slug}
-              rotation={ROTATIONS[i]}
+              {...CARD_PROPS}
+              style={{ rotate: ROTATIONS[i] }}
               label={card.label}
-              flipped={!!flipped[card.slug]}
-              onToggle={() => toggle(card.slug)}
+              flipLabel={`${card.label} : voir le nombre d'offres`}
               front={
-                <>
+                <div className="h-full flex flex-col items-center justify-center gap-3">
                   <div className="text-navy-700">{card.icon}</div>
                   <span className="text-[11px] font-semibold text-navy-600 text-center leading-tight px-3">{card.label}</span>
-                </>
+                </div>
               }
               back={
-                <>
+                <div className="h-full flex flex-col items-center justify-center px-2 text-center">
                   <span className="text-3xl font-bold text-gold-400 leading-none tabular-nums">{count}</span>
                   <span className="mt-1 text-[11px] text-white/70">{plural(count)}</span>
-                </>
-              }
-              action={
-                <a href={card.href} className={ACTION_CLASS}>
-                  Voir
-                </a>
+                  <a href={card.href} className={ACTION_CLASS}>Voir</a>
+                </div>
               }
             />
           )
@@ -189,26 +136,23 @@ export function HeroCards({ counts, total }: HeroCardsProps) {
 
         {/* Carte mystère : verso = total des offres + acces au mini-jeu */}
         <FlipCard
-          rotation={ROTATIONS[5]}
+          {...CARD_PROPS}
+          style={{ rotate: ROTATIONS[5] }}
           label="Surprise"
-          flipped={!!flipped.surprise}
-          onToggle={() => toggle('surprise')}
           front={
-            <>
+            <div className="h-full flex flex-col items-center justify-center gap-3">
               <span className="text-4xl font-bold text-navy-200 leading-none select-none">?</span>
               <span className="text-[11px] font-semibold text-navy-300 text-center leading-tight px-3">Surprise</span>
-            </>
+            </div>
           }
           back={
-            <>
+            <div className="h-full flex flex-col items-center justify-center px-2 text-center">
               <span className="text-3xl font-bold text-gold-400 leading-none tabular-nums">{total}</span>
               <span className="mt-1 text-[11px] text-white/70">{plural(total)} au total</span>
-            </>
-          }
-          action={
-            <button type="button" onClick={() => setGameOpen(true)} className={ACTION_CLASS}>
-              Jouer <span aria-hidden="true">▶</span>
-            </button>
+              <button type="button" onClick={() => setGameOpen(true)} className={ACTION_CLASS}>
+                Jouer <span aria-hidden="true">▶</span>
+              </button>
+            </div>
           }
         />
       </div>
