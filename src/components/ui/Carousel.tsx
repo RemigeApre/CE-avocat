@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 
 interface CarouselProps {
@@ -18,15 +18,25 @@ interface CarouselProps {
   itemClassName?: string
   /** Classes ajoutees aux pastilles (ex. "md:hidden") */
   dotsClassName?: string
+  /** Element centre au chargement (ex. l'offre recommandee) ; sans effet quand le conteneur est en grille */
+  initialIndex?: number
 }
 
 /**
  * Carrousel balayable au doigt : defilement natif + scroll-snap (fluide, inertie du telephone),
  * element actif centre, fondu sur les bords, pastilles de position cliquables.
  */
-export function Carousel({ children, itemWidth, label, className, itemClassName, dotsClassName }: CarouselProps) {
+export function Carousel({ children, itemWidth, label, className, itemClassName, dotsClassName, initialIndex = 0 }: CarouselProps) {
   const ref = useRef<HTMLDivElement>(null)
-  const [active, setActive] = useState(0)
+  const [active, setActive] = useState(initialIndex)
+
+  // Positionnement initial, sans animation (et sans toucher au defilement vertical de la page)
+  useEffect(() => {
+    const el = ref.current
+    const child = el?.children[initialIndex] as HTMLElement | undefined
+    if (!el || !child || el.scrollWidth <= el.clientWidth) return
+    el.scrollLeft = child.offsetLeft - (el.clientWidth - child.offsetWidth) / 2
+  }, [initialIndex])
 
   // Element actif = celui dont le centre est le plus proche du centre de la zone
   function onScroll() {
