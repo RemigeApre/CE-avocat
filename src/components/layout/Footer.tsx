@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { CATEGORY_PUNS, categoryHref } from '@/lib/categoryPuns'
 
 const NAV_LINKS = [
   { href: '/offres', label: 'Offres' },
@@ -26,10 +27,10 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-10 lg:px-16 pt-14 pb-10">
 
         {/* Contenu principal */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12 mb-12">
 
           {/* Marque */}
-          <div className="md:col-span-1">
+          <div>
             <Link href="/" className="inline-flex mb-5">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/logo complet.jpg" alt="Maître en Pause" className="h-10 w-auto object-contain rounded-sm" />
@@ -53,6 +54,28 @@ export function Footer() {
                     className="text-sm text-navy-300 hover:text-white transition-colors"
                   >
                     {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Categories : jeu de mot -> categorie reelle */}
+          <div>
+            <p className="text-xs font-semibold text-gold-400 uppercase tracking-[0.15em] mb-5">
+              Nos catégories
+            </p>
+            <ul className="space-y-3">
+              {CATEGORY_PUNS.map(({ pun, category, slug }) => (
+                <li key={slug}>
+                  <Link
+                    href={categoryHref(slug)}
+                    className="group inline-flex flex-wrap items-baseline gap-x-1.5 text-sm"
+                  >
+                    <span className="text-navy-300 group-hover:text-white transition-colors">{pun}</span>
+                    <span className="text-xs text-navy-500 group-hover:text-gold-400 transition-colors">
+                      <span aria-hidden="true">· </span>{category}
+                    </span>
                   </Link>
                 </li>
               ))}

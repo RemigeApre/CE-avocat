@@ -4,6 +4,7 @@ import { Button, CountUp } from '@/components/ui'
 import { HeroCards } from '@/components/hero/HeroCards'
 import { OfferGrid } from '@/components/offers/OfferGrid'
 import { cn } from '@/lib/utils'
+import { CATEGORY_PUNS } from '@/lib/categoryPuns'
 import { formatDate } from '@/lib/utils'
 import type { OfferWithRelations } from '@/types'
 
@@ -57,7 +58,7 @@ export default async function HomePage() {
     getLatestPosts(),
   ])
 
-  const HIGHLIGHTS = ['Flagrant délice', 'Culture', 'Abandon de poste', 'Délit de fuite', 'Mise en liberté']
+  const HIGHLIGHTS = CATEGORY_PUNS.map((c) => c.pun)
 
   const marqueeItems = partners.length > 0
     ? partners

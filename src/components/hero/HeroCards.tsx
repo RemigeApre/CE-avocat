@@ -1,66 +1,50 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { LawyerGame } from '@/components/ui/LawyerGame'
+import { CATEGORY_PUNS, categoryHref, type CategoryPunSlug } from '@/lib/categoryPuns'
 
-const CARDS = [
-  {
-    label: 'Flagrant délice',
-    slug: 'gastronomie',
-    href: '/offres?categorie=gastronomie',
-    icon: (
-      // Couteau + fourchette
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-9 h-9">
-        <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6h3v7"/>
-      </svg>
-    ),
-  },
-  {
-    label: 'Culture',
-    slug: 'culture',
-    href: '/offres?categorie=culture',
-    icon: (
-      // Masques de théâtre
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-9 h-9">
-        <path d="M2 10s3-3 3-8h14c0 5 3 8 3 8"/><path d="M6 17c.83.83 1.94 1 3 1s2.17-.17 3-1"/><path d="M13 17c.83.83 1.94 1 3 1s2.17-.17 3-1"/><path d="M2 10s0 8 7 8"/><path d="M22 10s0 8-7 8"/>
-      </svg>
-    ),
-  },
-  {
-    label: 'Abandon de poste',
-    slug: 'bien-etre',
-    href: '/offres?categorie=bien-etre',
-    icon: (
-      // Lotus / fleur zen
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-9 h-9">
-        <path d="M12 22c0 0-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><path d="M12 22s-4-3-4-7c0-2.2 1.8-4 4-4s4 1.8 4 4c0 4-4 7-4 7z"/>
-      </svg>
-    ),
-  },
-  {
-    label: 'Délit de fuite',
-    slug: 'voyages',
-    href: '/offres?categorie=voyages',
-    icon: (
-      // Avion
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-9 h-9">
-        <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21 4 19 2c-2-2-4-2-5.5-.5L10 5 1.8 6.2a.5.5 0 0 0-.3.8l1.6 1.6a1 1 0 0 0 .9.3l5-1 1.5 1.5-5.5 4.5a.5.5 0 0 0 0 .8l1.5 1.5a1 1 0 0 0 .9.3l4.5-1 1.5 1.5-1 5a1 1 0 0 0 .3.9l1.6 1.6a.5.5 0 0 0 .8-.3z"/>
-      </svg>
-    ),
-  },
-  {
-    label: 'Mise en liberté',
-    slug: 'loisirs',
-    href: '/offres?categorie=loisirs',
-    icon: (
-      // Ticket / billet
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-9 h-9">
-        <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/>
-      </svg>
-    ),
-  },
-]
+// Icone par categorie ; libelles et slugs viennent de CATEGORY_PUNS
+const ICONS: Record<CategoryPunSlug, ReactNode> = {
+  'gastronomie': (
+    // Couteau + fourchette
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-9 h-9">
+      <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6h3v7"/>
+    </svg>
+  ),
+  'culture': (
+    // Masques de théâtre
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-9 h-9">
+      <path d="M2 10s3-3 3-8h14c0 5 3 8 3 8"/><path d="M6 17c.83.83 1.94 1 3 1s2.17-.17 3-1"/><path d="M13 17c.83.83 1.94 1 3 1s2.17-.17 3-1"/><path d="M2 10s0 8 7 8"/><path d="M22 10s0 8-7 8"/>
+    </svg>
+  ),
+  'bien-etre': (
+    // Lotus / fleur zen
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-9 h-9">
+      <path d="M12 22c0 0-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><path d="M12 22s-4-3-4-7c0-2.2 1.8-4 4-4s4 1.8 4 4c0 4-4 7-4 7z"/>
+    </svg>
+  ),
+  'voyages': (
+    // Avion
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-9 h-9">
+      <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21 4 19 2c-2-2-4-2-5.5-.5L10 5 1.8 6.2a.5.5 0 0 0-.3.8l1.6 1.6a1 1 0 0 0 .9.3l5-1 1.5 1.5-5.5 4.5a.5.5 0 0 0 0 .8l1.5 1.5a1 1 0 0 0 .9.3l4.5-1 1.5 1.5-1 5a1 1 0 0 0 .3.9l1.6 1.6a.5.5 0 0 0 .8-.3z"/>
+    </svg>
+  ),
+  'loisirs': (
+    // Ticket / billet
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-9 h-9">
+      <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/>
+    </svg>
+  ),
+}
+
+const CARDS = CATEGORY_PUNS.map(({ pun, slug }) => ({
+  label: pun,
+  slug,
+  href: categoryHref(slug),
+  icon: ICONS[slug],
+}))
 
 const ROTATIONS = ['-2deg', '1.5deg', '-1.5deg', '2deg', '-1deg', '1.5deg']
 
