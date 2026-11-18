@@ -5,7 +5,7 @@ import { UtensilsCrossed, Drama, Flower2, Plane, FerrisWheel, Gift } from 'lucid
 import { FlipCard } from '@/components/ui/FlipCard'
 import { Carousel } from '@/components/ui/Carousel'
 import { createPortal } from 'react-dom'
-import { LawyerGame } from '@/components/ui/LawyerGame'
+import { GamePanel } from '@/components/game/GamePanel'
 import { CATEGORY_PUNS, categoryHref, type CategoryPunSlug } from '@/lib/categoryPuns'
 
 // Icone par categorie (Lucide) ; libelles et slugs viennent de CATEGORY_PUNS
@@ -96,10 +96,7 @@ export function HeroCards({ counts, variant = 'rail' }: HeroCardsProps) {
             </svg>
           </button>
         </div>
-        <LawyerGame />
-        {/* Consigne selon l'appareil : souris/clavier ou ecran tactile */}
-        <p className="text-xs text-gray-400 text-center mt-3 [@media(pointer:coarse)]:hidden">← → ou clic gauche / droit · P pour pause · sautez sur l’huissier !</p>
-        <p className="text-xs text-gray-400 text-center mt-3 hidden [@media(pointer:coarse)]:block">Gardez le doigt à gauche ou à droite · sautez sur l’huissier !</p>
+        <GamePanel />
       </div>
     </div>
   )

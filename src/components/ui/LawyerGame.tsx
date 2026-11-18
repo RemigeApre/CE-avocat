@@ -497,7 +497,14 @@ const freshState = () => ({
   nextHeartScore: HEART_EVERY,
 })
 
-export function LawyerGame() {
+interface LawyerGameProps {
+  /** Record deja connu (compte de l'utilisateur) : affiche comme record si superieur au record local */
+  initialBest?: number
+  /** Appele a chaque fin de partie avec le score (metres) */
+  onGameOver?: (score: number) => void
+}
+
+export function LawyerGame({ initialBest = 0, onGameOver }: LawyerGameProps = {}) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const keys = useRef({ left: false, right: false })      // clavier
   const ptrKeys = useRef({ left: false, right: false })   // souris / doigts
@@ -511,6 +518,8 @@ export function LawyerGame() {
   const [paused, setPaused] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
   const fsRef = useRef(false)
+  const onGameOverRef = useRef(onGameOver)
+  useEffect(() => { onGameOverRef.current = onGameOver }, [onGameOver])
 
 
   const st = useRef({
@@ -555,9 +564,14 @@ export function LawyerGame() {
   useEffect(() => {
     try {
       const saved = localStorage.getItem('lawyergame_best')
-      if (saved) st.current.bestScore = parseInt(saved, 10)
+      if (saved) st.current.bestScore = Math.max(st.current.bestScore, parseInt(saved, 10) || 0)
     } catch { /* SSR ou privacy */ }
   }, [])
+
+  // Record du compte (connecte) : prend le dessus s'il est meilleur que le record de ce navigateur
+  useEffect(() => {
+    if (initialBest > st.current.bestScore) st.current.bestScore = initialBest
+  }, [initialBest])
 
   // Une iteration de jeu (mise a jour + dessin). La planification est dans `tick`.
   const step = useCallback(() => {
@@ -797,6 +811,7 @@ export function LawyerGame() {
         }
         s.phase = 'dead'
         deadAt.current = performance.now()
+        onGameOverRef.current?.(s.score)
       }
     }
 
