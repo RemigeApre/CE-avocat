@@ -3,10 +3,10 @@ import { prisma } from '@/lib/db'
 import { Button, CountUp, FlipCard, Avocado, Carousel, type AvocadoEmotion } from '@/components/ui'
 import { HeroCards } from '@/components/hero/HeroCards'
 import { VirtuousCircle } from '@/components/home/VirtuousCircle'
-import { OfferGrid } from '@/components/offers/OfferGrid'
+import { OfferCard } from '@/components/offers/OfferCard'
+import { PostCard } from '@/components/posts/PostCard'
 import { cn } from '@/lib/utils'
 import { CATEGORY_PUNS } from '@/lib/categoryPuns'
-import { formatDate } from '@/lib/utils'
 import type { OfferWithRelations } from '@/types'
 
 async function getFeaturedOffers(): Promise<OfferWithRelations[]> {
@@ -246,15 +246,29 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Offres en vedette */}
-      <section className="bg-[#f7f6f3] py-14">
+      {/* Offres en vedette - mobile : carrousel ; md+ : grille identique a OfferGrid */}
+      <section className="bg-[#f7f6f3] py-10 md:py-14">
         <div className="max-w-7xl mx-auto px-6">
-          <h2 className="text-2xl font-bold text-navy-800 text-center mb-8">Dernières offres</h2>
-          <OfferGrid offers={offers} emptyMessage="Aucune offre disponible pour le moment." />
+          <h2 className="text-2xl font-bold text-navy-800 text-center mb-4 md:mb-8">Dernières offres</h2>
+          {offers.length === 0 ? (
+            <div className="text-center py-16 text-gray-400 text-sm">Aucune offre disponible pour le moment.</div>
+          ) : (
+            <div className="-mx-6 md:mx-0">
+              <Carousel
+                itemWidth="min(80vw, 320px)"
+                label="Dernières offres"
+                className="md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-5 md:overflow-visible md:px-0 md:py-0 md:[mask-image:none]"
+                itemClassName="md:w-auto"
+                dotsClassName="md:hidden"
+              >
+                {offers.map((offer) => <OfferCard key={offer.id} offer={offer} />)}
+              </Carousel>
+            </div>
+          )}
           {offerCount > 4 && (
-            <div className="mt-8 text-center">
-              <Link href="/offres">
-                <Button variant="outline">Voir toutes les offres</Button>
+            <div className="mt-7 md:mt-8 text-center">
+              <Link href="/offres" className="block sm:inline-block">
+                <Button variant="outline" className="w-full sm:w-auto">Voir toutes les offres</Button>
               </Link>
             </div>
           )}
@@ -264,52 +278,33 @@ export default async function HomePage() {
       {/* Cercle vertueux */}
       <VirtuousCircle />
 
-      {/* Actualites */}
+      {/* Actualites - mobile : titre centre, carrousel, bouton en bas ; md+ : inchange */}
       {posts.length > 0 && (
-        <section className="bg-white py-14 border-t border-[#e5e3de]">
+        <section className="bg-white py-10 md:py-14 border-t border-[#e5e3de]">
           <div className="max-w-7xl mx-auto px-6">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-bold text-navy-800">Actualites</h2>
-              <Link href="/actualites" className="text-sm text-gold-600 hover:text-gold-700 font-medium transition-colors shrink-0">
+            <div className="flex items-center justify-center md:justify-between mb-4 md:mb-8">
+              <h2 className="text-2xl font-bold text-navy-800">Actualités</h2>
+              <Link href="/actualites" className="hidden md:inline text-sm text-gold-600 hover:text-gold-700 font-medium transition-colors shrink-0">
                 Tout voir &rarr;
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {posts.map((post) => (
-                <Link
-                  key={post.id}
-                  href={`/actualites/${post.slug}`}
-                  className="group bg-white border border-[#e5e3de] rounded-lg overflow-hidden hover:shadow-md transition-shadow flex flex-col"
-                >
-                  {post.imageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={post.imageUrl} alt={post.title} className="w-full h-44 object-cover" />
-                  ) : (
-                    <div className="w-full h-44 bg-[#f7f6f3] flex items-center justify-center">
-                      <span className="text-3xl text-navy-200">◈</span>
-                    </div>
-                  )}
-                  <div className="p-5 flex flex-col flex-1">
-                    {post.publishedAt && (
-                      <p className="text-xs font-semibold uppercase tracking-widest text-gold-600 mb-2">
-                        {formatDate(post.publishedAt)}
-                      </p>
-                    )}
-                    <h3 className="font-semibold text-navy-800 leading-snug mb-2 group-hover:text-gold-600 transition-colors">
-                      {post.title}
-                    </h3>
-                    {post.excerpt && (
-                      <p className="text-sm text-gray-500 leading-relaxed line-clamp-3 flex-1">
-                        {post.excerpt}
-                      </p>
-                    )}
-                    <span className="mt-4 text-sm font-medium text-gold-600 group-hover:text-gold-700 transition-colors">
-                      Lire l'article &rarr;
-                    </span>
-                  </div>
-                </Link>
-              ))}
+            <div className="-mx-6 md:mx-0">
+              <Carousel
+                itemWidth="min(82vw, 340px)"
+                label="Actualités"
+                className="md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-6 md:overflow-visible md:px-0 md:py-0 md:[mask-image:none]"
+                itemClassName="md:w-auto"
+                dotsClassName="md:hidden"
+              >
+                {posts.map((post) => <PostCard key={post.id} post={post} />)}
+              </Carousel>
+            </div>
+
+            <div className="mt-7 md:hidden">
+              <Link href="/actualites" className="block">
+                <Button variant="outline" className="w-full">Toutes les actualités</Button>
+              </Link>
             </div>
           </div>
         </section>

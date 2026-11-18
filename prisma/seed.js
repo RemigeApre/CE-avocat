@@ -50,7 +50,7 @@ async function main() {
   const hashedMember  = await bcrypt.hash('Member123!',  12)
 
   // ── Utilisateurs système ──────────────────────────────────────────────
-  await prisma.user.upsert({
+  const adminUser = await prisma.user.upsert({
     where:  { email: 'admin@ce-avocats.fr' },
     update: {},
     create: { email: 'admin@ce-avocats.fr', password: hashedAdmin, name: 'Administrateur', role: 'ADMIN' },
@@ -176,6 +176,75 @@ async function main() {
   await upsertOffer('offer-zoo-famille',     { title: 'Zoo parc animalier (pack famille)',  description: 'Entrée 2 adultes + 2 enfants au 1er zoo de France : pandas géants, lions blancs, hippopotames, 10 000 animaux.', originalPrice: 134, discountedPrice: 88,  conditions: 'Pack 4 personnes non séparable. Enfants 3-12 ans.',                  isActive: true, isDemo: true, partnerId: plaisirs.id, categoryId: CAT_LOISIRS.id, locationCity: 'Saint-Aignan', locationCountry: 'France' })
   await upsertOffer('offer-aquapark',        { title: 'Aquapark journée famille',           description: 'Accès illimité à un parc aquatique indoor & outdoor : toboggans, rivière lente, espace enfants et espace détente.', originalPrice: 92,  discountedPrice: 58,  conditions: 'Pack 2 adultes + 2 enfants. Valable semaine et weekend.',            isActive: true, isDemo: true, partnerId: plaisirs.id, categoryId: CAT_LOISIRS.id, locationCity: 'Paris', locationCountry: 'France' })
   await upsertOffer('offer-karting',         { title: 'Session karting + bowling',          description: '2 sessions karting 10 min + 1 partie bowling pour 4 personnes. Boissons incluses.', originalPrice: 120, discountedPrice: 75, conditions: 'Sur réservation. Valable semaine uniquement pour bowling.', isActive: true, isDemo: true, partnerId: plaisirs.id, categoryId: CAT_LOISIRS.id, locationCity: 'Paris', locationCountry: 'France' })
+
+  // ── Actualités de démonstration ───────────────────────────────────────
+  // Créées une seule fois (update vide) : une modification faite depuis l'admin n'est pas écrasée au redémarrage.
+  const IMG = {
+    gastro:  'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80',
+    culture: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800&q=80',
+    zen:     'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&q=80',
+    voyage:  'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80',
+    loisirs: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&q=80',
+    bureau:  'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&q=80',
+    livres:  'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&q=80',
+  }
+  const DEMO_POSTS = [
+    {
+      slug: 'delit-de-fuite-sejours-ski',
+      title: 'Délit de fuite : les séjours au ski ouvrent à la réservation',
+      excerpt: "Horizons Séjours ouvre sa saison d'hiver avec des tarifs négociés pour les adhérents. Les vacances de février partent vite : on vous dit tout.",
+      content: "Bonne nouvelle pour celles et ceux qui rêvent de troquer la robe contre la combinaison de ski : notre partenaire Horizons Séjours ouvre les réservations de la saison d'hiver.\n\nLes adhérents bénéficient de remises allant jusqu'à 25 % sur une sélection de résidences en Savoie, en Haute-Savoie et dans les Pyrénées, avec forfaits de remontées mécaniques à tarif préférentiel.\n\nConseil d'ami : les semaines des vacances scolaires de février sont les plus demandées. Si votre agenda d'audiences vous le permet, réservez avant la mi-décembre.\n\nToutes les conditions sont détaillées dans la catégorie « Délit de fuite » de l'espace offres.",
+      imageUrl: IMG.voyage,
+      publishedAt: new Date('2026-11-14T09:00:00Z'),
+    },
+    {
+      slug: 'huit-nouveaux-partenaires',
+      title: 'Huit nouveaux partenaires rejoignent le Comité',
+      excerpt: "Restaurants, spas, billetterie, librairie juridique : le catalogue s'étoffe encore ce mois-ci. Tour d'horizon des nouveaux venus.",
+      content: "Le Comité poursuit sa croissance : huit nouveaux partenaires nous ont rejoints depuis la rentrée, et chacun propose une offre exclusive aux adhérents.\n\nParmi eux, une librairie juridique de référence, deux réseaux de spas, une billetterie de spectacle vivant et plusieurs restaurants à deux pas des palais de justice.\n\nCette dynamique est directement liée au nombre d'adhérents : plus nous sommes nombreux, plus notre pouvoir de négociation augmente. Merci à toutes celles et ceux qui ont parlé du Comité autour d'eux.\n\nVous connaissez une enseigne qui aurait sa place ici ? Écrivez-nous, nous prenons contact avec elle.",
+      imageUrl: IMG.bureau,
+      publishedAt: new Date('2026-11-07T09:00:00Z'),
+    },
+    {
+      slug: 'flagrant-delice-table-du-palais',
+      title: 'Flagrant délice : menu du midi à prix d’ami à La Table du Palais',
+      excerpt: "Entre deux audiences, la brasserie face au tribunal propose désormais une formule déjeuner réservée aux adhérents.",
+      content: "La Table du Palais, la cantine des robes noires depuis 1987, lance une formule déjeuner dédiée aux adhérents du Comité : entrée, plat et café à tarif préférentiel, du lundi au vendredi.\n\nService rapide garanti pour ne pas manquer l'appel des causes, et possibilité de réserver la veille pour les grandes tablées de confrères.\n\nPrésentez simplement votre espace adhérent au moment de l'addition.",
+      imageUrl: IMG.gastro,
+      publishedAt: new Date('2026-10-30T09:00:00Z'),
+    },
+    {
+      slug: 'plagiat-saison-theatrale',
+      title: 'Plagiat assumé : la saison théâtrale à tarif réduit',
+      excerpt: "Opéra, théâtre, concerts : Scène Ouverte propose plus de 400 représentations à prix négocié pour les adhérents et leurs proches.",
+      content: "Pour une fois, copier n'est pas tricher : Scène Ouverte reprend les plus beaux classiques de la saison, et les adhérents en profitent à tarif réduit.\n\nL'offre couvre le théâtre, l'opéra, les concerts classiques et contemporains, ainsi que la comédie musicale, dans toute la France.\n\nLes places sont nominatives mais peuvent être achetées pour vos proches, dans la limite de quatre billets par représentation.",
+      imageUrl: IMG.culture,
+      publishedAt: new Date('2026-10-22T09:00:00Z'),
+    },
+    {
+      slug: 'abandon-de-poste-bien-etre',
+      title: 'Abandon de poste recommandé : nos adresses pour décompresser',
+      excerpt: "Fin d'année chargée ? Spas thermaux, yoga, sophrologie : sélection d'offres bien-être pensées pour les rythmes des avocats.",
+      content: "La fin d'année est souvent la période la plus intense du cabinet. Le Comité vous recommande donc officiellement un abandon de poste, au moins le temps d'un après-midi.\n\nThermae Évasion propose des entrées et des soins signature à prix réduit dans ses spas thermaux, et Studio Sérénité ouvre des cours de yoga et de sophrologie en petit groupe, avec des créneaux tôt le matin et en soirée.\n\nAucune convocation devant le conseil de l'Ordre n'est à craindre pour ce genre d'abandon.",
+      imageUrl: IMG.zen,
+      publishedAt: new Date('2026-10-15T09:00:00Z'),
+    },
+    {
+      slug: 'carte-membre-numerique-bientot',
+      title: 'Bientôt : votre carte membre dans votre téléphone',
+      excerpt: "Fini la capture d'écran : une carte d'adhérent numérique avec QR code arrive dans votre espace dans les prochaines semaines.",
+      content: "C'était l'une des demandes les plus fréquentes : vous pourrez bientôt présenter une carte d'adhérent numérique directement depuis votre téléphone.\n\nChaque carte portera un QR code unique, vérifiable par nos partenaires en un instant, sans application à installer.\n\nCette fonctionnalité fait partie des évolutions envisagées pour le Comité. Retrouvez les autres pistes sur la page dédiée, accessible depuis le pied de page.",
+      imageUrl: IMG.livres,
+      publishedAt: new Date('2026-10-06T09:00:00Z'),
+    },
+  ]
+  for (const post of DEMO_POSTS) {
+    await prisma.post.upsert({
+      where: { slug: post.slug },
+      update: {},
+      create: { ...post, isPublished: true, authorId: adminUser.id },
+    })
+  }
 
   console.log('[seed] Terminé.')
   console.log('  Admin       : admin@ce-avocats.fr    / Admin123!')

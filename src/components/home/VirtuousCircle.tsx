@@ -156,10 +156,10 @@ function CycleList() {
 
 export function VirtuousCircle() {
   return (
-    <section className="bg-white py-16 md:py-20 border-t border-[#e5e3de]">
+    <section className="bg-white py-12 md:py-20 border-t border-[#e5e3de]">
       <div className="max-w-5xl mx-auto px-6">
 
-        <div className="text-center mb-10 md:mb-6">
+        <div className="text-center mb-8 md:mb-6">
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold-600 mb-3">Modèle collectif</p>
           <h2 className="text-2xl md:text-3xl font-bold text-navy-800">Plus on est nombreux, mieux c&apos;est pour tous</h2>
           <p className="text-sm text-gray-500 mt-3 max-w-md mx-auto leading-relaxed">
@@ -177,8 +177,8 @@ export function VirtuousCircle() {
         <CycleList />
 
         {/* Comment y contribuer */}
-        <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="border border-[#e5e3de] rounded-lg p-7 flex flex-col gap-4 transition-shadow hover:shadow-md">
+        <div className="mt-10 md:mt-14 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="border border-[#e5e3de] rounded-lg p-6 md:p-7 flex flex-col gap-4 transition-shadow hover:shadow-md">
             <div className="w-10 h-10 rounded-sm bg-navy-800 flex items-center justify-center shrink-0">
               <Users className="w-5 h-5 text-gold-400" strokeWidth={1.6} aria-hidden="true" />
             </div>
@@ -193,11 +193,11 @@ export function VirtuousCircle() {
               title="Maître en Pause"
               text="Le comité professionnel des avocats : des offres négociées pour les avocats libéraux."
               label="Partager la page d'adhésion"
-              className="mt-auto self-start px-4 py-2 rounded-sm border border-navy-800 text-sm font-medium text-navy-800 hover:bg-navy-50 transition-colors"
+              className="mt-auto w-full justify-center py-2.5 sm:w-auto sm:self-start sm:py-2 px-4 rounded-sm border border-navy-800 text-sm font-medium text-navy-800 hover:bg-navy-50 transition-colors"
             />
           </div>
 
-          <div className="rounded-lg p-7 flex flex-col gap-4 bg-navy-800 transition-shadow hover:shadow-lg hover:shadow-navy-800/20">
+          <div className="rounded-lg p-6 md:p-7 flex flex-col gap-4 bg-navy-800 transition-shadow hover:shadow-lg hover:shadow-navy-800/20">
             <div className="w-10 h-10 rounded-sm bg-gold-500 flex items-center justify-center shrink-0">
               <Building2 className="w-5 h-5 text-white" strokeWidth={1.6} aria-hidden="true" />
             </div>
@@ -210,7 +210,7 @@ export function VirtuousCircle() {
             </div>
             <Link
               href="/adhesion#cabinet"
-              className="mt-auto self-start px-4 py-2 rounded-sm bg-gold-500 hover:bg-gold-400 text-sm font-medium text-navy-900 transition-colors"
+              className="mt-auto w-full text-center py-2.5 sm:w-auto sm:self-start sm:py-2 px-4 rounded-sm bg-gold-500 hover:bg-gold-400 text-sm font-medium text-navy-900 transition-colors"
             >
               Découvrir le tarif cabinet
             </Link>
