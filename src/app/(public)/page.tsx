@@ -76,17 +76,17 @@ export default async function HomePage() {
 
           {/* Image droite - habillage, rien par dessus */}
           <div className="absolute right-0 top-0 h-full w-[44%] pointer-events-none select-none hidden md:block">
-            {/* Fondu blanc a gauche : etroit pour ne pas effacer le plateau gauche de la balance */}
-            <div className="absolute left-0 top-0 bottom-0 w-20 lg:w-28 bg-gradient-to-r from-white via-white/60 to-transparent z-10" />
+            {/* Fondu blanc a gauche : la statue est a droite, le fondu ne mange que le decor */}
+            <div className="absolute left-0 top-0 bottom-0 w-24 lg:w-44 bg-gradient-to-r from-white via-white/60 to-transparent z-10" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/hero-justice.webp"
+              src="/hero-justice-plage.webp"
               alt=""
               fetchPriority="high"
               decoding="async"
               width={1200}
               height={1698}
-              className="h-full w-full object-cover object-[62%_12%]"
+              className="h-full w-full object-cover object-[80%_10%]"
             />
           </div>
 
