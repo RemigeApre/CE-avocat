@@ -285,6 +285,26 @@ export function LawyerGame() {
     }
   }, [])
 
+  // Tactile : bloque le zoom au double appui, la selection de texte et la loupe.
+  // Listeners natifs NON passifs : ceux de React le sont, leur preventDefault serait ignore.
+  // Les evenements pointer (deplacement) continuent d'arriver normalement.
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const block = (e: Event) => e.preventDefault()
+    const opts = { passive: false } as const
+    canvas.addEventListener('touchstart', block, opts)
+    canvas.addEventListener('touchend', block, opts)
+    canvas.addEventListener('dblclick', block)
+    canvas.addEventListener('selectstart', block)
+    return () => {
+      canvas.removeEventListener('touchstart', block)
+      canvas.removeEventListener('touchend', block)
+      canvas.removeEventListener('dblclick', block)
+      canvas.removeEventListener('selectstart', block)
+    }
+  }, [])
+
   useEffect(() => {
     try {
       const saved = localStorage.getItem('lawyergame_best')

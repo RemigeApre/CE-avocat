@@ -71,14 +71,14 @@ export function HeroCards({ counts, variant = 'rail' }: HeroCardsProps) {
 
   const modal = gameOpen && (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm p-3 sm:p-4"
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm p-3 sm:p-4 touch-manipulation"
       onClick={() => setGameOpen(false)}
       role="dialog"
       aria-modal="true"
       aria-label="Mini-jeu Le Maître en cavale"
     >
       <div
-        className="bg-white rounded-xl shadow-2xl p-4 sm:p-6 w-full max-w-sm max-h-full overflow-y-auto"
+        className="bg-white rounded-xl shadow-2xl p-4 sm:p-6 w-full max-w-sm max-h-full overflow-y-auto select-none touch-manipulation [-webkit-touch-callout:none]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-3 sm:mb-4">

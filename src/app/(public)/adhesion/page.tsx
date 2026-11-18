@@ -4,6 +4,9 @@ import { Carousel } from '@/components/ui'
 
 export const metadata = { title: 'Adhérer - Maitre en Pause' }
 
+// Encart sur le Conseil National des Barreaux, masque pour l'instant
+const SHOW_CNB_NOTE = false
+
 type PlanId = 'classique' | 'premium' | 'cabinet'
 
 interface Plan {
@@ -376,7 +379,8 @@ export default function AdhesionPage() {
           ))}
         </div>
 
-        {/* CNB */}
+        {/* CNB - masque pour l'instant : passer SHOW_CNB_NOTE a true pour le reafficher */}
+        {SHOW_CNB_NOTE && (
         <div className="mt-10 border border-dashed border-[#e5e3de] rounded-lg px-6 md:px-7 py-5">
           <p className="text-xs text-gray-400 leading-relaxed">
             <span className="font-semibold text-gray-500">Conseil National des Barreaux (CNB).</span>{' '}
@@ -385,6 +389,7 @@ export default function AdhesionPage() {
             Un lien depuis le site du CNB représenterait un signal fort pour la profession.
           </p>
         </div>
+        )}
       </section>
 
       {/* Appel final */}
