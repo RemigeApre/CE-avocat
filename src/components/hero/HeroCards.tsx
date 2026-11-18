@@ -98,8 +98,8 @@ export function HeroCards({ counts, variant = 'rail' }: HeroCardsProps) {
         </div>
         <LawyerGame />
         {/* Consigne selon l'appareil : souris/clavier ou ecran tactile */}
-        <p className="text-xs text-gray-400 text-center mt-3 [@media(pointer:coarse)]:hidden">← → ou clic gauche / droit pour se déplacer</p>
-        <p className="text-xs text-gray-400 text-center mt-3 hidden [@media(pointer:coarse)]:block">Gardez le doigt à gauche ou à droite pour vous déplacer</p>
+        <p className="text-xs text-gray-400 text-center mt-3 [@media(pointer:coarse)]:hidden">← → ou clic gauche / droit · P pour pause · sautez sur l’huissier !</p>
+        <p className="text-xs text-gray-400 text-center mt-3 hidden [@media(pointer:coarse)]:block">Gardez le doigt à gauche ou à droite · sautez sur l’huissier !</p>
       </div>
     </div>
   )

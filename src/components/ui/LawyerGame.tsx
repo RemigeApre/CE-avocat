@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useCallback, useState } from 'react'
+import { Maximize2, Pause, Play, X } from 'lucide-react'
 
 const W = 340
 const H = 480
@@ -38,6 +39,11 @@ const ROBE_FRAMES = 300    // 5 s de vol plane
 const CAFE_FRAMES = 75     // propulsion (~180 m)
 const CAFE_VY = -17
 const GLIDE_VY = 1.3
+// ── Huissier (ennemi) ───────────────────────────────────────
+const HUISSIER_MIN = 900   // m : apparait seulement dans les niveaux durs
+const HUISSIER_GAP = 350   // m : ecart minimal entre deux huissiers
+const EW = 22              // largeur
+const EH = 30              // hauteur
 
 type PlatType = 'dossier' | 'feuille' | 'amende'
 type BonusKind = 'code' | 'cafe' | 'robe'
@@ -47,6 +53,8 @@ interface Heart { x: number; y: number; collected: boolean; bobOff: number }
 interface Bonus { x: number; y: number; kind: BonusKind; bobOff: number }
 interface Power { kind: BonusKind; t: number; total: number }
 interface FloatText { text: string; x: number; y: number; t: number }
+/** Huissier : patrouille sur un dossier (minX..maxX), ou tombe une fois deboute (deadT > 0) */
+interface Enemy { x: number; y: number; vx: number; minX: number; maxX: number; deadT: number; walk: number }
 
 const BONUS_INFO: Record<BonusKind, { label: string; pickup: string; color: string }> = {
   code: { label: 'Intouchable', pickup: 'Code civil : intouchable !', color: '#b91c1c' },
@@ -329,6 +337,51 @@ function drawBonus(ctx: CanvasRenderingContext2D, b: Bonus, cam: number, frame: 
   ctx.restore()
 }
 
+function drawHuissier(ctx: CanvasRenderingContext2D, e: Enemy, cam: number) {
+  ctx.save()
+  ctx.translate(e.x + EW / 2, e.y - cam + EH)
+  if (e.deadT > 0) { ctx.rotate(Math.min(1.6, e.deadT * 0.08)); ctx.globalAlpha = Math.max(0, 1 - e.deadT / 40) }
+  if (e.vx < 0) ctx.scale(-1, 1)
+  const step = Math.sin(e.walk * 0.25) * 2.5
+  // jambes
+  ctx.strokeStyle = '#1f2937'; ctx.lineWidth = 3; ctx.lineCap = 'round'
+  ctx.beginPath(); ctx.moveTo(-3, -9); ctx.lineTo(-3 - step, 0); ctx.stroke()
+  ctx.beginPath(); ctx.moveTo(3, -9); ctx.lineTo(3 + step, 0); ctx.stroke()
+  // costume
+  ctx.fillStyle = '#374151'; ctx.beginPath(); ctx.roundRect(-8, -21, 16, 13, 3); ctx.fill()
+  ctx.fillStyle = 'white'; ctx.beginPath(); ctx.moveTo(-3, -21); ctx.lineTo(3, -21); ctx.lineTo(0, -15); ctx.closePath(); ctx.fill()
+  ctx.fillStyle = RED; ctx.fillRect(-0.8, -19, 1.6, 5)
+  // serviette a documents
+  ctx.fillStyle = '#7c4a2d'; ctx.beginPath(); ctx.roundRect(7, -14, 7, 6, 1); ctx.fill()
+  ctx.strokeStyle = '#7c4a2d'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(10.5, -14, 1.8, Math.PI, 0); ctx.stroke()
+  // tete
+  ctx.fillStyle = '#f1c9a5'; ctx.beginPath(); ctx.arc(0, -25, 5, 0, Math.PI * 2); ctx.fill()
+  // chapeau melon
+  ctx.fillStyle = '#111827'
+  ctx.beginPath(); ctx.ellipse(0, -28.5, 7, 1.6, 0, 0, Math.PI * 2); ctx.fill()
+  ctx.beginPath(); ctx.arc(0, -29, 4.5, Math.PI, 0); ctx.fill()
+  // sourcils fronces, moustache
+  ctx.strokeStyle = '#111827'; ctx.lineWidth = 1
+  ctx.beginPath(); ctx.moveTo(-3.5, -27); ctx.lineTo(-0.8, -26); ctx.stroke()
+  ctx.beginPath(); ctx.moveTo(3.5, -27); ctx.lineTo(0.8, -26); ctx.stroke()
+  ctx.fillStyle = '#111827'; ctx.fillRect(-2.4, -23.2, 4.8, 1.2)
+  ctx.restore()
+}
+
+function drawPause(ctx: CanvasRenderingContext2D, touch: boolean) {
+  ctx.fillStyle = 'rgba(10,15,30,0.55)'
+  ctx.fillRect(0, 0, W, H)
+  const bx = W / 2 - 110, by = H / 2 - 52
+  ctx.fillStyle = '#fafaf8'
+  ctx.beginPath(); ctx.roundRect(bx, by, 220, 104, 12); ctx.fill()
+  ctx.fillStyle = NAVY; ctx.font = 'bold 18px system-ui'; ctx.textAlign = 'center'
+  ctx.fillText('Pause', W / 2, by + 40)
+  ctx.fillStyle = '#6b7280'; ctx.font = '11px system-ui'
+  ctx.fillText('Suspension d’audience', W / 2, by + 60)
+  ctx.fillStyle = NAVY; ctx.font = 'bold 12px system-ui'
+  ctx.fillText(touch ? '[ Touchez pour reprendre ]' : '[ Espace, P ou clic pour reprendre ]', W / 2, by + 86)
+}
+
 function drawPowerHUD(ctx: CanvasRenderingContext2D, power: Power) {
   const info = BONUS_INFO[power.kind]
   const bw = 84, bx = W / 2 - bw / 2, by = 30
@@ -429,6 +482,9 @@ const freshState = () => ({
   power: null as Power | null,
   coffeeSafe: false,     // apres un cafe : amendes inoffensives et plateformes solides jusqu'a l'atterrissage
   floats: [] as FloatText[],
+  enemies: [] as Enemy[],
+  lastEnemyScore: 0,
+  paused: false,
   lost: { index: -1, t: 0 },
   hurtFlash: 0,
   cam: 0,
@@ -451,6 +507,10 @@ export function LawyerGame() {
   const lastTs = useRef<number | null>(null)
   const acc = useRef(0)
   const deadAt = useRef(0)
+  const wrapRef = useRef<HTMLDivElement>(null)
+  const [paused, setPaused] = useState(false)
+  const [fullscreen, setFullscreen] = useState(false)
+  const fsRef = useRef(false)
 
 
   const st = useRef({
@@ -543,7 +603,7 @@ export function LawyerGame() {
     }
 
     // ── PLAYING ─────────────────────────────────────────────
-    if (s.phase === 'playing') {
+    if (s.phase === 'playing' && !s.paused) {
       s.frame++
       if (p.hurt > 0) p.hurt--
       if (p.stun > 0) p.stun--
@@ -630,14 +690,31 @@ export function LawyerGame() {
       if (topY > s.cam - 20) {
         let y = topY - platGap(s.score)
         if (s.lastPlatWasAmende) y = Math.max(y, s.lastUsableY - SAFE_REACH)
+        const prevUsableY = s.lastUsableY
         const newPlat = makePlat(y, s.score, s.lastPlatWasAmende, s.coffeeSafe ? 'dossier' : undefined)
         s.lastPlatWasAmende = newPlat.type === 'amende'
         if (newPlat.type !== 'amende') s.lastUsableY = newPlat.y
         s.plats.push(newPlat)
         if (s.plats.length > 32) s.plats.splice(0, 1)
 
+        // Huissier : rare, niveaux durs, patrouille sur un dossier fixe assez large.
+        // Ce dossier devient un "danger" : la plateforme suivante sera sure et a portee (comme apres une amende).
+        if (s.score >= HUISSIER_MIN && !s.coffeeSafe && s.enemies.length === 0 &&
+            s.score - s.lastEnemyScore >= HUISSIER_GAP && newPlat.type === 'dossier' && !newPlat.vx &&
+            newPlat.w >= 56 && Math.random() < 0.03 + 0.04 * difficulty(s.score)) {
+          const d = difficulty(s.score)
+          s.enemies.push({
+            x: newPlat.x + newPlat.w / 2 - EW / 2, y: newPlat.y - EH,
+            vx: (Math.random() < 0.5 ? -1 : 1) * (0.5 + 0.7 * d),
+            minX: newPlat.x, maxX: newPlat.x + newPlat.w - EW, deadT: 0, walk: 0,
+          })
+          s.lastEnemyScore = s.score
+          s.lastPlatWasAmende = true
+          s.lastUsableY = prevUsableY
+        }
+
         // Bonus : rares, seulement dans les niveaux durs, un seul a la fois, pose sur un dossier fixe
-        if (s.score >= BONUS_MIN && !s.power && !s.coffeeSafe && s.bonuses.length === 0 &&
+        if (s.score >= BONUS_MIN && !s.power && !s.coffeeSafe && s.bonuses.length === 0 && !s.lastPlatWasAmende &&
             s.score - s.lastBonusScore >= BONUS_GAP && newPlat.type === 'dossier' && !newPlat.vx &&
             Math.random() < BONUS_CHANCE) {
           const r = Math.random()
@@ -680,6 +757,31 @@ export function LawyerGame() {
       }
       s.bonuses = s.bonuses.filter(b => b.y !== Infinity && b.y - s.cam < H + 60)
 
+      // Huissier : patrouille, deboute si on lui saute dessus, sinon il fait mal
+      for (const e of s.enemies) {
+        if (e.deadT > 0) { e.deadT++; e.y += 4; continue }
+        e.walk++
+        e.x += e.vx
+        if (e.x < e.minX || e.x > e.maxX) { e.vx = -e.vx; e.x = Math.max(e.minX, Math.min(e.maxX, e.x)) }
+        const overlap = p.x + PW - 5 > e.x && p.x + 5 < e.x + EW && p.y + PH > e.y + 2 && p.y < e.y + EH
+        if (!overlap) continue
+        const stomp = p.vy > 0 && p.y + PH - p.vy <= e.y + 8
+        const invincible = s.coffeeSafe || s.power?.kind === 'code' || s.power?.kind === 'cafe'
+        if (stomp || invincible) {
+          e.deadT = 1
+          if (stomp) { p.vy = JUMP_V * 1.1; p.squash = 1 }
+          s.floats.push({ text: 'Huissier débouté !', x: Math.max(60, Math.min(W - 60, e.x + EW / 2)), y: e.y, t: 60 })
+        } else if (p.hurt === 0) {
+          p.hp--; p.hurt = 55; p.stun = 32
+          p.vx = (p.x + PW / 2 < e.x + EW / 2 ? -1 : 1) * MOVE_SPEED * 1.4
+          p.vy = Math.min(p.vy, JUMP_V * 0.4)
+          s.lost = { index: p.hp, t: 40 }
+          s.hurtFlash = 14
+          s.floats.push({ text: 'Saisie !', x: Math.max(40, Math.min(W - 40, e.x + EW / 2)), y: e.y, t: 45 })
+        }
+      }
+      s.enemies = s.enemies.filter(e => e.deadT < 40 && e.y - s.cam < H + 60)
+
       // Textes flottants
       for (const f of s.floats) { f.t--; f.y -= 0.6 }
       s.floats = s.floats.filter(f => f.t > 0)
@@ -708,6 +810,7 @@ export function LawyerGame() {
       if (!h.collected) drawHeartPickup(ctx, h.x, h.y - s.cam, s.frame, h.bobOff)
     }
     for (const b of s.bonuses) drawBonus(ctx, b, s.cam, s.frame)
+    for (const e of s.enemies) drawHuissier(ctx, e, s.cam)
 
     drawAvocat(ctx, p.x, p.y - s.cam, p.hurt, p.face, { hp: p.hp, squash: p.squash, vy: p.vy, power: s.power?.kind ?? null, frame: s.frame })
 
@@ -728,6 +831,7 @@ export function LawyerGame() {
     drawScoreHUD(ctx, s.score, s.bestScore, p.hp, s.lost)
     if (s.power) drawPowerHUD(ctx, s.power)
 
+    if (s.phase === 'playing' && s.paused) drawPause(ctx, touchRef.current)
     if (s.phase === 'dead') {
       drawGameOver(ctx, s.score, s.bestScore, s.isRecord, touchRef.current)
     }
@@ -742,7 +846,7 @@ export function LawyerGame() {
     while (acc.current >= STEP_MS) {
       step()
       acc.current -= STEP_MS
-      if (s.phase === 'dead') return // ecran de fin fige, plus de planification
+      if (s.phase === 'dead' || s.paused) return // ecran fige (fin ou pause) : plus de planification
     }
     s.animId = requestAnimationFrame(tick)
   }, [step])
@@ -753,6 +857,72 @@ export function LawyerGame() {
     lastTs.current = null
     st.current.animId = requestAnimationFrame(tick)
   }, [tick])
+
+  const pause = useCallback(() => {
+    const s = st.current
+    if (s.phase !== 'playing' || s.paused) return
+    s.paused = true
+    pointers.current.clear(); ptrKeys.current = { left: false, right: false }
+    keys.current = { left: false, right: false }
+    setPaused(true)
+  }, [])
+
+  const resume = useCallback(() => {
+    const s = st.current
+    if (!s.paused) return
+    s.paused = false
+    setPaused(false)
+    schedule()
+  }, [schedule])
+
+  const togglePause = useCallback(() => {
+    if (st.current.paused) resume(); else pause()
+  }, [pause, resume])
+
+  // Plein ecran : API native quand elle existe (Android, ordinateur), sinon affichage couvrant (iPhone)
+  const enterFullscreen = useCallback(() => {
+    fsRef.current = true
+    setFullscreen(true)
+    const el = wrapRef.current
+    if (el?.requestFullscreen) el.requestFullscreen({ navigationUI: 'hide' }).catch(() => { /* repli : affichage couvrant */ })
+  }, [])
+
+  const exitFullscreen = useCallback(() => {
+    fsRef.current = false
+    setFullscreen(false)
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => { /* deja sorti */ })
+  }, [])
+
+  // Sortie par le systeme (Echap natif, geste retour...) : on se resynchronise
+  useEffect(() => {
+    const onChange = () => { if (!document.fullscreenElement && fsRef.current) { fsRef.current = false; setFullscreen(false) } }
+    document.addEventListener('fullscreenchange', onChange)
+    return () => document.removeEventListener('fullscreenchange', onChange)
+  }, [])
+
+  // Pause automatique : onglet cache, application en arriere-plan, fenetre qui perd le focus
+  useEffect(() => {
+    const onHide = () => { if (document.hidden) pause() }
+    document.addEventListener('visibilitychange', onHide)
+    window.addEventListener('blur', pause)
+    return () => {
+      document.removeEventListener('visibilitychange', onHide)
+      window.removeEventListener('blur', pause)
+    }
+  }, [pause])
+
+  // Echap en plein ecran (repli) : quitte le plein ecran sans fermer la fenetre du jeu.
+  // Phase de capture : passe avant l'ecouteur qui ferme la fenetre.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && fsRef.current) { e.stopImmediatePropagation(); exitFullscreen() }
+    }
+    window.addEventListener('keydown', onKey, true)
+    return () => window.removeEventListener('keydown', onKey, true)
+  }, [exitFullscreen])
+
+  // A la fermeture du jeu : on sort proprement du plein ecran natif
+  useEffect(() => () => { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}) }, [])
 
   const startOrRestart = useCallback(() => {
     const s = st.current
@@ -774,7 +944,14 @@ export function LawyerGame() {
     const dn = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft' || e.key === 'a') keys.current.left = true
       if (e.key === 'ArrowRight' || e.key === 'd') keys.current.right = true
-      if (e.code === 'Space') { e.preventDefault(); if (st.current.phase !== 'playing') startOrRestart() }
+      // Un bouton a le focus : Espace l'active normalement, sans doubler l'action
+      if (e.code === 'Space' && e.target instanceof HTMLButtonElement) return
+      if (e.code === 'Space') {
+        e.preventDefault()
+        if (st.current.paused) resume()
+        else if (st.current.phase !== 'playing') startOrRestart()
+      }
+      if (e.key === 'p' || e.key === 'P') togglePause()
     }
     const up = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft' || e.key === 'a') keys.current.left = false
@@ -782,7 +959,7 @@ export function LawyerGame() {
     }
     window.addEventListener('keydown', dn); window.addEventListener('keyup', up)
     return () => { window.removeEventListener('keydown', dn); window.removeEventListener('keyup', up) }
-  }, [startOrRestart])
+  }, [startOrRestart, resume, togglePause])
 
   // Souris et doigts : moitie gauche / droite, appui maintenu, plusieurs doigts geres
   const syncPointers = () => {
@@ -794,6 +971,7 @@ export function LawyerGame() {
   const handlePointerDown = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
     e.preventDefault()
     const s = st.current
+    if (s.paused) { resume(); return }
     if (s.phase !== 'playing') {
       // Evite de relancer par accident avec le doigt encore pose au moment de la chute
       if (s.phase === 'dead' && performance.now() - deadAt.current < 600) return
@@ -805,7 +983,7 @@ export function LawyerGame() {
     const side = e.clientX - rect.left < rect.width / 2 ? 'left' : 'right'
     pointers.current.set(e.pointerId, { side, at: performance.now() })
     syncPointers()
-  }, [startOrRestart])
+  }, [startOrRestart, resume])
 
   const handlePointerEnd = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
     const ptr = pointers.current.get(e.pointerId)
@@ -816,16 +994,62 @@ export function LawyerGame() {
     else release()
   }, [])
 
+  const toolBtn = 'inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-xs font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-500'
+
   return (
-    <canvas
-      ref={canvasRef} width={W} height={H}
-      onPointerDown={handlePointerDown}
-      onPointerUp={handlePointerEnd}
-      onPointerCancel={handlePointerEnd}
-      onContextMenu={(e) => e.preventDefault()}
-      className="cursor-pointer w-full h-auto rounded-lg border border-[#e5e3de] touch-none select-none [-webkit-touch-callout:none] [-webkit-tap-highlight-color:transparent]"
-      style={{ maxWidth: W }}
-      aria-label="Mini-jeu Le Maître en cavale"
-    />
+    <div
+      ref={wrapRef}
+      className={
+        fullscreen
+          ? 'fixed inset-0 z-[10000] bg-navy-950 flex flex-col items-center justify-center gap-3 px-3 pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(0.75rem,env(safe-area-inset-bottom))] select-none touch-manipulation'
+          : 'flex flex-col items-center'
+      }
+    >
+      {/* Barre du plein ecran : titre + pause + sortie toujours visible */}
+      {fullscreen && (
+        <div className="w-[min(100%,calc((100dvh-7rem)*0.7083))] flex items-center justify-between gap-2">
+          <p className="text-sm font-semibold text-white truncate">Le Maître en cavale</p>
+          <div className="flex items-center gap-2 shrink-0">
+            <button type="button" onClick={togglePause} className={`${toolBtn} bg-white/10 text-white hover:bg-white/20`} aria-label={paused ? 'Reprendre' : 'Pause'}>
+              {paused ? <Play className="w-4 h-4" aria-hidden="true" /> : <Pause className="w-4 h-4" aria-hidden="true" />}
+              <span className="hidden min-[380px]:inline">{paused ? 'Reprendre' : 'Pause'}</span>
+            </button>
+            <button type="button" onClick={exitFullscreen} className={`${toolBtn} bg-gold-500 text-navy-900 hover:bg-gold-400`}>
+              <X className="w-4 h-4" aria-hidden="true" />
+              Quitter
+            </button>
+          </div>
+        </div>
+      )}
+
+      <canvas
+        ref={canvasRef} width={W} height={H}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerEnd}
+        onPointerCancel={handlePointerEnd}
+        onContextMenu={(e) => e.preventDefault()}
+        className={[
+          'cursor-pointer h-auto rounded-lg touch-none select-none [-webkit-touch-callout:none] [-webkit-tap-highlight-color:transparent]',
+          // plein ecran : le plus grand possible sans deformer (ratio 340/480)
+          fullscreen ? 'w-[min(100%,calc((100dvh-7rem)*0.7083))]' : 'w-full border border-[#e5e3de]',
+        ].join(' ')}
+        style={fullscreen ? undefined : { maxWidth: W }}
+        aria-label="Mini-jeu Le Maître en cavale"
+      />
+
+      {/* Barre normale : pause + plein ecran */}
+      {!fullscreen && (
+        <div className="mt-3 flex items-center justify-center gap-2">
+          <button type="button" onClick={togglePause} className={`${toolBtn} border border-[#e5e3de] text-navy-800 hover:bg-gray-50`}>
+            {paused ? <Play className="w-4 h-4" aria-hidden="true" /> : <Pause className="w-4 h-4" aria-hidden="true" />}
+            {paused ? 'Reprendre' : 'Pause'}
+          </button>
+          <button type="button" onClick={enterFullscreen} className={`${toolBtn} border border-[#e5e3de] text-navy-800 hover:bg-gray-50`}>
+            <Maximize2 className="w-4 h-4" aria-hidden="true" />
+            Plein écran
+          </button>
+        </div>
+      )}
+    </div>
   )
 }
