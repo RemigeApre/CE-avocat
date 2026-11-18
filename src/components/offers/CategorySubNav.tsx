@@ -18,7 +18,8 @@ export function CategorySubNav({ categories, activeSlug }: CategorySubNavProps) 
   const inactiveClass = 'border-transparent text-white/60 hover:text-white'
 
   return (
-    <div className="sticky top-[72px] z-30 bg-navy-800 border-b border-navy-700">
+    // Masque sur mobile : les categories sont dans le menu burger (sous-menu Offres)
+    <div className="hidden md:block sticky top-[72px] z-30 bg-navy-800 border-b border-navy-700">
       {/* Centrage "sur" : w-max + mx-auto centre quand ca tient, et reste defilable depuis le debut quand ca deborde (mobile).
           xl+ : tout tient sur une ligne -> overflow visible pour laisser sortir l'infobulle sous la barre. */}
       <div className="overflow-x-auto xl:overflow-visible [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">

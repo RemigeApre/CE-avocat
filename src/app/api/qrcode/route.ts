@@ -1,14 +1,16 @@
 import { getHomeUrl, qrPng, qrSvg } from '@/lib/qrcode'
 
-// Telechargement du QR code : /api/qrcode?format=svg (defaut) ou ?format=png
+// QR code de la page d'accueil.
+//   /api/qrcode?format=svg (defaut) | ?format=png
+//   &download=1 : force le telechargement (sinon affichable dans une balise <img>)
 export async function GET(req: Request) {
-  const format = new URL(req.url).searchParams.get('format') === 'png' ? 'png' : 'svg'
+  const params = new URL(req.url).searchParams
+  const format = params.get('format') === 'png' ? 'png' : 'svg'
+  const download = params.get('download') === '1'
   const url = await getHomeUrl()
-  const filename = `qrcode-maitre-en-pause.${format}`
-  const common = {
-    'Content-Disposition': `attachment; filename="${filename}"`,
-    'Cache-Control': 'public, max-age=86400',
-  }
+
+  const common: Record<string, string> = { 'Cache-Control': 'public, max-age=86400' }
+  if (download) common['Content-Disposition'] = `attachment; filename="qrcode-maitre-en-pause.${format}"`
 
   if (format === 'png') {
     const png = await qrPng(url)

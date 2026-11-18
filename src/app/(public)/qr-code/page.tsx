@@ -36,7 +36,7 @@ export default async function QrCodePage() {
 
         <div className="mt-8 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
           <a
-            href="/api/qrcode?format=svg"
+            href="/api/qrcode?format=svg&download=1"
             download
             className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm bg-navy-800 text-white text-sm font-medium hover:bg-navy-700 transition-colors"
           >
@@ -44,7 +44,7 @@ export default async function QrCodePage() {
             SVG <span className="text-white/60 font-normal">— impression</span>
           </a>
           <a
-            href="/api/qrcode?format=png"
+            href="/api/qrcode?format=png&download=1"
             download
             className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm border border-navy-800 text-navy-800 text-sm font-medium hover:bg-navy-50 transition-colors"
           >
