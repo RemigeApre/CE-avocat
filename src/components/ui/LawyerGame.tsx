@@ -25,85 +25,196 @@ const GREEN_LIGHT = '#d4e8a0'
 const FEUILLE_COL = '#7c9e68'
 const FEUILLE_BREAK_COL = '#a89880'
 
-type PlatType = 'dossier' | 'feuille' | 'amende'
-interface Plat { x: number; y: number; w: number; type: PlatType; timer: number; broken: boolean }
-interface Player { x: number; y: number; vx: number; vy: number; hp: number; hurt: number; stun: number; face: number }
-interface Heart { x: number; y: number; collected: boolean; bobOff: number }
+// ── Difficulte progressive ──────────────────────────────────
+const SAFE_START = 300     // m : aucune amende avant
+const RAMP = 1700          // m : de SAFE_START a SAFE_START + RAMP, la difficulte passe de 0 a 1
+const SAFE_REACH = 140     // px : ecart max entre deux plateformes utilisables (saut max ~183 px)
+// ── Bonus ───────────────────────────────────────────────────
+const BONUS_MIN = 700      // m : bonus seulement dans les niveaux plus durs
+const BONUS_GAP = 300      // m : ecart minimal entre deux bonus
+const BONUS_CHANCE = 0.035 // par plateforme eligible : rares
+const CODE_FRAMES = 360    // 6 s d'invincibilite
+const ROBE_FRAMES = 300    // 5 s de vol plane
+const CAFE_FRAMES = 75     // propulsion (~180 m)
+const CAFE_VY = -17
+const GLIDE_VY = 1.3
 
-// Garantit qu'une amende n'est jamais seule : si la précédente était amende, force dossier
-function makePlat(y: number, lastWasAmende = false, force?: PlatType): Plat {
+type PlatType = 'dossier' | 'feuille' | 'amende'
+type BonusKind = 'code' | 'cafe' | 'robe'
+interface Plat { x: number; y: number; w: number; vx: number; type: PlatType; timer: number; broken: boolean }
+interface Player { x: number; y: number; vx: number; vy: number; hp: number; hurt: number; stun: number; face: number; squash: number }
+interface Heart { x: number; y: number; collected: boolean; bobOff: number }
+interface Bonus { x: number; y: number; kind: BonusKind; bobOff: number }
+interface Power { kind: BonusKind; t: number; total: number }
+interface FloatText { text: string; x: number; y: number; t: number }
+
+const BONUS_INFO: Record<BonusKind, { label: string; pickup: string; color: string }> = {
+  code: { label: 'Intouchable', pickup: 'Code civil : intouchable !', color: '#b91c1c' },
+  cafe: { label: 'Café', pickup: 'Café : décollage !', color: '#7c4a2d' },
+  robe: { label: 'Vol plané', pickup: 'Robe : vol plané !', color: '#111827' },
+}
+
+const clamp01 = (v: number) => Math.max(0, Math.min(1, v))
+/** 0 avant SAFE_START, puis monte lineairement jusqu'a 1 */
+const difficulty = (score: number) => clamp01((score - SAFE_START) / RAMP)
+/** Ecart vertical avant la prochaine plateforme : se creuse avec la difficulte (max ~92 px) */
+const platGap = (score: number) => {
+  const d = difficulty(score)
+  return 36 + 16 * d + Math.random() * (22 + 18 * d)
+}
+
+// Amende jamais seule (jamais deux de suite), et aucune avant SAFE_START
+function makePlat(y: number, score: number, lastWasAmende = false, force?: PlatType): Plat {
+  const d = difficulty(score)
+  const amendeP = score < SAFE_START ? 0 : 0.08 + 0.22 * d
+  const feuilleP = 0.22 + 0.13 * d
   const r = Math.random()
   let type: PlatType
-  if (force) {
-    type = force
-  } else if (lastWasAmende) {
-    type = r < 0.70 ? 'dossier' : 'feuille'
-  } else {
-    type = r < 0.55 ? 'dossier' : r < 0.80 ? 'feuille' : 'amende'
-  }
-  const w = 60 + Math.random() * 36
-  return { x: Math.random() * (W - w - 10) + 5, y, w, type, timer: 0, broken: false }
+  if (force) type = force
+  else if (lastWasAmende) type = r < 0.7 ? 'dossier' : 'feuille'
+  else type = r < amendeP ? 'amende' : r < amendeP + feuilleP ? 'feuille' : 'dossier'
+
+  const w = (60 + Math.random() * 36) * (1 - 0.2 * d)
+  // Dossiers mobiles a partir d'un certain niveau
+  const moving = type === 'dossier' && !force && score > 500 && Math.random() < 0.28 * d
+  const vx = moving ? (Math.random() < 0.5 ? -1 : 1) * (0.6 + 1.0 * d) : 0
+  return { x: Math.random() * (W - w - 10) + 5, y, w, vx, type, timer: 0, broken: false }
 }
 
 function initPlats(): Plat[] {
-  const ps: Plat[] = [{ x: W / 2 - 50, y: H - 60, w: 100, type: 'dossier', timer: 0, broken: false }]
-  let lastAmende = false
-  for (let i = 1; i < 14; i++) {
-    const p = makePlat(H - 60 - i * 40, lastAmende)
-    lastAmende = p.type === 'amende'
-    ps.push(p)
-  }
+  const ps: Plat[] = [{ x: W / 2 - 50, y: H - 60, w: 100, vx: 0, type: 'dossier', timer: 0, broken: false }]
+  for (let i = 1; i < 14; i++) ps.push(makePlat(H - 60 - i * 40, 0))
   return ps
 }
 
 function initPlayer(): Player {
-  return { x: W / 2 - PW / 2, y: H - 60 - PH, vx: 0, vy: JUMP_V, hp: 3, hurt: 0, stun: 0, face: 1 }
+  return { x: W / 2 - PW / 2, y: H - 60 - PH, vx: 0, vy: JUMP_V, hp: 3, hurt: 0, stun: 0, face: 1, squash: 0 }
 }
 
-function drawAvocat(ctx: CanvasRenderingContext2D, x: number, y: number, hurt: number, face: number) {
-  ctx.save()
-  if (face < 0) { ctx.translate(x + PW, y); ctx.scale(-1, 1); x = 0; y = 0 } else { ctx.translate(x, y); x = 0; y = 0 }
+interface AvocatFx { hp: number; squash: number; vy: number; power: BonusKind | null; frame: number }
+
+function drawAvocat(ctx: CanvasRenderingContext2D, x: number, y: number, hurt: number, face: number, fx: AvocatFx = { hp: 3, squash: 0, vy: 0, power: null, frame: 0 }) {
   const cx = PW / 2
   const shakeX = hurt > 0 ? (Math.random() - 0.5) * 3 : 0
+
+  // Etirement en montee, ecrasement a la reception (ancre aux pieds)
+  const rise = clamp01(-fx.vy / -JUMP_V)
+  const sx = 1 - 0.08 * rise + 0.2 * fx.squash
+  const sy = 1 + 0.1 * rise - 0.24 * fx.squash
+
+  ctx.save()
+  ctx.translate(x, y)
+
+  // Aura du Code civil (non deformee)
+  if (fx.power === 'code') {
+    const pulse = 0.5 + 0.5 * Math.sin(fx.frame * 0.2)
+    ctx.strokeStyle = `rgba(201,168,76,${0.45 + 0.35 * pulse})`
+    ctx.lineWidth = 2
+    ctx.beginPath(); ctx.ellipse(cx, PH * 0.55, 21 + pulse * 2, 25 + pulse * 2, 0, 0, Math.PI * 2); ctx.stroke()
+    ctx.fillStyle = 'rgba(201,168,76,0.10)'; ctx.fill()
+  }
+  // Trainee de vapeur du cafe
+  if (fx.power === 'cafe') {
+    for (let i = 0; i < 4; i++) {
+      const k = (fx.frame * 0.15 + i * 0.25) % 1
+      ctx.fillStyle = `rgba(124,74,45,${0.28 * (1 - k)})`
+      ctx.beginPath(); ctx.arc(cx + Math.sin(fx.frame * 0.3 + i) * 4, PH + 6 + k * 34, 4 + k * 6, 0, Math.PI * 2); ctx.fill()
+    }
+  }
+
+  ctx.translate(cx, PH); ctx.scale(sx, sy); ctx.translate(-cx, -PH)
+  if (face < 0) { ctx.translate(PW, 0); ctx.scale(-1, 1) }
+
+  // Robe d'avocat qui flotte (derriere le corps)
+  if (fx.power === 'robe') {
+    const flap = Math.sin(fx.frame * 0.35) * 3
+    ctx.fillStyle = '#111827'
+    ctx.beginPath()
+    ctx.moveTo(cx - 6, PH * 0.38)
+    ctx.lineTo(cx - 19 - flap, PH * 0.95)
+    ctx.quadraticCurveTo(cx, PH * 1.08 + flap, cx + 19 + flap, PH * 0.95)
+    ctx.lineTo(cx + 6, PH * 0.38)
+    ctx.closePath(); ctx.fill()
+  }
 
   ctx.fillStyle = 'rgba(0,0,0,0.08)'
   ctx.beginPath(); ctx.ellipse(cx + shakeX, PH + 4, 11, 4, 0, 0, Math.PI * 2); ctx.fill()
 
   ctx.fillStyle = GREEN
-  ctx.beginPath(); ctx.ellipse(cx + shakeX, y + PH * 0.62, 11, 15, 0, 0, Math.PI * 2); ctx.fill()
+  ctx.beginPath(); ctx.ellipse(cx + shakeX, PH * 0.62, 11, 15, 0, 0, Math.PI * 2); ctx.fill()
   ctx.fillStyle = '#3d6b4a'
-  ctx.beginPath(); ctx.ellipse(cx + shakeX, y + PH * 0.28, 7, 10, 0, 0, Math.PI * 2); ctx.fill()
+  ctx.beginPath(); ctx.ellipse(cx + shakeX, PH * 0.28, 7, 10, 0, 0, Math.PI * 2); ctx.fill()
 
   ctx.fillStyle = GREEN_LIGHT
-  ctx.beginPath(); ctx.ellipse(cx + shakeX, y + PH * 0.6, 8, 11, 0, 0, Math.PI * 2); ctx.fill()
-  ctx.beginPath(); ctx.ellipse(cx + shakeX, y + PH * 0.28, 5, 7, 0, 0, Math.PI * 2); ctx.fill()
+  ctx.beginPath(); ctx.ellipse(cx + shakeX, PH * 0.6, 8, 11, 0, 0, Math.PI * 2); ctx.fill()
+  ctx.beginPath(); ctx.ellipse(cx + shakeX, PH * 0.28, 5, 7, 0, 0, Math.PI * 2); ctx.fill()
 
   ctx.fillStyle = GOLD
-  ctx.beginPath(); ctx.ellipse(cx + shakeX, y + PH * 0.72, 5, 6.5, 0, 0, Math.PI * 2); ctx.fill()
+  ctx.beginPath(); ctx.ellipse(cx + shakeX, PH * 0.72, 5, 6.5, 0, 0, Math.PI * 2); ctx.fill()
   ctx.fillStyle = GOLD_LIGHT
-  ctx.beginPath(); ctx.ellipse(cx + shakeX - 1, y + PH * 0.68, 2, 3, 0, 0, Math.PI * 2); ctx.fill()
+  ctx.beginPath(); ctx.ellipse(cx + shakeX - 1, PH * 0.68, 2, 3, 0, 0, Math.PI * 2); ctx.fill()
 
   ctx.strokeStyle = GREEN; ctx.lineWidth = 2; ctx.lineCap = 'round'
-  ctx.beginPath(); ctx.moveTo(cx + shakeX, y + 1); ctx.lineTo(cx + shakeX + 2, y - 5); ctx.stroke()
+  ctx.beginPath(); ctx.moveTo(cx + shakeX, 1); ctx.lineTo(cx + shakeX + 2, -5); ctx.stroke()
+
+  // Rabat blanc de la robe, par-dessus le corps
+  if (fx.power === 'robe') {
+    ctx.fillStyle = 'white'
+    ctx.fillRect(cx - 3 + shakeX, PH * 0.4, 2.5, 6); ctx.fillRect(cx + 0.5 + shakeX, PH * 0.4, 2.5, 6)
+  }
+
+  // L'avocat s'abime avec les degats (subtil)
+  if (fx.hp <= 2) {
+    // tache brune sur la chair
+    ctx.fillStyle = 'rgba(122,92,46,0.55)'
+    ctx.beginPath(); ctx.ellipse(cx - 4.5 + shakeX, PH * 0.5, 2.2, 1.6, 0.4, 0, Math.PI * 2); ctx.fill()
+    // pansement
+    ctx.save()
+    ctx.translate(cx + 6 + shakeX, PH * 0.2); ctx.rotate(-0.6)
+    ctx.fillStyle = '#f1d3a8'; ctx.beginPath(); ctx.roundRect(-5, -2, 10, 4, 2); ctx.fill()
+    ctx.fillStyle = '#d9b483'; ctx.fillRect(-1.5, -2, 3, 4)
+    ctx.restore()
+  }
+  if (fx.hp <= 1) {
+    // fissure + seconde tache
+    ctx.strokeStyle = 'rgba(40,60,40,0.7)'; ctx.lineWidth = 1
+    ctx.beginPath()
+    ctx.moveTo(cx - 9 + shakeX, PH * 0.56); ctx.lineTo(cx - 6 + shakeX, PH * 0.62)
+    ctx.lineTo(cx - 8.5 + shakeX, PH * 0.67); ctx.lineTo(cx - 5.5 + shakeX, PH * 0.74)
+    ctx.stroke()
+    ctx.fillStyle = 'rgba(122,92,46,0.5)'
+    ctx.beginPath(); ctx.ellipse(cx + 5 + shakeX, PH * 0.82, 1.8, 1.3, 0, 0, Math.PI * 2); ctx.fill()
+  }
 
   if (hurt > 0) {
     ctx.fillStyle = RED; ctx.font = 'bold 9px sans-serif'; ctx.textAlign = 'center'
-    ctx.fillText('x  x', cx + shakeX, y + 14)
+    ctx.fillText('x  x', cx + shakeX, 14)
   } else {
     ctx.fillStyle = 'white'
-    ctx.beginPath(); ctx.ellipse(cx - 3.5 + shakeX, y + 13, 3, 3.5, 0, 0, Math.PI * 2); ctx.fill()
+    ctx.beginPath(); ctx.ellipse(cx - 3.5 + shakeX, 13, 3, 3.5, 0, 0, Math.PI * 2); ctx.fill()
     ctx.fillStyle = '#1a1a2e'
-    ctx.beginPath(); ctx.ellipse(cx - 3 + shakeX, y + 13.5, 1.8, 2, 0, 0, Math.PI * 2); ctx.fill()
+    ctx.beginPath(); ctx.ellipse(cx - 3 + shakeX, 13.5, 1.8, 2, 0, 0, Math.PI * 2); ctx.fill()
     ctx.fillStyle = 'white'
-    ctx.beginPath(); ctx.ellipse(cx - 2.5 + shakeX, y + 12.5, 0.7, 0.7, 0, 0, Math.PI * 2); ctx.fill()
+    ctx.beginPath(); ctx.ellipse(cx - 2.5 + shakeX, 12.5, 0.7, 0.7, 0, 0, Math.PI * 2); ctx.fill()
     ctx.fillStyle = 'white'
-    ctx.beginPath(); ctx.ellipse(cx + 3.5 + shakeX, y + 13, 3, 3.5, 0, 0, Math.PI * 2); ctx.fill()
+    ctx.beginPath(); ctx.ellipse(cx + 3.5 + shakeX, 13, 3, 3.5, 0, 0, Math.PI * 2); ctx.fill()
     ctx.fillStyle = '#1a1a2e'
-    ctx.beginPath(); ctx.ellipse(cx + 4 + shakeX, y + 13.5, 1.8, 2, 0, 0, Math.PI * 2); ctx.fill()
+    ctx.beginPath(); ctx.ellipse(cx + 4 + shakeX, 13.5, 1.8, 2, 0, 0, Math.PI * 2); ctx.fill()
     ctx.fillStyle = 'white'
-    ctx.beginPath(); ctx.ellipse(cx + 4.5 + shakeX, y + 12.5, 0.7, 0.7, 0, 0, Math.PI * 2); ctx.fill()
+    ctx.beginPath(); ctx.ellipse(cx + 4.5 + shakeX, 12.5, 0.7, 0.7, 0, 0, Math.PI * 2); ctx.fill()
+    if (fx.hp <= 1) {
+      // paupieres lourdes : il est fatigue
+      ctx.fillStyle = GREEN_LIGHT
+      ctx.fillRect(cx - 7 + shakeX, 9, 6.5, 3.2); ctx.fillRect(cx + 0.5 + shakeX, 9, 6.5, 3.2)
+      ctx.strokeStyle = '#1a1a2e'; ctx.lineWidth = 0.9
+      ctx.beginPath(); ctx.moveTo(cx - 6.5 + shakeX, 12.2); ctx.lineTo(cx - 0.5 + shakeX, 12.2); ctx.stroke()
+      ctx.beginPath(); ctx.moveTo(cx + 0.5 + shakeX, 12.2); ctx.lineTo(cx + 6.5 + shakeX, 12.2); ctx.stroke()
+    }
     ctx.strokeStyle = '#1a1a2e'; ctx.lineWidth = 1.2
-    ctx.beginPath(); ctx.arc(cx + shakeX, y + 16, 3, 0.1, Math.PI - 0.1); ctx.stroke()
+    ctx.beginPath()
+    if (fx.hp <= 1) ctx.arc(cx + shakeX, 19, 2.6, Math.PI + 0.3, -0.3) // bouche triste
+    else ctx.arc(cx + shakeX, 16, 3, 0.1, Math.PI - 0.1)
+    ctx.stroke()
   }
 
   ctx.restore()
@@ -179,10 +290,72 @@ function drawHeartPickup(ctx: CanvasRenderingContext2D, x: number, y: number, fr
   ctx.restore()
 }
 
-function drawScoreHUD(ctx: CanvasRenderingContext2D, score: number, best: number, hp: number) {
-  // Vies
+function drawBonus(ctx: CanvasRenderingContext2D, b: Bonus, cam: number, frame: number) {
+  const x = b.x
+  const y = b.y - cam + Math.sin(frame * 0.06 + b.bobOff) * 3
+  ctx.save()
+  // halo dore : il se remarque sans crier
+  const pulse = 0.5 + 0.5 * Math.sin(frame * 0.1 + b.bobOff)
+  ctx.fillStyle = `rgba(201,168,76,${0.16 + 0.12 * pulse})`
+  ctx.beginPath(); ctx.arc(x, y, 15 + pulse * 2, 0, Math.PI * 2); ctx.fill()
+
+  if (b.kind === 'code') {
+    // Code civil : livre rouge
+    ctx.fillStyle = '#b91c1c'; ctx.beginPath(); ctx.roundRect(x - 8, y - 10, 16, 20, 2); ctx.fill()
+    ctx.fillStyle = '#7f1d1d'; ctx.fillRect(x - 8, y - 10, 3, 20)
+    ctx.fillStyle = GOLD_LIGHT; ctx.font = 'bold 9px system-ui'; ctx.textAlign = 'center'
+    ctx.fillText('C', x + 1.5, y + 3)
+  } else if (b.kind === 'cafe') {
+    // Cafe : tasse fumante
+    ctx.strokeStyle = 'rgba(124,74,45,0.6)'; ctx.lineWidth = 1.3; ctx.lineCap = 'round'
+    for (const dx of [-3, 2]) {
+      ctx.beginPath(); ctx.moveTo(x + dx, y - 6)
+      ctx.quadraticCurveTo(x + dx + 3, y - 10, x + dx, y - 13); ctx.stroke()
+    }
+    ctx.fillStyle = 'white'; ctx.strokeStyle = '#7c4a2d'; ctx.lineWidth = 1.5
+    ctx.beginPath(); ctx.roundRect(x - 7, y - 4, 13, 12, [1, 1, 4, 4]); ctx.fill(); ctx.stroke()
+    ctx.beginPath(); ctx.arc(x + 7, y + 1.5, 3, -Math.PI / 2, Math.PI / 2); ctx.stroke()
+    ctx.fillStyle = '#7c4a2d'; ctx.fillRect(x - 6, y - 3, 11, 2.5)
+  } else {
+    // Robe d'avocat noire a rabat blanc
+    ctx.fillStyle = '#111827'
+    ctx.beginPath()
+    ctx.moveTo(x - 4, y - 10); ctx.lineTo(x + 4, y - 10)
+    ctx.lineTo(x + 9, y - 4); ctx.lineTo(x + 6, y - 2); ctx.lineTo(x + 6, y + 10)
+    ctx.lineTo(x - 6, y + 10); ctx.lineTo(x - 6, y - 2); ctx.lineTo(x - 9, y - 4)
+    ctx.closePath(); ctx.fill()
+    ctx.fillStyle = 'white'; ctx.fillRect(x - 2.5, y - 9, 2, 6); ctx.fillRect(x + 0.5, y - 9, 2, 6)
+  }
+  ctx.restore()
+}
+
+function drawPowerHUD(ctx: CanvasRenderingContext2D, power: Power) {
+  const info = BONUS_INFO[power.kind]
+  const bw = 84, bx = W / 2 - bw / 2, by = 30
+  ctx.fillStyle = 'rgba(255,255,255,0.75)'
+  ctx.beginPath(); ctx.roundRect(bx - 6, by - 16, bw + 12, 24, 6); ctx.fill()
+  ctx.fillStyle = info.color; ctx.font = 'bold 9px system-ui'; ctx.textAlign = 'center'
+  ctx.fillText(info.label, W / 2, by - 6)
+  ctx.fillStyle = 'rgba(27,45,90,0.12)'
+  ctx.beginPath(); ctx.roundRect(bx, by, bw, 4, 2); ctx.fill()
+  ctx.fillStyle = GOLD
+  ctx.beginPath(); ctx.roundRect(bx, by, Math.max(2, bw * (power.t / power.total)), 4, 2); ctx.fill()
+}
+
+function drawScoreHUD(ctx: CanvasRenderingContext2D, score: number, best: number, hp: number, lost?: { index: number; t: number }) {
+  // Vies ; la vie qui vient d'etre perdue gonfle puis s'efface (subtil)
   ctx.font = '17px sans-serif'; ctx.textAlign = 'left'
   for (let i = 0; i < 3; i++) {
+    if (lost && lost.t > 0 && i === lost.index) {
+      const k = 1 - lost.t / 40 // 0 -> 1
+      const scale = 1 + 0.55 * Math.sin(Math.min(1, k * 1.6) * Math.PI)
+      ctx.save()
+      ctx.globalAlpha = 0.18 + 0.82 * (1 - k)
+      ctx.translate(7 + i * 24 + 9, 20); ctx.scale(scale, scale); ctx.rotate(k * 0.5)
+      ctx.fillText('🥑', -9, 6)
+      ctx.restore()
+      continue
+    }
     ctx.globalAlpha = i < hp ? 1 : 0.18
     ctx.fillText('🥑', 7 + i * 24, 26)
   }
@@ -247,6 +420,27 @@ function drawGameOver(ctx: CanvasRenderingContext2D, score: number, best: number
   ctx.fillText(touch ? '[ Touchez pour rejouer ]' : '[ Espace ou clic pour rejouer ]', W / 2, by + 174)
 }
 
+// Etat d'une partie neuve (le record et la phase sont conserves a part)
+const freshState = () => ({
+  player: initPlayer(),
+  plats: initPlats(),
+  hearts: [] as Heart[],
+  bonuses: [] as Bonus[],
+  power: null as Power | null,
+  coffeeSafe: false,     // apres un cafe : amendes inoffensives et plateformes solides jusqu'a l'atterrissage
+  floats: [] as FloatText[],
+  lost: { index: -1, t: 0 },
+  hurtFlash: 0,
+  cam: 0,
+  score: 0,
+  maxY: H - 60 - PH,
+  frame: 0,
+  lastPlatWasAmende: false,
+  lastUsableY: H - 60 - 13 * 40,
+  lastBonusScore: 0,
+  nextHeartScore: HEART_EVERY,
+})
+
 export function LawyerGame() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const keys = useRef({ left: false, right: false })      // clavier
@@ -258,20 +452,13 @@ export function LawyerGame() {
   const acc = useRef(0)
   const deadAt = useRef(0)
 
+
   const st = useRef({
     phase: 'idle' as 'idle' | 'playing' | 'dead',
-    player: initPlayer(),
-    plats: initPlats(),
-    hearts: [] as Heart[],
-    cam: 0,
-    score: 0,
     bestScore: 0,
     isRecord: false,
-    maxY: H - 60 - PH,
-    frame: 0,
     animId: 0,
-    lastPlatWasAmende: false,
-    nextHeartScore: HEART_EVERY,
+    ...freshState(),
   })
 
   useEffect(() => {
@@ -360,6 +547,24 @@ export function LawyerGame() {
       s.frame++
       if (p.hurt > 0) p.hurt--
       if (p.stun > 0) p.stun--
+      if (s.lost.t > 0) s.lost.t--
+      if (s.hurtFlash > 0) s.hurtFlash--
+      p.squash *= 0.82
+
+      // Bonus actif
+      const power = s.power
+      if (power) {
+        power.t--
+        if (power.t <= 0) {
+          if (power.kind === 'cafe') {
+            // Fin du decollage : plateforme solide large posee sous l'avocat, atterrissage garanti
+            const lw = 110
+            s.plats.push({ x: Math.max(5, Math.min(W - lw - 5, p.x + PW / 2 - lw / 2)), y: p.y + PH + 120, w: lw, vx: 0, type: 'dossier', timer: 0, broken: false })
+            p.vy = JUMP_V * 0.6
+          }
+          s.power = null
+        }
+      }
 
       const left = keys.current.left || ptrKeys.current.left
       const right = keys.current.right || ptrKeys.current.right
@@ -369,19 +574,38 @@ export function LawyerGame() {
         else p.vx *= 0.72
       } else { p.vx *= 0.72 }
 
-      p.vy += GRAVITY; p.x += p.vx; p.y += p.vy
+      if (s.power?.kind === 'cafe') p.vy = CAFE_VY
+      else {
+        p.vy += GRAVITY
+        if (s.power?.kind === 'robe' && p.vy > GLIDE_VY) p.vy = GLIDE_VY
+      }
+      p.x += p.vx; p.y += p.vy
       if (p.x > W) p.x = -PW
       if (p.x < -PW) p.x = W
 
+      // Plateformes mobiles
+      for (const pl of s.plats) {
+        if (!pl.vx) continue
+        pl.x += pl.vx
+        if (pl.x < 5 || pl.x + pl.w > W - 5) pl.vx = -pl.vx
+      }
+
       if (p.vy > 0) {
+        const invincible = s.coffeeSafe || s.power?.kind === 'code'
         for (const pl of s.plats) {
           if (pl.broken) continue
           if (p.x + PW - 4 > pl.x && p.x + 4 < pl.x + pl.w &&
               p.y + PH >= pl.y && p.y + PH <= pl.y + PLAT_H + p.vy + 2) {
-            if (pl.type === 'amende') {
-              if (p.hurt === 0) { p.hp--; p.hurt = 55; p.stun = 32; p.vy = JUMP_V * 0.5 }
+            if (pl.type === 'amende' && !invincible) {
+              if (p.hurt === 0) {
+                p.hp--; p.hurt = 55; p.stun = 32; p.vy = JUMP_V * 0.5
+                s.lost = { index: p.hp, t: 40 }
+                s.hurtFlash = 14
+              }
             } else {
               p.y = pl.y - PH; p.vy = JUMP_V
+              p.squash = 1
+              s.coffeeSafe = false
               if (pl.type === 'feuille' && pl.timer === 0) pl.timer = 1
             }
           }
@@ -401,13 +625,26 @@ export function LawyerGame() {
         s.score = Math.floor((H - 60 - PH - s.maxY) / 7)
       }
 
-      // Génération de plateformes (avec garantie anti-amende consécutive)
+      // Generation : difficulte progressive, toujours une echappatoire a portee de saut
       const topY = Math.min(...s.plats.map(pl => pl.y))
       if (topY > s.cam - 20) {
-        const newPlat = makePlat(topY - 36 - Math.random() * 22, s.lastPlatWasAmende)
+        let y = topY - platGap(s.score)
+        if (s.lastPlatWasAmende) y = Math.max(y, s.lastUsableY - SAFE_REACH)
+        const newPlat = makePlat(y, s.score, s.lastPlatWasAmende, s.coffeeSafe ? 'dossier' : undefined)
         s.lastPlatWasAmende = newPlat.type === 'amende'
+        if (newPlat.type !== 'amende') s.lastUsableY = newPlat.y
         s.plats.push(newPlat)
         if (s.plats.length > 32) s.plats.splice(0, 1)
+
+        // Bonus : rares, seulement dans les niveaux durs, un seul a la fois, pose sur un dossier fixe
+        if (s.score >= BONUS_MIN && !s.power && !s.coffeeSafe && s.bonuses.length === 0 &&
+            s.score - s.lastBonusScore >= BONUS_GAP && newPlat.type === 'dossier' && !newPlat.vx &&
+            Math.random() < BONUS_CHANCE) {
+          const r = Math.random()
+          const kind: BonusKind = r < 0.4 ? 'code' : r < 0.75 ? 'robe' : 'cafe'
+          s.bonuses.push({ x: newPlat.x + newPlat.w / 2, y: newPlat.y - 24, kind, bobOff: Math.random() * Math.PI * 2 })
+          s.lastBonusScore = s.score
+        }
       }
 
       // Spawn coeurs tous les HEART_EVERY mètres
@@ -419,15 +656,33 @@ export function LawyerGame() {
 
       // Collecte des coeurs (coordonnées monde)
       const pcx = p.x + PW / 2
+      const pcy = p.y + PH / 2
       for (const h of s.hearts) {
         if (h.collected) continue
-        if (Math.abs(pcx - h.x) < 22 && Math.abs(p.y + PH / 2 - h.y) < 22) {
+        if (Math.abs(pcx - h.x) < 22 && Math.abs(pcy - h.y) < 22) {
           h.collected = true
           p.hp = Math.min(3, p.hp + 1)
+          s.floats.push({ text: '+1 ❤', x: h.x, y: h.y, t: 50 })
         }
       }
       // Nettoyage coeurs trop loin en dessous
       s.hearts = s.hearts.filter(h => !h.collected && h.y - s.cam < H + 60)
+
+      // Collecte des bonus
+      for (const b of s.bonuses) {
+        if (Math.abs(pcx - b.x) < 22 && Math.abs(pcy - b.y) < 24) {
+          const total = b.kind === 'code' ? CODE_FRAMES : b.kind === 'robe' ? ROBE_FRAMES : CAFE_FRAMES
+          s.power = { kind: b.kind, t: total, total }
+          if (b.kind === 'cafe') s.coffeeSafe = true
+          s.floats.push({ text: BONUS_INFO[b.kind].pickup, x: Math.max(70, Math.min(W - 70, b.x)), y: b.y, t: 70 })
+          b.y = Infinity // ramasse
+        }
+      }
+      s.bonuses = s.bonuses.filter(b => b.y !== Infinity && b.y - s.cam < H + 60)
+
+      // Textes flottants
+      for (const f of s.floats) { f.t--; f.y -= 0.6 }
+      s.floats = s.floats.filter(f => f.t > 0)
 
       if (p.y - s.cam > H + 80 || p.hp <= 0) {
         // Mise à jour best score
@@ -452,9 +707,26 @@ export function LawyerGame() {
     for (const h of s.hearts) {
       if (!h.collected) drawHeartPickup(ctx, h.x, h.y - s.cam, s.frame, h.bobOff)
     }
+    for (const b of s.bonuses) drawBonus(ctx, b, s.cam, s.frame)
 
-    drawAvocat(ctx, p.x, p.y - s.cam, p.hurt, p.face)
-    drawScoreHUD(ctx, s.score, s.bestScore, p.hp)
+    drawAvocat(ctx, p.x, p.y - s.cam, p.hurt, p.face, { hp: p.hp, squash: p.squash, vy: p.vy, power: s.power?.kind ?? null, frame: s.frame })
+
+    // Textes flottants (bonus, coeur)
+    for (const f of s.floats) {
+      ctx.globalAlpha = Math.min(1, f.t / 20)
+      ctx.fillStyle = NAVY; ctx.font = 'bold 11px system-ui'; ctx.textAlign = 'center'
+      ctx.fillText(f.text, f.x, f.y - s.cam)
+    }
+    ctx.globalAlpha = 1
+
+    // Voile rouge tres leger quand on perd une vie
+    if (s.hurtFlash > 0) {
+      ctx.fillStyle = `rgba(220,38,38,${0.10 * (s.hurtFlash / 14)})`
+      ctx.fillRect(0, 0, W, H)
+    }
+
+    drawScoreHUD(ctx, s.score, s.bestScore, p.hp, s.lost)
+    if (s.power) drawPowerHUD(ctx, s.power)
 
     if (s.phase === 'dead') {
       drawGameOver(ctx, s.score, s.bestScore, s.isRecord, touchRef.current)
@@ -485,13 +757,8 @@ export function LawyerGame() {
   const startOrRestart = useCallback(() => {
     const s = st.current
     if (s.phase === 'dead' || s.phase === 'idle') {
-      const best = s.bestScore
-      s.player = initPlayer(); s.plats = initPlats()
-      s.hearts = []; s.cam = 0; s.score = 0
-      s.maxY = H - 60 - PH; s.frame = 0
-      s.bestScore = best; s.isRecord = false
-      s.lastPlatWasAmende = false
-      s.nextHeartScore = HEART_EVERY
+      Object.assign(s, freshState())
+      s.isRecord = false
       s.phase = 'playing'
       schedule()
     }
