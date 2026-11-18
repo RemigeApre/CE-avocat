@@ -43,6 +43,10 @@
   .perspective-800 {
     perspective: 800px;
   }
+  /* Grandes cartes : perspective plus douce, la carte deborde moins pendant le retournement */
+  .perspective-1600 {
+    perspective: 1600px;
+  }
   .preserve-3d {
     transform-style: preserve-3d;
   }

@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/db'
-import { Button, CountUp, FlipCard, Avocado, type AvocadoEmotion } from '@/components/ui'
+import { Button, CountUp, FlipCard, Avocado, Carousel, type AvocadoEmotion } from '@/components/ui'
 import { HeroCards } from '@/components/hero/HeroCards'
 import { VirtuousCircle } from '@/components/home/VirtuousCircle'
 import { OfferGrid } from '@/components/offers/OfferGrid'
@@ -201,15 +201,23 @@ export default async function HomePage() {
       {/* Nous rejoindre */}
       <section className="bg-white py-16 border-b border-[#e5e3de]">
         <div className="max-w-5xl mx-auto px-6 text-center">
-          <h2 className="text-2xl font-bold text-navy-800 mb-12">Nous rejoindre</h2>
+          <h2 className="text-2xl font-bold text-navy-800 mb-6 md:mb-12">Nous rejoindre</h2>
 
           {/* Etapes : recto = etape, verso = l'avocat dans l'emotion du moment (clic pour retourner) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Mobile : carrousel pleine largeur (bord a bord) ; md+ : grille 2 puis 4 colonnes, inchangee */}
+          <div className="-mx-6 md:mx-0">
+          <Carousel
+            itemWidth="min(76vw, 320px)"
+            label="Les étapes pour nous rejoindre"
+            className="md:grid md:grid-cols-2 lg:grid-cols-4 md:overflow-visible md:px-0 md:py-0 md:[mask-image:none]"
+            itemClassName="md:w-auto"
+            dotsClassName="md:hidden"
+          >
             {JOIN_STEPS.map((step) => (
               <FlipCard
                 key={step.n}
                 label={`Étape ${step.n} : ${step.title}`}
-                className="h-64"
+                className="h-64 perspective-1600 md:perspective-800"
                 frontClassName="rounded-sm bg-[#f7f6f3] border border-[#e5e3de] transition-colors hover:border-navy-200"
                 backClassName="rounded-sm bg-navy-800 border border-navy-700"
                 front={
@@ -227,9 +235,10 @@ export default async function HomePage() {
                 }
               />
             ))}
+          </Carousel>
           </div>
 
-          <div className="mt-10">
+          <div className="mt-8 md:mt-10">
             <Link href="/adhesion">
               <Button size="lg" className="px-10">Rejoindre le Comité</Button>
             </Link>

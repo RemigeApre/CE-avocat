@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect, useRef, type ReactNode } from 'react'
+import { useState, useEffect, type ReactNode } from 'react'
 import { UtensilsCrossed, Drama, Flower2, Plane, FerrisWheel, Gift } from 'lucide-react'
 import { FlipCard } from '@/components/ui/FlipCard'
+import { Carousel } from '@/components/ui/Carousel'
 import { createPortal } from 'react-dom'
 import { LawyerGame } from '@/components/ui/LawyerGame'
 import { CATEGORY_PUNS, categoryHref, type CategoryPunSlug } from '@/lib/categoryPuns'
@@ -48,9 +49,6 @@ interface HeroCardsProps {
    */
   variant?: 'rail' | 'carousel'
 }
-
-const CARD_W = 108
-const CAROUSEL_GAP = 16
 
 export function HeroCards({ counts, variant = 'rail' }: HeroCardsProps) {
   const [gameOpen, setGameOpen] = useState(false)
@@ -106,9 +104,6 @@ export function HeroCards({ counts, variant = 'rail' }: HeroCardsProps) {
     </div>
   )
 
-  // En carrousel : chaque carte s'aligne au centre lors du balayage
-  const itemClass = variant === 'carousel' ? 'snap-center shrink-0' : ''
-
   const cards = [
     ...CARDS.map((card, i) => {
       const count = counts[card.slug] ?? 0
@@ -116,7 +111,7 @@ export function HeroCards({ counts, variant = 'rail' }: HeroCardsProps) {
         <FlipCard
           key={card.slug}
           {...CARD_PROPS}
-          className={`${CARD_PROPS.className} ${itemClass}`}
+          className={CARD_PROPS.className}
           style={{ rotate: ROTATIONS[i] }}
           label={card.label}
           flipLabel={`${card.label} : voir le nombre d'offres`}
@@ -138,7 +133,7 @@ export function HeroCards({ counts, variant = 'rail' }: HeroCardsProps) {
     }),
 
     /* Carte mystère : pas de verso, un clic ouvre directement le mini-jeu */
-    <div key="surprise" className={`${CARD_PROPS.className} ${itemClass}`} style={{ rotate: ROTATIONS[5] }}>
+    <div key="surprise" className={CARD_PROPS.className} style={{ rotate: ROTATIONS[5] }}>
       <button
         type="button"
         onClick={() => setGameOpen(true)}
@@ -154,7 +149,7 @@ export function HeroCards({ counts, variant = 'rail' }: HeroCardsProps) {
   return (
     <>
       {variant === 'carousel' ? (
-        <CardCarousel>{cards}</CardCarousel>
+        <Carousel itemWidth="108px" label="Nos catégories">{cards}</Carousel>
       ) : (
         /* 1 colonne sous 2xl (rail defilant), 2 colonnes au-dessus */
         <div className="grid grid-cols-1 2xl:grid-cols-2 gap-5">{cards}</div>
@@ -162,46 +157,5 @@ export function HeroCards({ counts, variant = 'rail' }: HeroCardsProps) {
 
       {mounted && createPortal(modal, document.body)}
     </>
-  )
-}
-
-/** Rangee balayable, cartes centrees (scroll-snap), pastilles de position cliquables */
-function CardCarousel({ children }: { children: ReactNode[] }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [active, setActive] = useState(0)
-  const pitch = CARD_W + CAROUSEL_GAP
-
-  const onScroll = () => {
-    const el = ref.current
-    if (el) setActive(Math.max(0, Math.min(children.length - 1, Math.round(el.scrollLeft / pitch))))
-  }
-  const goTo = (i: number) => ref.current?.scrollTo({ left: i * pitch, behavior: 'smooth' })
-
-  return (
-    <div>
-      <div
-        ref={ref}
-        onScroll={onScroll}
-        className="flex overflow-x-auto snap-x snap-mandatory overscroll-x-contain py-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [mask-image:linear-gradient(to_right,transparent,#000_20px,#000_calc(100%-20px),transparent)]"
-        // Marges laterales = premiere et derniere carte centrables
-        style={{ gap: CAROUSEL_GAP, paddingInline: `calc(50% - ${CARD_W / 2}px)` }}
-      >
-        {children}
-      </div>
-      <div className="flex justify-center gap-1.5 mt-1">
-        {children.map((_, i) => (
-          <button
-            key={i}
-            type="button"
-            onClick={() => goTo(i)}
-            aria-label={`Carte ${i + 1} sur ${children.length}`}
-            aria-current={i === active ? 'true' : undefined}
-            className="p-1.5 -m-0.5"
-          >
-            <span className={`block h-1.5 rounded-full transition-all duration-200 ${i === active ? 'w-5 bg-gold-500' : 'w-1.5 bg-navy-200'}`} />
-          </button>
-        ))}
-      </div>
-    </div>
   )
 }
