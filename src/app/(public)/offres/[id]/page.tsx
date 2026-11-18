@@ -8,6 +8,7 @@ import { CATEGORY_IMAGES } from '@/lib/categoryImages'
 import { categoryPun } from '@/lib/categoryPuns'
 import { OrderButton } from './OrderButton'
 import { SaveButton } from '@/components/offers/SaveButton'
+import { DirectionsButton } from '@/components/offers/DirectionsButton'
 import { auth } from '../../../../../auth'
 
 interface Props {
@@ -42,6 +43,10 @@ export default async function OfferPage({ params }: Props) {
 
   const slug = offer.category.slug
   const hasLocation = offer.addresses.length > 0 || !!offer.locationCity || !!offer.contactEmail
+  // Destinations pour "S'y rendre" : adresses precises, sinon la ville (et le pays)
+  const destinations = offer.addresses.length > 0
+    ? offer.addresses
+    : offer.locationCity ? [[offer.locationCity, offer.locationCountry].filter(Boolean).join(', ')] : []
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-10">
@@ -147,9 +152,10 @@ export default async function OfferPage({ params }: Props) {
                   </p>
                 </>
               )}
+              <DirectionsButton destinations={destinations} />
               {offer.contactEmail && (
                 <>
-                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Contact</p>
+                  <p className={['text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3', destinations.length > 0 ? 'mt-5' : ''].join(' ')}>Contact</p>
                   <a
                     href={`mailto:${offer.contactEmail}`}
                     className="text-sm text-gold-600 hover:text-gold-700 transition-colors flex items-center gap-2"

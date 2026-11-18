@@ -1,3 +1,5 @@
+import { ContactForm } from '@/components/contact/ContactForm'
+import { RevealEmail } from '@/components/contact/RevealEmail'
 import {
   BookOpen,
   BrainCircuit,
@@ -20,8 +22,6 @@ export const metadata = {
     "Le Geai, maison d'édition et entreprise de services informatiques : sites sur mesure, applications ordinateur et mobile, maintenance, conférences et formations.",
 }
 
-const EMAIL = 'administration@legeai-editions.com'
-const MAILTO = `mailto:${EMAIL}?subject=${encodeURIComponent('Demande de contact depuis Maître en Pause')}`
 
 const SERVICES: { Icon: LucideIcon; title: string; text: string; featured?: boolean }[] = [
   {
@@ -81,7 +81,7 @@ export default function LeGeaiPage() {
             et des formations qui allient rapidité, exigence et sur-mesure.
           </p>
           <a
-            href={MAILTO}
+            href="#contact"
             className="mt-8 inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 rounded-sm bg-gold-500 hover:bg-gold-400 text-navy-900 text-sm font-semibold transition-colors"
           >
             <Mail className="w-4 h-4" aria-hidden="true" />
@@ -146,25 +146,20 @@ export default function LeGeaiPage() {
         </div>
       </section>
 
-      {/* Contact */}
-      <section className="max-w-3xl mx-auto px-6 py-12 md:py-16 text-center">
-        <h2 className="text-2xl font-bold text-navy-800">Un projet en tête ?</h2>
-        <p className="mt-3 text-sm text-gray-500 leading-relaxed max-w-md mx-auto">
-          Ce site, Maître en Pause, a été conçu et réalisé bénévolement par Le Geai.
-          Parlons du vôtre : réponse rapide et devis sans engagement.
-        </p>
-        <a
-          href={MAILTO}
-          className="mt-6 inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 rounded-sm bg-navy-800 hover:bg-navy-700 text-white text-sm font-semibold transition-colors"
-        >
-          <Mail className="w-4 h-4" aria-hidden="true" />
-          Nous contacter
-        </a>
-        <p className="mt-4">
-          <a href={`mailto:${EMAIL}`} className="text-sm font-medium text-navy-700 hover:text-gold-600 transition-colors break-all">
-            {EMAIL}
-          </a>
-        </p>
+      {/* Contact : formulaire protege + adresse affichee a la demande (jamais dans la page) */}
+      <section id="contact" className="max-w-2xl mx-auto px-4 sm:px-6 py-12 md:py-16 scroll-mt-20">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold text-navy-800">Un projet en tête ?</h2>
+          <p className="mt-3 text-sm text-gray-600 leading-relaxed max-w-md mx-auto">
+            Ce site, Maître en Pause, a été conçu et réalisé bénévolement par Le Geai.
+            Parlons du vôtre : réponse rapide et devis sans engagement.
+          </p>
+        </div>
+        <ContactForm defaultSubject="le-geai" />
+        <div className="mt-6">
+          <p className="text-center text-xs text-gray-500 mb-1.5">Vous préférez votre messagerie ?</p>
+          <RevealEmail />
+        </div>
       </section>
     </div>
   )

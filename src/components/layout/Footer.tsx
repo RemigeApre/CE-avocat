@@ -13,6 +13,7 @@ const EXTRA_LINKS = [
   { href: '/evolutions', label: 'Évolutions envisagées' },
   { href: '/qr-code', label: 'QR code du site' },
   { href: '/le-geai', label: 'Le Geai, concepteur du site' },
+  { href: '/contact', label: 'Contact' },
 ]
 
 const LEGAL_LINKS = [

@@ -75,7 +75,7 @@ const PLANS: Plan[] = [
     ],
     note: 'Passable en frais de cabinet',
     cta: 'Nous contacter',
-    href: 'mailto:contact@maitre-en-pause.fr?subject=Formule%20Cabinet',
+    href: '/contact?sujet=cabinet',
     highlight: false,
   },
 ]
