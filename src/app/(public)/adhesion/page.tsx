@@ -82,8 +82,9 @@ export default function AdhesionPage() {
         {PLANS.map((plan) => (
           <div
             key={plan.id}
+            id={plan.id}
             className={[
-              'rounded-lg border flex flex-col overflow-hidden',
+              'rounded-lg border flex flex-col overflow-hidden scroll-mt-24',
               plan.highlight
                 ? 'border-navy-800 shadow-lg shadow-navy-800/10'
                 : 'border-[#e5e3de]',

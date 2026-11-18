@@ -60,6 +60,17 @@
   }
 }
 
+/* Pointilles qui avancent le long d'un trace (cercle vertueux) : 12 = 6 + 6 du dasharray, x2 */
+@keyframes dash-flow {
+  to { stroke-dashoffset: -24; }
+}
+.animate-dash-flow {
+  animation: dash-flow 1.6s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-dash-flow { animation: none; }
+}
+
 @keyframes marquee {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
