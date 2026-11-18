@@ -11,6 +11,7 @@ const NAV_LINKS = [
 
 const EXTRA_LINKS = [
   { href: '/evolutions', label: 'Evolutions envisagees' },
+  { href: '/qr-code', label: 'QR code du site' },
 ]
 
 const LEGAL_LINKS = [
@@ -95,7 +96,7 @@ export function Footer() {
                   </Link>
                 </li>
               ))}
-              <li className="pt-2 border-t border-navy-700">
+              <li className="pt-3 border-t border-navy-700 flex flex-col items-start gap-3">
                 {EXTRA_LINKS.map(({ href, label }) => (
                   <Link key={href} href={href} className="text-sm text-navy-300 hover:text-white transition-colors">
                     {label}
