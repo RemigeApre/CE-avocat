@@ -1,3 +1,5 @@
+import { punFor } from '@/lib/categoryPuns'
+
 interface Category {
   id: string
   name: string
@@ -17,22 +19,30 @@ export function CategorySubNav({ categories, activeSlug }: CategorySubNavProps) 
 
   return (
     <div className="sticky top-[72px] z-30 bg-navy-800 border-b border-navy-700">
-      <div className="flex justify-center overflow-x-auto scrollbar-hide px-6 lg:px-16">
-        <a
-          href="/offres"
-          className={[baseClass, !activeSlug ? activeClass : inactiveClass].join(' ')}
-        >
-          Toutes les offres
-        </a>
-        {categories.map((cat) => (
+      {/* Centrage "sur" : w-max + mx-auto centre quand ca tient, et reste defilable depuis le debut quand ca deborde (mobile) */}
+      <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex w-max mx-auto px-6 lg:px-16">
           <a
-            key={cat.id}
-            href={`/offres?categorie=${cat.slug}`}
-            className={[baseClass, activeSlug === cat.slug ? activeClass : inactiveClass].join(' ')}
+            href="/offres"
+            className={[baseClass, !activeSlug ? activeClass : inactiveClass].join(' ')}
           >
-            {cat.name}
+            Toutes les offres
           </a>
-        ))}
+          {categories.map((cat) => (
+            <a
+              key={cat.id}
+              href={`/offres?categorie=${cat.slug}`}
+              className={[baseClass, activeSlug === cat.slug ? activeClass : inactiveClass].join(' ')}
+            >
+              {punFor(cat.slug) ? (
+                <>
+                  {punFor(cat.slug)}
+                  <span className="text-xs font-normal opacity-60">· {cat.name}</span>
+                </>
+              ) : cat.name}
+            </a>
+          ))}
+        </div>
       </div>
     </div>
   )

@@ -9,4 +9,8 @@ export const CATEGORY_PUNS = [
 
 export type CategoryPunSlug = (typeof CATEGORY_PUNS)[number]['slug']
 
-export const categoryHref = (slug: string) => `/offres?categorie=${slug}`
+/** Jeu de mot d'une categorie (par slug), ou undefined si aucun n'est defini */
+export const punFor = (slug: string): string | undefined =>
+  CATEGORY_PUNS.find((c) => c.slug === slug)?.pun
+
+export const categoryHref =(slug: string) => `/offres?categorie=${slug}`

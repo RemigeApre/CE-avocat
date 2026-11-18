@@ -4,7 +4,7 @@ import { Button, CountUp } from '@/components/ui'
 import { HeroCards } from '@/components/hero/HeroCards'
 import { OfferGrid } from '@/components/offers/OfferGrid'
 import { cn } from '@/lib/utils'
-import { CATEGORY_PUNS } from '@/lib/categoryPuns'
+import { CATEGORY_PUNS, punFor } from '@/lib/categoryPuns'
 import { formatDate } from '@/lib/utils'
 import type { OfferWithRelations } from '@/types'
 
@@ -196,7 +196,12 @@ export default async function HomePage() {
                   className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium border border-[#e5e3de] text-gray-600 hover:border-navy-800 hover:text-navy-800 transition-colors shrink-0"
                 >
                   {cat.icon && <span>{cat.icon}</span>}
-                  {cat.name}
+                  {punFor(cat.slug) ? (
+                    <>
+                      {punFor(cat.slug)}
+                      <span className="text-xs font-normal text-gray-400">· {cat.name}</span>
+                    </>
+                  ) : cat.name}
                 </Link>
               ))}
             </div>
