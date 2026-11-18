@@ -94,9 +94,11 @@ export function Header() {
           {/* Droite — logo mobile / actions desktop */}
           <div className="flex items-center gap-3">
             {/* Logo mobile (droite) */}
-            <Link href="/" className="md:hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo complet.jpg" alt="Maître en Pause" className="h-8 w-auto object-contain rounded-sm" />
+            <Link href="/" className="md:hidden" aria-label="Maître en Pause — accueil">
+              <span className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm ring-1 ring-gold-400/40">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/icone robe.png" alt="" className="w-8 h-8 object-contain" />
+              </span>
             </Link>
 
             {/* Actions desktop */}

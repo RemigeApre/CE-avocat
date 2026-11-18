@@ -78,17 +78,16 @@ export default async function HomePage() {
   return (
     <>
       {/* Hero + marquee = exactement le viewport moins le header */}
-      <section
-        className="flex flex-col overflow-hidden bg-white"
-        style={{ height: 'calc(100vh - 72px)' }}
-      >
+      <section className="flex flex-col overflow-hidden bg-white h-[calc(100svh-72px)] md:h-[calc(100vh-72px)]">
         {/* Zone principale */}
         <div className="relative flex-1 overflow-hidden">
 
-          {/* Image droite - habillage, rien par dessus */}
-          <div className="absolute right-0 top-0 h-full w-[44%] pointer-events-none select-none hidden md:block">
-            {/* Fondu blanc a gauche : la statue est a droite, le fondu ne mange que le decor */}
-            <div className="absolute left-0 top-0 bottom-0 w-24 lg:w-44 bg-gradient-to-r from-white via-white/60 to-transparent z-10" />
+          {/* Image de couverture : plein cadre sur mobile, colonne droite (44%) sur desktop */}
+          <div className="absolute inset-0 md:left-auto md:w-[44%] pointer-events-none select-none">
+            {/* Desktop : fondu blanc a gauche, la statue est a droite, le fondu ne mange que le decor */}
+            <div className="hidden md:block absolute left-0 top-0 bottom-0 w-24 lg:w-44 bg-gradient-to-r from-white via-white/60 to-transparent z-10" />
+            {/* Mobile : voile bleu nuit depuis le bas, pour lire le texte en blanc ; la statue reste visible en haut */}
+            <div className="md:hidden absolute inset-0 z-10 bg-[linear-gradient(to_top,rgba(14,26,63,0.97)_0%,rgba(14,26,63,0.88)_45%,rgba(14,26,63,0.35)_72%,rgba(14,26,63,0.05)_100%)]" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/hero-justice-plage.webp"
@@ -102,7 +101,7 @@ export default async function HomePage() {
           </div>
 
           {/* Contenu principal */}
-          <div className="relative z-10 h-full flex items-center">
+          <div className="relative z-10 h-full flex items-end pb-10 md:items-center md:pb-0">
 
             {/* Logo + cartes collectibles - absolus a gauche, hors flux.
                 lg -> 2xl : rail etroit pleine hauteur, cartes en 1 colonne defilante.
@@ -121,28 +120,28 @@ export default async function HomePage() {
             {/* Texte + CTA - decale a droite entre lg et 2xl pour laisser la place au rail (12rem = rail + respiration) */}
             <div className="max-w-5xl mx-auto px-6 md:px-8 lg:pl-[max(2rem,calc(12rem_-_(100vw_-_64rem)/2))] 2xl:pl-8 w-full">
               <div className="max-w-lg">
-                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-navy-800 leading-[1.05] mb-8 md:mb-10">
+                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white md:text-navy-800 leading-[1.05] tracking-tight md:tracking-normal mb-7 md:mb-10 [text-shadow:0_2px_16px_rgba(14,26,63,0.45)] md:[text-shadow:none]">
                   Le Comité Professionnel des avocats
                 </h1>
                 <div className="flex items-center gap-6 md:gap-8">
                   <Link href="/login">
-                    <Button size="lg" className="px-8 md:px-10 py-3 h-auto rounded-sm">
+                    <Button size="lg" className="px-8 md:px-10 py-3 h-auto rounded-sm bg-gold-500 text-navy-900 hover:bg-gold-400 md:bg-navy-800 md:text-white md:hover:bg-navy-700">
                       Se connecter
                     </Button>
                   </Link>
                   <div className="flex items-baseline gap-1.5">
-                    <span className="text-3xl md:text-4xl font-bold text-gold-500 leading-none">{offerCount}</span>
-                    <span className="text-sm text-gray-400">offres</span>
+                    <span className="text-3xl md:text-4xl font-bold text-gold-400 md:text-gold-500 leading-none">{offerCount}</span>
+                    <span className="text-sm text-white/70 md:text-gray-400">offres</span>
                   </div>
                 </div>
-                <p className="mt-4 text-sm text-gray-500 leading-relaxed max-w-sm">
-                  Dans les entreprises, les salariés accèdent à des offres negociées à tarifs
+                <p className="mt-5 md:mt-4 text-sm text-white/80 md:text-gray-500 leading-relaxed max-w-sm">
+                  Dans les entreprises, les salariés accèdent à des offres négociées à tarifs
                   préférentiels. Les avocats libéraux, eux, n'y ont pas droit.
                   Maître en Pause change ça.
                 </p>
-                <p className="mt-2 text-xs text-gray-400 flex items-center gap-2">
-                  <CountUp target={81640} className="font-semibold text-gray-500" /> avocats en France.
-                  <CountUp target={4132} className="font-semibold text-gray-500" /> élèves avocats.
+                <p className="mt-3 md:mt-2 text-xs text-white/60 md:text-gray-400 flex flex-wrap items-center gap-x-2 gap-y-1">
+                  <span className="inline-flex items-center gap-2"><CountUp target={81640} className="font-semibold text-white md:text-gray-500" /> avocats en France.</span>
+                  <span className="inline-flex items-center gap-2"><CountUp target={4132} className="font-semibold text-white md:text-gray-500" /> élèves avocats.</span>
                 </p>
               </div>
             </div>
