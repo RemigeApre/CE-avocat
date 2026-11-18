@@ -39,6 +39,21 @@
   .scroll-rail::-webkit-scrollbar {
     display: none;
   }
+  /* Cartes retournables (flip 3D) */
+  .perspective-800 {
+    perspective: 800px;
+  }
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+  .backface-hidden {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
+
   .scroll-rail-none {
     -webkit-mask-image: none;
     mask-image: none;

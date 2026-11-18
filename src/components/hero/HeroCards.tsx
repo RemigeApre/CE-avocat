@@ -48,9 +48,78 @@ const CARDS = CATEGORY_PUNS.map(({ pun, slug }) => ({
 
 const ROTATIONS = ['-2deg', '1.5deg', '-1.5deg', '2deg', '-1deg', '1.5deg']
 
-export function HeroCards() {
+const CARD_SHADOW = '0 6px 24px rgba(27,45,90,0.14), 0 2px 6px rgba(27,45,90,0.08)'
+const FACE = 'absolute inset-0 backface-hidden rounded-[4px] border flex flex-col items-center justify-center'
+
+const plural = (n: number) => `offre${n > 1 ? 's' : ''}`
+
+interface FlipCardProps {
+  rotation: string
+  label: string
+  flipped: boolean
+  onToggle: () => void
+  front: ReactNode
+  /** Contenu du verso ; `action` est un element interactif pose au-dessus de la zone de retournement */
+  back: ReactNode
+  action: ReactNode
+}
+
+/**
+ * Carte qui se retourne au clic (recto <-> verso).
+ * Chaque face a son propre bouton plein cadre ; la face cachee est `inert`
+ * pour ne pas etre atteignable au clavier ni par les lecteurs d'ecran.
+ */
+function FlipCard({ rotation, label, flipped, onToggle, front, back, action }: FlipCardProps) {
+  return (
+    <div
+      className="w-[108px] h-[152px] perspective-800 transition-transform duration-200 hover:scale-105"
+      style={{ rotate: rotation }}
+    >
+      <div
+        className={`relative h-full w-full preserve-3d transition-transform duration-500 ease-[cubic-bezier(.2,.7,.3,1)] motion-reduce:transition-none ${flipped ? 'rotate-y-180' : ''}`}
+      >
+        {/* Recto */}
+        <div className={`${FACE} bg-white border-navy-100`} style={{ boxShadow: CARD_SHADOW }} inert={flipped}>
+          <button
+            type="button"
+            onClick={onToggle}
+            aria-label={`${label} : voir le nombre d'offres`}
+            className="absolute inset-0 rounded-[4px] cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-500 focus-visible:outline-offset-2"
+          />
+          <div className="pointer-events-none flex flex-col items-center gap-3">{front}</div>
+        </div>
+
+        {/* Verso */}
+        <div className={`${FACE} rotate-y-180 bg-navy-800 border-navy-700`} style={{ boxShadow: CARD_SHADOW }} inert={!flipped}>
+          <button
+            type="button"
+            onClick={onToggle}
+            aria-label={`${label} : revenir au recto`}
+            className="absolute inset-0 rounded-[4px] cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-500 focus-visible:outline-offset-2"
+          />
+          <div className="pointer-events-none flex flex-col items-center px-2 text-center">{back}</div>
+          <div className="relative mt-3">{action}</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const ACTION_CLASS = 'inline-flex items-center gap-1 rounded-sm px-2.5 py-1 text-[11px] font-semibold text-navy-900 bg-gold-500 hover:bg-gold-400 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2'
+
+interface HeroCardsProps {
+  /** Nombre d'offres actives par slug de categorie */
+  counts: Record<string, number>
+  /** Nombre total d'offres actives (verso de la carte Surprise) */
+  total: number
+}
+
+export function HeroCards({ counts, total }: HeroCardsProps) {
   const [gameOpen, setGameOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
+  // Cartes retournees, par cle (slug ou 'surprise') ; chacune se retourne independamment
+  const [flipped, setFlipped] = useState<Record<string, boolean>>({})
+  const toggle = (key: string) => setFlipped((f) => ({ ...f, [key]: !f[key] }))
 
   useEffect(() => { setMounted(true) }, [])
 
@@ -88,33 +157,60 @@ export function HeroCards() {
     <>
       {/* 1 colonne sous 2xl (rail defilant), 2 colonnes au-dessus */}
       <div className="grid grid-cols-1 2xl:grid-cols-2 gap-5">
-        {CARDS.map((card, i) => (
-          <a
-            key={card.slug}
-            href={card.href}
-            className="w-[108px] h-[152px] bg-white border border-navy-100 rounded-[4px] flex flex-col items-center justify-center gap-3 transition-transform duration-200 hover:scale-105 no-underline"
-            style={{
-              rotate: ROTATIONS[i],
-              boxShadow: '0 6px 24px rgba(27,45,90,0.14), 0 2px 6px rgba(27,45,90,0.08)',
-            }}
-          >
-            <div className="text-navy-700">{card.icon}</div>
-            <span className="text-[11px] font-semibold text-navy-600 text-center leading-tight px-3">{card.label}</span>
-          </a>
-        ))}
+        {CARDS.map((card, i) => {
+          const count = counts[card.slug] ?? 0
+          return (
+            <FlipCard
+              key={card.slug}
+              rotation={ROTATIONS[i]}
+              label={card.label}
+              flipped={!!flipped[card.slug]}
+              onToggle={() => toggle(card.slug)}
+              front={
+                <>
+                  <div className="text-navy-700">{card.icon}</div>
+                  <span className="text-[11px] font-semibold text-navy-600 text-center leading-tight px-3">{card.label}</span>
+                </>
+              }
+              back={
+                <>
+                  <span className="text-3xl font-bold text-gold-400 leading-none tabular-nums">{count}</span>
+                  <span className="mt-1 text-[11px] text-white/70">{plural(count)}</span>
+                </>
+              }
+              action={
+                <a href={card.href} className={ACTION_CLASS}>
+                  Voir <span aria-hidden="true">→</span>
+                </a>
+              }
+            />
+          )
+        })}
 
-        {/* Carte mystère */}
-        <button
-          onClick={() => setGameOpen(true)}
-          className="w-[108px] h-[152px] bg-white border border-navy-100 rounded-[4px] flex flex-col items-center justify-center gap-3 transition-transform duration-200 hover:scale-105 cursor-pointer"
-          style={{
-            rotate: ROTATIONS[5],
-            boxShadow: '0 6px 24px rgba(27,45,90,0.14), 0 2px 6px rgba(27,45,90,0.08)',
-          }}
-        >
-          <span className="text-4xl font-bold text-navy-200 leading-none select-none">?</span>
-          <span className="text-[11px] font-semibold text-navy-300 text-center leading-tight px-3">Surprise</span>
-        </button>
+        {/* Carte mystère : verso = total des offres + acces au mini-jeu */}
+        <FlipCard
+          rotation={ROTATIONS[5]}
+          label="Surprise"
+          flipped={!!flipped.surprise}
+          onToggle={() => toggle('surprise')}
+          front={
+            <>
+              <span className="text-4xl font-bold text-navy-200 leading-none select-none">?</span>
+              <span className="text-[11px] font-semibold text-navy-300 text-center leading-tight px-3">Surprise</span>
+            </>
+          }
+          back={
+            <>
+              <span className="text-3xl font-bold text-gold-400 leading-none tabular-nums">{total}</span>
+              <span className="mt-1 text-[11px] text-white/70">{plural(total)} au total</span>
+            </>
+          }
+          action={
+            <button type="button" onClick={() => setGameOpen(true)} className={ACTION_CLASS}>
+              Jouer <span aria-hidden="true">▶</span>
+            </button>
+          }
+        />
       </div>
 
       {mounted && createPortal(modal, document.body)}

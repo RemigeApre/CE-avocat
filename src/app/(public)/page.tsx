@@ -4,7 +4,7 @@ import { Button, CountUp } from '@/components/ui'
 import { HeroCards } from '@/components/hero/HeroCards'
 import { OfferGrid } from '@/components/offers/OfferGrid'
 import { cn } from '@/lib/utils'
-import { CATEGORY_PUNS, punFor } from '@/lib/categoryPuns'
+import { CATEGORY_PUNS } from '@/lib/categoryPuns'
 import { formatDate } from '@/lib/utils'
 import type { OfferWithRelations } from '@/types'
 
@@ -21,11 +21,12 @@ async function getFeaturedOffers(): Promise<OfferWithRelations[]> {
   return offers as unknown as OfferWithRelations[]
 }
 
-async function getCategories() {
-  return prisma.category.findMany({
-    orderBy: { name: 'asc' },
-    select: { id: true, name: true, slug: true, icon: true },
+// Nombre d'offres actives par categorie (slug -> nombre), pour le verso des cartes du hero
+async function getOfferCountsByCategory(): Promise<Record<string, number>> {
+  const categories = await prisma.category.findMany({
+    select: { slug: true, _count: { select: { offers: { where: { isActive: true } } } } },
   })
+  return Object.fromEntries(categories.map((c) => [c.slug, c._count.offers]))
 }
 
 async function getOfferCount() {
@@ -50,10 +51,10 @@ async function getLatestPosts() {
 
 
 export default async function HomePage() {
-  const [offers, categories, offerCount, partners, posts] = await Promise.all([
+  const [offers, offerCount, countsByCategory, partners, posts] = await Promise.all([
     getFeaturedOffers(),
-    getCategories(),
     getOfferCount(),
+    getOfferCountsByCategory(),
     getPartners(),
     getLatestPosts(),
   ])
@@ -103,7 +104,7 @@ export default async function HomePage() {
               {/* Padding interne : evite que l'overflow coupe ombres, rotations et zoom au survol */}
               <div className="scroll-rail flex-1 min-h-0 w-full overflow-y-auto flex flex-col px-4 py-4 2xl:scroll-rail-none 2xl:flex-none 2xl:overflow-visible 2xl:p-0">
                 <div className="my-auto">
-                  <HeroCards />
+                  <HeroCards counts={countsByCategory} total={offerCount} />
                 </div>
               </div>
             </div>
@@ -177,37 +178,6 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* Categories */}
-      {categories.length > 0 && (
-        <section className="bg-white border-b border-[#e5e3de]">
-          <div className="max-w-7xl mx-auto px-6 py-4 overflow-x-auto">
-            <div className="flex items-center gap-2 min-w-max">
-              <Link
-                href="/offres"
-                className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium bg-navy-800 text-white shrink-0"
-              >
-                Tout voir
-              </Link>
-              {categories.map((cat) => (
-                <Link
-                  key={cat.id}
-                  href={`/offres?categorie=${cat.slug}`}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium border border-[#e5e3de] text-gray-600 hover:border-navy-800 hover:text-navy-800 transition-colors shrink-0"
-                >
-                  {cat.icon && <span>{cat.icon}</span>}
-                  {punFor(cat.slug) ? (
-                    <>
-                      {punFor(cat.slug)}
-                      <span className="text-xs font-normal text-gray-400">· {cat.name}</span>
-                    </>
-                  ) : cat.name}
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* Nous rejoindre */}
       <section className="bg-white py-16 border-b border-[#e5e3de]">

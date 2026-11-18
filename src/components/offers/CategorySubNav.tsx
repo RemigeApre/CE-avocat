@@ -19,8 +19,9 @@ export function CategorySubNav({ categories, activeSlug }: CategorySubNavProps) 
 
   return (
     <div className="sticky top-[72px] z-30 bg-navy-800 border-b border-navy-700">
-      {/* Centrage "sur" : w-max + mx-auto centre quand ca tient, et reste defilable depuis le debut quand ca deborde (mobile) */}
-      <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {/* Centrage "sur" : w-max + mx-auto centre quand ca tient, et reste defilable depuis le debut quand ca deborde (mobile).
+          xl+ : tout tient sur une ligne -> overflow visible pour laisser sortir l'infobulle sous la barre. */}
+      <div className="overflow-x-auto xl:overflow-visible [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <div className="flex w-max mx-auto px-6 lg:px-16">
           <a
             href="/offres"
@@ -28,20 +29,33 @@ export function CategorySubNav({ categories, activeSlug }: CategorySubNavProps) 
           >
             Toutes les offres
           </a>
-          {categories.map((cat) => (
-            <a
-              key={cat.id}
-              href={`/offres?categorie=${cat.slug}`}
-              className={[baseClass, activeSlug === cat.slug ? activeClass : inactiveClass].join(' ')}
-            >
-              {punFor(cat.slug) ? (
-                <>
-                  {punFor(cat.slug)}
-                  <span className="text-xs font-normal opacity-60">· {cat.name}</span>
-                </>
-              ) : cat.name}
-            </a>
-          ))}
+          {categories.map((cat) => {
+            const pun = punFor(cat.slug)
+            return (
+              <a
+                key={cat.id}
+                href={`/offres?categorie=${cat.slug}`}
+                className={[baseClass, 'group relative', activeSlug === cat.slug ? activeClass : inactiveClass].join(' ')}
+              >
+                {pun ?? cat.name}
+                {pun && (
+                  <>
+                    {/* Lecteurs d'ecran : la vraie categorie est toujours annoncee */}
+                    <span className="sr-only"> ({cat.name})</span>
+                    {/* Infobulle au survol / focus clavier (desktop, xl+) */}
+                    <span
+                      aria-hidden="true"
+                      className="pointer-events-none absolute left-1/2 top-full z-40 mt-2 hidden xl:block -translate-x-1/2 -translate-y-1 whitespace-nowrap rounded bg-white px-2.5 py-1 text-xs font-medium text-navy-800 opacity-0 shadow-lg transition duration-150 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100"
+                    >
+                      {/* Petite fleche */}
+                      <span className="absolute -top-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 bg-white" />
+                      <span className="relative">{cat.name}</span>
+                    </span>
+                  </>
+                )}
+              </a>
+            )
+          })}
         </div>
       </div>
     </div>
