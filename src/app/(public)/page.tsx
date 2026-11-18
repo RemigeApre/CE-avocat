@@ -93,15 +93,22 @@ export default async function HomePage() {
           {/* Contenu principal */}
           <div className="relative z-10 h-full flex items-center">
 
-            {/* Cartes collectibles - absolues a gauche, hors flux */}
-            <div className="absolute left-6 top-1/2 -translate-y-1/2 hidden 2xl:flex flex-col items-center gap-6">
+            {/* Logo + cartes collectibles - absolus a gauche, hors flux.
+                lg -> 2xl : rail etroit pleine hauteur, cartes en 1 colonne defilante.
+                2xl+      : bloc centre verticalement, cartes en 2 colonnes. */}
+            <div className="absolute left-6 top-0 bottom-0 w-[140px] py-6 hidden lg:flex flex-col items-center gap-4 2xl:w-auto 2xl:py-0 2xl:bottom-auto 2xl:top-1/2 2xl:-translate-y-1/2 2xl:gap-6">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo complet.jpg" alt="Maître en Pause" className="h-32 w-auto object-contain rounded-xl" />
-              <HeroCards />
+              <img src="/logo complet.jpg" alt="Maître en Pause" className="h-20 2xl:h-32 w-auto object-contain rounded-xl shrink-0" />
+              {/* Padding interne : evite que l'overflow coupe ombres, rotations et zoom au survol */}
+              <div className="scroll-rail flex-1 min-h-0 w-full overflow-y-auto flex flex-col px-4 py-4 2xl:scroll-rail-none 2xl:flex-none 2xl:overflow-visible 2xl:p-0">
+                <div className="my-auto">
+                  <HeroCards />
+                </div>
+              </div>
             </div>
 
-            {/* Texte + CTA - non affectes par les cartes */}
-            <div className="max-w-5xl mx-auto px-6 md:px-8 w-full">
+            {/* Texte + CTA - decale a droite entre lg et 2xl pour laisser la place au rail (12rem = rail + respiration) */}
+            <div className="max-w-5xl mx-auto px-6 md:px-8 lg:pl-[max(2rem,calc(12rem_-_(100vw_-_64rem)/2))] 2xl:pl-8 w-full">
               <div className="max-w-lg">
                 <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-navy-800 leading-[1.05] mb-8 md:mb-10">
                   Le Comité Professionnel des avocats

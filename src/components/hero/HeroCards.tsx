@@ -102,7 +102,8 @@ export function HeroCards() {
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-5">
+      {/* 1 colonne sous 2xl (rail defilant), 2 colonnes au-dessus */}
+      <div className="grid grid-cols-1 2xl:grid-cols-2 gap-5">
         {CARDS.map((card, i) => (
           <a
             key={card.slug}
