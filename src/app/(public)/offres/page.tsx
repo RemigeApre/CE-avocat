@@ -3,6 +3,8 @@ import { prisma } from '@/lib/db'
 import { OfferGrid } from '@/components/offers/OfferGrid'
 import { CategorySubNav } from '@/components/offers/CategorySubNav'
 import { OfferFilters } from '@/components/offers/OfferFilters'
+import { MobileFilters } from '@/components/offers/MobileFilters'
+import { categoryPun } from '@/lib/categoryPuns'
 import { getDiscountPercent } from '@/lib/utils'
 import type { OfferWithRelations } from '@/types'
 
@@ -53,6 +55,11 @@ export default async function OffresPage({ searchParams }: Props) {
     return true
   })
 
+  // Categorie active affichee a cote du nombre d'offres (mobile : pas de sous-header)
+  const activePun = categorie
+    ? categoryPun(categorie)?.pun ?? categories.find((c) => c.slug === categorie)?.name ?? null
+    : null
+
   return (
     <>
       <CategorySubNav categories={categories} activeSlug={categorie} />
@@ -70,10 +77,15 @@ export default async function OffresPage({ searchParams }: Props) {
         <div className="flex-1 min-w-0 px-6 py-8">
 
           {/* Mobile : filtres condensés */}
-          <div className="lg:hidden mb-5 flex items-center gap-3">
-            <span className="text-sm text-gray-400">
+          {/* Mobile / tablette : nombre d'offres (+ categorie active) a gauche, lien Filtres a droite */}
+          <div className="lg:hidden mb-5 flex items-center justify-between gap-3">
+            <span className="text-sm text-gray-400 min-w-0 truncate">
               {filtered.length} offre{filtered.length > 1 ? 's' : ''}
+              {activePun && <span className="text-navy-800 font-medium"> · {activePun}</span>}
             </span>
+            <Suspense fallback={null}>
+              <MobileFilters offerCount={filtered.length} categories={categories} />
+            </Suspense>
           </div>
 
           <OfferGrid
