@@ -5,7 +5,6 @@ import { HeroCards } from '@/components/hero/HeroCards'
 import { VirtuousCircle } from '@/components/home/VirtuousCircle'
 import { OfferCard } from '@/components/offers/OfferCard'
 import { PostCard } from '@/components/posts/PostCard'
-import { cn } from '@/lib/utils'
 import { CATEGORY_PUNS } from '@/lib/categoryPuns'
 import type { OfferWithRelations } from '@/types'
 
@@ -108,7 +107,7 @@ export default async function HomePage() {
                 2xl+      : bloc centre verticalement, cartes en 2 colonnes. */}
             <div className="absolute left-6 top-0 bottom-0 w-[140px] py-6 hidden lg:flex flex-col items-center gap-4 2xl:w-auto 2xl:py-0 2xl:bottom-auto 2xl:top-1/2 2xl:-translate-y-1/2 2xl:gap-6">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo complet.jpg" alt="Maître en Pause" className="h-20 2xl:h-32 w-auto object-contain rounded-xl shrink-0" />
+              <img src="/logo-complet.webp" alt="Maître en Pause" className="h-20 2xl:h-32 w-auto object-contain rounded-xl shrink-0" />
               {/* Padding interne : evite que l'overflow coupe ombres, rotations et zoom au survol */}
               <div className="scroll-rail flex-1 min-h-0 w-full overflow-y-auto flex flex-col px-4 py-4 2xl:scroll-rail-none 2xl:flex-none 2xl:overflow-visible 2xl:p-0">
                 <div className="my-auto">

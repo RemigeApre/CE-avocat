@@ -22,7 +22,7 @@ export default async function PartenairesPage() {
       <div className="mb-10">
         <h1 className="text-2xl font-bold text-navy-800">Nos partenaires</h1>
         <p className="text-sm text-gray-400 mt-1">
-          {partenaires.length} partenaire{partenaires.length > 1 ? 's' : ''} selectionne{partenaires.length > 1 ? 's' : ''}
+          {partenaires.length} partenaire{partenaires.length > 1 ? 's' : ''} sélectionné{partenaires.length > 1 ? 's' : ''}
         </p>
       </div>
 

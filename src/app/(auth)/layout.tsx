@@ -7,7 +7,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         {/* Image de fond */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/Sans titre.png"
+          src="/connexion-bibliotheque.webp"
+          loading="lazy"
+          decoding="async"
           alt=""
           className="absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none"
         />

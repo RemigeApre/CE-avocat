@@ -6,7 +6,17 @@ import { UtensilsCrossed, Drama, Flower2, Plane, FerrisWheel, Gift } from 'lucid
 import { FlipCard } from '@/components/ui/FlipCard'
 import { Carousel } from '@/components/ui/Carousel'
 import { createPortal } from 'react-dom'
-import { GamePanel } from '@/components/game/GamePanel'
+import dynamic from 'next/dynamic'
+
+// Le mini-jeu (moteur + classement) n'est telecharge qu'a l'ouverture de sa fenetre
+const GamePanel = dynamic(() => import('@/components/game/GamePanel').then((m) => m.GamePanel), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full aspect-[340/480] max-w-[340px] mx-auto rounded-lg border border-[#e5e3de] bg-[#e8e6e0] flex items-center justify-center text-sm text-gray-500">
+      Chargement du jeu…
+    </div>
+  ),
+})
 import { CATEGORY_PUNS, categoryHref, type CategoryPunSlug } from '@/lib/categoryPuns'
 
 // Icone par categorie (Lucide) ; libelles et slugs viennent de CATEGORY_PUNS

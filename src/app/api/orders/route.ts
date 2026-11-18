@@ -5,7 +5,7 @@ import { prisma } from '@/lib/db'
 import { sendOrderConfirmation } from '@/lib/mail'
 
 const schema = z.object({
-  offerId: z.string().cuid(),
+  offerId: z.string().min(1).max(64), // les offres de demo ont des ids lisibles (ex. offer-menu-midi)
   quantity: z.number().int().min(1).max(10),
 })
 

@@ -45,14 +45,19 @@ async function cleanupCategory(oldSlug, newSlug) {
 async function main() {
   console.log('[seed] Démarrage...')
 
-  const hashedAdmin   = await bcrypt.hash('Admin123!',   12)
+  // Administrateur : mot de passe pris dans ADMIN_PASSWORD (jamais de mot de passe public en production).
+  // Sans la variable, on garde l'ancien comportement de demonstration, avec un avertissement.
+  const adminPassword = process.env.ADMIN_PASSWORD
+  if (!adminPassword) console.warn('[seed] ATTENTION : ADMIN_PASSWORD absent, le compte admin garde le mot de passe de demonstration.')
+  const hashedAdmin   = await bcrypt.hash(adminPassword || 'Admin123!', 12)
   const hashedPartner = await bcrypt.hash('Partner123!', 12)
   const hashedMember  = await bcrypt.hash('Member123!',  12)
 
   // ── Utilisateurs système ──────────────────────────────────────────────
   const adminUser = await prisma.user.upsert({
     where:  { email: 'admin@ce-avocats.fr' },
-    update: {},
+    // ADMIN_PASSWORD defini : il remplace le mot de passe existant a chaque demarrage
+    update: adminPassword ? { password: hashedAdmin } : {},
     create: { email: 'admin@ce-avocats.fr', password: hashedAdmin, name: 'Administrateur', role: 'ADMIN' },
   })
   await prisma.user.upsert({
@@ -247,7 +252,7 @@ async function main() {
   }
 
   console.log('[seed] Terminé.')
-  console.log('  Admin       : admin@ce-avocats.fr    / Admin123!')
+  console.log(`  Admin       : admin@ce-avocats.fr    / ${adminPassword ? '(ADMIN_PASSWORD)' : 'Admin123!'}`)
   console.log('  Partenaires : resto@ce-avocats.fr    / Partner123!')
   console.log('  Partenaires : terroir@demo-ce.fr     / Partner123!')
   console.log('  Partenaires : cinema@demo-ce.fr      / Partner123!')

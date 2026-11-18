@@ -1,5 +1,8 @@
 import { Resend } from 'resend'
 
+/** Echappe les valeurs inserees dans le HTML des e-mails (noms, titres saisis par des utilisateurs) */
+const esc = (v: string) => v.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
+
 const from = process.env.RESEND_FROM ?? 'Maitre en Pause <noreply@ce-avocats.legeai-editions.com>' // en-tete From : ASCII par prudence
 
 export async function sendOrderConfirmation(params: {
@@ -15,7 +18,7 @@ export async function sendOrderConfirmation(params: {
     .map(
       (item) =>
         `<tr>
-          <td style="padding:8px 0;border-bottom:1px solid #e5e3de">${item.title}</td>
+          <td style="padding:8px 0;border-bottom:1px solid #e5e3de">${esc(item.title)}</td>
           <td style="padding:8px 0;border-bottom:1px solid #e5e3de;text-align:right">${item.quantity}</td>
           <td style="padding:8px 0;border-bottom:1px solid #e5e3de;text-align:right">${item.unitPrice.toFixed(2)} EUR</td>
         </tr>`,
@@ -35,7 +38,7 @@ export async function sendOrderConfirmation(params: {
         <div style="padding:40px;background:#ffffff;border:1px solid #e5e3de;border-top:none">
           <h2 style="margin:0 0 8px;font-size:18px">Commande confirmée</h2>
           <p style="color:#6b7280;margin:0 0 32px;font-size:14px">
-            Bonjour ${params.name}, votre commande a bien ete enregistree.
+            Bonjour ${esc(params.name)}, votre commande a bien ete enregistree.
           </p>
           <table style="width:100%;border-collapse:collapse;font-size:14px">
             <thead>
@@ -73,7 +76,7 @@ export async function sendWelcome(params: { to: string; name: string }) {
           <p style="color:#c9a84c;margin:4px 0 0;font-size:14px">Votre Comité Professionnel</p>
         </div>
         <div style="padding:40px;background:#ffffff;border:1px solid #e5e3de;border-top:none">
-          <h2 style="margin:0 0 16px;font-size:18px">Bienvenue, ${params.name} !</h2>
+          <h2 style="margin:0 0 16px;font-size:18px">Bienvenue, ${esc(params.name)} !</h2>
           <p style="color:#4b5563;margin:0 0 16px;font-size:14px;line-height:1.6">
             Votre compte Maître en Pause est actif. Vous avez désormais accès à tous nos avantages
             négociés auprès de nos partenaires.

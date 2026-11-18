@@ -9,7 +9,10 @@ export default async function AdminUsersPage() {
   const [users, session] = await Promise.all([
     prisma.user.findMany({
       orderBy: { createdAt: 'desc' },
-      include: { partner: { select: { name: true } } },
+      select: {
+        id: true, name: true, email: true, role: true, isDemo: true, createdAt: true,
+        partner: { select: { name: true } },
+      },
     }),
     auth(),
   ])

@@ -58,7 +58,7 @@ export function Header() {
     <span className="flex items-center gap-2.5 shrink-0">
       <span className="w-8 h-8 rounded-full bg-white overflow-hidden shrink-0 flex items-center justify-center">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/icone robe.png" alt="" className="w-7 h-7 object-contain" />
+        <img src="/robe-96.png" alt="" className="w-7 h-7 object-contain" />
       </span>
       <span className="font-semibold text-white text-base tracking-wide">
         Maître en <span className="text-gold-400">Pause</span>
@@ -134,7 +134,7 @@ export function Header() {
               {/* overflow-hidden + image < diametre/sqrt(2) : la robe reste entierement dans le cercle */}
               <span className="w-10 h-10 rounded-full bg-white overflow-hidden flex items-center justify-center shadow-sm ring-1 ring-gold-400/40">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/icone robe.png" alt="" className="w-7 h-7 object-contain" />
+                <img src="/robe-96.png" alt="" className="w-7 h-7 object-contain" />
               </span>
             </Link>
 

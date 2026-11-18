@@ -3,6 +3,7 @@ import Credentials from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
 import { prisma } from '@/lib/db'
+import { clientIp, rateLimit } from '@/lib/antibot'
 import type { Role } from '@prisma/client'
 
 const credentialsSchema = z.object({
@@ -17,7 +18,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: {},
         password: {},
       },
-      async authorize(credentials) {
+      async authorize(credentials, request) {
+        // Anti force brute : 10 essais / 15 min par IP, 5 / 15 min par adresse e-mail
+        const ip = request instanceof Request ? clientIp(request) : 'inconnue'
+        const email = typeof credentials?.email === 'string' ? credentials.email.toLowerCase() : ''
+        if (!rateLimit(`login:${ip}`, 10, 15 * 60 * 1000) || (email && !rateLimit(`login-mail:${email}`, 5, 15 * 60 * 1000))) {
+          return null
+        }
         const parsed = credentialsSchema.safeParse(credentials)
         if (!parsed.success) return null
 

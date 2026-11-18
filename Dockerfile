@@ -1,4 +1,7 @@
-FROM node:20-alpine AS base
+# Node 22 (LTS maintenue) : Node 20 est en fin de vie (plus de correctifs de securite)
+FROM node:22-alpine AS base
+# OpenSSL des l'etape de base : Prisma detecte la bonne version pendant le build
+RUN apk add --no-cache openssl
 
 FROM base AS deps
 RUN apk add --no-cache libc6-compat

@@ -36,7 +36,7 @@ export function Footer() {
           <div>
             <Link href="/" className="inline-flex mb-5">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo complet.jpg" alt="Maître en Pause" className="h-10 w-auto object-contain rounded-sm" />
+              <img src="/logo-complet.webp" loading="lazy" alt="Maître en Pause" className="h-10 w-auto object-contain rounded-sm" />
             </Link>
             <p className="text-sm text-navy-300 leading-relaxed max-w-xs">
               Le Comité Professionnel des avocats. Des avantages négociés, des partenaires sélectionnés.
