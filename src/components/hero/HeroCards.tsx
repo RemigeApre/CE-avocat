@@ -42,11 +42,9 @@ const ACTION_CLASS = 'pointer-events-auto mt-3 inline-flex items-center gap-1 ro
 interface HeroCardsProps {
   /** Nombre d'offres actives par slug de categorie */
   counts: Record<string, number>
-  /** Nombre total d'offres actives (verso de la carte Surprise) */
-  total: number
 }
 
-export function HeroCards({ counts, total }: HeroCardsProps) {
+export function HeroCards({ counts }: HeroCardsProps) {
   const [gameOpen, setGameOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
 
@@ -112,27 +110,18 @@ export function HeroCards({ counts, total }: HeroCardsProps) {
           )
         })}
 
-        {/* Carte mystère : verso = total des offres + acces au mini-jeu */}
-        <FlipCard
-          {...CARD_PROPS}
-          style={{ rotate: ROTATIONS[5] }}
-          label="Surprise"
-          front={
-            <div className="h-full flex flex-col items-center justify-center gap-3">
-              <Gift className={`${ICON_CLASS} text-navy-700`} strokeWidth={ICON_STROKE} aria-hidden="true" />
-              <span className="text-[11px] font-semibold text-navy-600 text-center leading-tight px-3">Surprise</span>
-            </div>
-          }
-          back={
-            <div className="h-full flex flex-col items-center justify-center px-2 text-center">
-              <span className="text-3xl font-bold text-gold-400 leading-none tabular-nums">{total}</span>
-              <span className="mt-1 text-[11px] text-white/70">{plural(total)} au total</span>
-              <button type="button" onClick={() => setGameOpen(true)} className={ACTION_CLASS}>
-                Jouer <span aria-hidden="true">▶</span>
-              </button>
-            </div>
-          }
-        />
+        {/* Carte mystère : pas de verso, un clic ouvre directement le mini-jeu */}
+        <div className={CARD_PROPS.className} style={{ rotate: ROTATIONS[5] }}>
+          <button
+            type="button"
+            onClick={() => setGameOpen(true)}
+            aria-label="Surprise : ouvrir le mini-jeu"
+            className={`${CARD_PROPS.frontClassName} h-full w-full flex flex-col items-center justify-center gap-3 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-500 focus-visible:outline-offset-2`}
+          >
+            <Gift className={`${ICON_CLASS} text-navy-700`} strokeWidth={ICON_STROKE} aria-hidden="true" />
+            <span className="text-[11px] font-semibold text-navy-600 text-center leading-tight px-3">Surprise</span>
+          </button>
+        </div>
       </div>
 
       {mounted && createPortal(modal, document.body)}

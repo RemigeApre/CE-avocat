@@ -112,7 +112,7 @@ export default async function HomePage() {
               {/* Padding interne : evite que l'overflow coupe ombres, rotations et zoom au survol */}
               <div className="scroll-rail flex-1 min-h-0 w-full overflow-y-auto flex flex-col px-4 py-4 2xl:scroll-rail-none 2xl:flex-none 2xl:overflow-visible 2xl:p-0">
                 <div className="my-auto">
-                  <HeroCards counts={countsByCategory} total={offerCount} />
+                  <HeroCards counts={countsByCategory} />
                 </div>
               </div>
             </div>
