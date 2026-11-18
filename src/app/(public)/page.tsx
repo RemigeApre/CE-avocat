@@ -119,11 +119,12 @@ export default async function HomePage() {
 
             {/* Texte + CTA - decale a droite entre lg et 2xl pour laisser la place au rail (12rem = rail + respiration) */}
             <div className="max-w-5xl mx-auto px-6 md:px-8 lg:pl-[max(2rem,calc(12rem_-_(100vw_-_64rem)/2))] 2xl:pl-8 w-full">
-              <div className="max-w-lg">
+              {/* Mobile : texte centre ; desktop : aligne a gauche (inchange) */}
+              <div className="max-w-lg mx-auto text-center md:mx-0 md:text-left">
                 <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white md:text-navy-800 leading-[1.05] tracking-tight md:tracking-normal mb-7 md:mb-10 [text-shadow:0_2px_16px_rgba(14,26,63,0.45)] md:[text-shadow:none]">
                   Le Comité Professionnel des avocats
                 </h1>
-                <div className="flex items-center gap-6 md:gap-8">
+                <div className="flex items-center justify-center md:justify-start gap-6 md:gap-8">
                   <Link href="/login">
                     <Button size="lg" className="px-8 md:px-10 py-3 h-auto rounded-sm bg-gold-500 text-navy-900 hover:bg-gold-400 md:bg-navy-800 md:text-white md:hover:bg-navy-700">
                       Se connecter
@@ -134,12 +135,12 @@ export default async function HomePage() {
                     <span className="text-sm text-white/70 md:text-gray-400">offres</span>
                   </div>
                 </div>
-                <p className="mt-5 md:mt-4 text-sm text-white/80 md:text-gray-500 leading-relaxed max-w-sm">
+                <p className="mt-5 md:mt-4 text-sm text-white/80 md:text-gray-500 leading-relaxed max-w-sm mx-auto md:mx-0">
                   Dans les entreprises, les salariés accèdent à des offres négociées à tarifs
                   préférentiels. Les avocats libéraux, eux, n'y ont pas droit.
                   Maître en Pause change ça.
                 </p>
-                <p className="mt-3 md:mt-2 text-xs text-white/60 md:text-gray-400 flex flex-wrap items-center gap-x-2 gap-y-1">
+                <p className="mt-3 md:mt-2 text-xs text-white/60 md:text-gray-400 flex flex-wrap items-center justify-center md:justify-start gap-x-2 gap-y-1">
                   <span className="inline-flex items-center gap-2"><CountUp target={81640} className="font-semibold text-white md:text-gray-500" /> avocats en France.</span>
                   <span className="inline-flex items-center gap-2"><CountUp target={4132} className="font-semibold text-white md:text-gray-500" /> élèves avocats.</span>
                 </p>
