@@ -5,7 +5,7 @@ import { prisma } from '@/lib/db'
 import { Badge, Card } from '@/components/ui'
 import { formatPrice, formatDate, getDiscountPercent } from '@/lib/utils'
 import { CATEGORY_IMAGES } from '@/lib/categoryImages'
-import { punFor } from '@/lib/categoryPuns'
+import { categoryPun } from '@/lib/categoryPuns'
 import { OrderButton } from './OrderButton'
 import { SaveButton } from '@/components/offers/SaveButton'
 import { auth } from '../../../../../auth'
@@ -72,9 +72,10 @@ export default async function OfferPage({ params }: Props) {
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-3">
               <Badge>
-                {punFor(offer.category.slug)
-                  ? `${punFor(offer.category.slug)} · ${offer.category.name}`
-                  : offer.category.name}
+                {(() => {
+                  const entry = categoryPun(offer.category.slug)
+                  return entry ? `${entry.pun} · ${entry.category}` : offer.category.name
+                })()}
               </Badge>
             </div>
             <h1 className="text-2xl font-bold text-navy-800 mb-3">{offer.title}</h1>

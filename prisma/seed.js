@@ -64,7 +64,7 @@ async function main() {
   // ── Catégories ────────────────────────────────────────────────────────
   const cats = await Promise.all([
     prisma.category.upsert({ where: { slug: 'gastronomie' }, update: { name: 'Flagrant délice',  icon: '🍽️' }, create: { name: 'Flagrant délice',  slug: 'gastronomie', icon: '🍽️' } }),
-    prisma.category.upsert({ where: { slug: 'culture' },     update: { name: 'Culture',          icon: '🎭' }, create: { name: 'Culture',          slug: 'culture',     icon: '🎭' } }),
+    prisma.category.upsert({ where: { slug: 'culture' },     update: { name: 'Plagiat',          icon: '🎭' }, create: { name: 'Plagiat',          slug: 'culture',     icon: '🎭' } }),
     prisma.category.upsert({ where: { slug: 'bien-etre' },   update: { name: 'Abandon de poste', icon: '🧘' }, create: { name: 'Abandon de poste', slug: 'bien-etre',   icon: '🧘' } }),
     prisma.category.upsert({ where: { slug: 'voyages' },     update: { name: 'Délit de fuite',   icon: '✈️' }, create: { name: 'Délit de fuite',   slug: 'voyages',     icon: '✈️' } }),
     prisma.category.upsert({ where: { slug: 'loisirs' },     update: { name: 'Mise en liberté',  icon: '🎡' }, create: { name: 'Mise en liberté',  slug: 'loisirs',     icon: '🎡' } }),

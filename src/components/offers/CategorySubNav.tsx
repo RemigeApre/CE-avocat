@@ -1,4 +1,4 @@
-import { punFor } from '@/lib/categoryPuns'
+import { categoryPun } from '@/lib/categoryPuns'
 
 interface Category {
   id: string
@@ -30,18 +30,18 @@ export function CategorySubNav({ categories, activeSlug }: CategorySubNavProps) 
             Toutes les offres
           </a>
           {categories.map((cat) => {
-            const pun = punFor(cat.slug)
+            const entry = categoryPun(cat.slug)
             return (
               <a
                 key={cat.id}
                 href={`/offres?categorie=${cat.slug}`}
                 className={[baseClass, 'group relative', activeSlug === cat.slug ? activeClass : inactiveClass].join(' ')}
               >
-                {pun ?? cat.name}
-                {pun && (
+                {entry?.pun ?? cat.name}
+                {entry && (
                   <>
                     {/* Lecteurs d'ecran : la vraie categorie est toujours annoncee */}
-                    <span className="sr-only"> ({cat.name})</span>
+                    <span className="sr-only"> ({entry.category})</span>
                     {/* Infobulle au survol / focus clavier (desktop, xl+) */}
                     <span
                       aria-hidden="true"
@@ -49,7 +49,7 @@ export function CategorySubNav({ categories, activeSlug }: CategorySubNavProps) 
                     >
                       {/* Petite fleche */}
                       <span className="absolute -top-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 bg-white" />
-                      <span className="relative">{cat.name}</span>
+                      <span className="relative">{entry.category}</span>
                     </span>
                   </>
                 )}

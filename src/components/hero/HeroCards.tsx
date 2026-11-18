@@ -180,7 +180,7 @@ export function HeroCards({ counts, total }: HeroCardsProps) {
               }
               action={
                 <a href={card.href} className={ACTION_CLASS}>
-                  Voir <span aria-hidden="true">→</span>
+                  Voir
                 </a>
               }
             />

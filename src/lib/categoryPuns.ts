@@ -9,8 +9,11 @@ export const CATEGORY_PUNS = [
 
 export type CategoryPunSlug = (typeof CATEGORY_PUNS)[number]['slug']
 
-/** Jeu de mot d'une categorie (par slug), ou undefined si aucun n'est defini */
-export const punFor = (slug: string): string | undefined =>
-  CATEGORY_PUNS.find((c) => c.slug === slug)?.pun
+/**
+ * Jeu de mot + vraie categorie pour un slug, ou undefined si non reference.
+ * Attention : en base, `Category.name` contient deja le jeu de mot (cf. prisma/seed.js) ;
+ * la vraie categorie n'existe qu'ici, dans `category`.
+ */
+export const categoryPun = (slug: string) => CATEGORY_PUNS.find((c) => c.slug === slug)
 
 export const categoryHref =(slug: string) => `/offres?categorie=${slug}`
